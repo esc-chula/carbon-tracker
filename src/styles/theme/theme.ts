@@ -135,6 +135,13 @@ const theme = createTheme({
     divider: color.DIVIDER_LIGHT_BLUE_32,
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: "#F4F6F8",
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
