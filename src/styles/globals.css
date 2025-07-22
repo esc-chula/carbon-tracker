@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&display=swap");
+
 @import "tailwindcss";
 
 @theme {
@@ -107,7 +109,8 @@
 
   --color-action-disable: #a7b1bc;
 
-  --font-sans:
-    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* --font-sans:
+    var(--font-geist-sans), var(--font-noto-sans-thai), ui-sans-serif,
+    system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji"; */
 }

@@ -1,7 +1,9 @@
 import { createTheme } from "@mui/material/styles";
-import { color } from "./colors";
+import { color } from "../colors";
+import { typography } from "./typography";
 
 const theme = createTheme({
+  typography,
   palette: {
     primary: {
       main: color.PRIMARY_MAIN,

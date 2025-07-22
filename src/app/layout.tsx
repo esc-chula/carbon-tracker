@@ -1,15 +1,8 @@
 import "@/styles/globals.css";
 
-import { type Metadata } from "next";
-import { Geist } from "next/font/google";
-
-// import font
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
-import theme from "@/styles/theme";
+import { Manrope, Noto_Sans_Thai } from "next/font/google";
 import ClientLayout from "./ClientLayout";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Carbon Tracker",
@@ -18,16 +11,23 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-const geist = Geist({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  variable: "--font-manrope",
+});
+
+const notoSansThai = Noto_Sans_Thai({
+  subsets: ["thai", "latin"],
+  weight: ["100", "300", "400", "500", "700", "900"],
+  variable: "--font-noto-sans-thai",
 });
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="en" className={`${manrope.variable} ${notoSansThai.variable}`}>
       <body>
         <ClientLayout>{children}</ClientLayout>
       </body>

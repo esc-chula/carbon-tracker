@@ -1,7 +1,7 @@
 "use client";
 
+import theme from "@/styles/theme/theme";
 import { ThemeProvider, CssBaseline } from "@mui/material";
-import theme from "@/styles/theme";
 
 export default function ClientLayout({
   children,
