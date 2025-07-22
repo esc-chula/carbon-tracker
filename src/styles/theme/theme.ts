@@ -147,6 +147,13 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: "#F4F6F8",
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
