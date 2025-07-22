@@ -133,6 +133,18 @@ const theme = createTheme({
       disabled: color.TEXT_DISABLE,
     },
     divider: color.DIVIDER_LIGHT_BLUE_32,
+    lightGray: {
+      50: color.LIGHT_GRAY_50,
+      100: color.LIGHT_GRAY_100,
+      200: color.LIGHT_GRAY_200,
+      300: color.LIGHT_GRAY_300,
+      400: color.LIGHT_GRAY_400,
+      500: color.LIGHT_GRAY_500,
+      600: color.LIGHT_GRAY_600,
+      700: color.LIGHT_GRAY_700,
+      800: color.LIGHT_GRAY_800,
+      900: color.LIGHT_GRAY_900,
+    },
   },
   components: {
     MuiButton: {

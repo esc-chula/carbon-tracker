@@ -12,6 +12,7 @@ declare module "@mui/material/styles" {
     greenOpa: Record<number, string>;
     redOpa: Record<number, string>;
     yellowOpa: Record<number, string>;
+    lightGray: Record<number, string>;
   }
   interface PaletteOptions {
     grayOpa?: Record<number, string>;
@@ -19,5 +20,6 @@ declare module "@mui/material/styles" {
     greenOpa?: Record<number, string>;
     redOpa?: Record<number, string>;
     yellowOpa?: Record<number, string>;
+    lightGray?: Record<number, string>;
   }
 }

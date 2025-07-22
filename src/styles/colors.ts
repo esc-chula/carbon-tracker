@@ -124,4 +124,16 @@ export const color = {
 
   // Action
   ACTION_DISABLE: "#a7b1bc",
+
+  // Light-gray
+  LIGHT_GRAY_50: "#fcfcfd",
+  LIGHT_GRAY_100: "#f7f8f9",
+  LIGHT_GRAY_200: "#f3f4f6",
+  LIGHT_GRAY_300: "#eef0f2",
+  LIGHT_GRAY_400: "#eaedef",
+  LIGHT_GRAY_500: "#e5ebeb",
+  LIGHT_GRAY_600: "#d0d3d6",
+  LIGHT_GRAY_700: "#a3a5a7",
+  LIGHT_GRAY_800: "#7e8081",
+  LIGHT_GRAY_900: "#606163",
 };
