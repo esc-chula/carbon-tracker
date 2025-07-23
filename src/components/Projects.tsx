@@ -30,7 +30,6 @@ export default function Projects() {
     <Container maxWidth={false}>
       <Box
         sx={{
-          fontWeight: theme.typography.fontWeightBold,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -41,6 +40,7 @@ export default function Projects() {
             py: 4,
             fontSize: "40px",
             lineHeight: "56px",
+            fontWeight: theme.typography.fontWeightBold,
           }}
         >
           รายการโครงการ
