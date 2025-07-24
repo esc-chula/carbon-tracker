@@ -32,22 +32,18 @@ function createData(
 }
 
 const rows = [
-  createData('0001', 'Project A', 'submit', '20/07/2568', 'John Doe'),
   createData('0002', 'Project B', 'pending', '21/07/2568', 'Jane Smith'),
   createData('0003', 'Project C', 'approved', '18/07/2568', 'Alex Johnson'),
   createData('0004', 'Project D', 'rejected', '19/07/2568', 'Emily Davis'),
   createData('0005', 'Project E', 'drafted', '22/07/2568', 'Chris Lee'),
-  createData('0006', 'Project F', 'submit', '20/07/2568', 'John Doe'),
   createData('0007', 'Project G', 'pending', '21/07/2568', 'Jane Smith'),
   createData('0008', 'Project H', 'approved', '18/07/2568', 'Alex Johnson'),
   createData('0009', 'Project I', 'rejected', '19/07/2568', 'Emily Davis'),
   createData('0010', 'Project J', 'drafted', '22/07/2568', 'Chris Lee'),
-  createData('0011', 'Project K', 'submit', '20/07/2568', 'John Doe'),
   createData('0012', 'Project L', 'pending', '21/07/2568', 'Jane Smith'),
   createData('0013', 'Project M', 'approved', '18/07/2568', 'Alex Johnson'),
   createData('0014', 'Project N', 'rejected', '19/07/2568', 'Emily Davis'),
   createData('0015', 'Project O', 'drafted', '22/07/2568', 'Chris Lee'),
-  createData('0016', 'Project P', 'submit', '20/07/2568', 'John Doe'),
   createData('0017', 'Project Q', 'pending', '21/07/2568', 'Jane Smith'),
   createData('0018', 'Project R', 'approved', '18/07/2568', 'Alex Johnson'),
   createData('0019', 'Project S', 'rejected', '19/07/2568', 'Emily Davis'),

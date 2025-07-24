@@ -1,8 +1,8 @@
 import React from "react";
 import { Chip, styled, type ChipProps } from "@mui/material";
+import theme from "@/styles/theme/theme";
 
 export type ChipVariant =
-  | "submit"
   | "pending"
   | "approved"
   | "rejected"
@@ -19,7 +19,6 @@ const StyledChip = styled(Chip, {
     ChipVariant,
     { backgroundColor: string; color: string }
   > = {
-    submit: { backgroundColor: "#D7EEFC", color: "#003768" },
     pending: { backgroundColor: "#F9F0D5", color: "#876607" },
     approved: { backgroundColor: "#D8FBDE", color: "#0A5554" },
     rejected: { backgroundColor: "#FFEBEB", color: "#7A092E" },
@@ -31,7 +30,6 @@ const StyledChip = styled(Chip, {
 
 const StatusChips: React.FC<StatusChipProps> = ({ variantType, ...props }) => {
   const variantLabels: Record<ChipVariant, string> = {
-    submit: "ส่งแล้ว",
     pending: "กำลังตรวจ",
     approved: "ผ่านการตรวจ",
     rejected: "ไม่ผ่านการตรวจ",
@@ -46,6 +44,9 @@ const StatusChips: React.FC<StatusChipProps> = ({ variantType, ...props }) => {
       label={label}
       {...props}
       size="small"
+      sx={{
+        fontWeight: theme.typography.fontWeightBold
+      }}
     />
   );
 };
