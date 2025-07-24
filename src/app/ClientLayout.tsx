@@ -2,6 +2,7 @@
 
 import theme from "@/styles/theme/theme";
 import { ThemeProvider, CssBaseline } from "@mui/material";
+import { SessionProvider } from "next-auth/react";
 
 export default function ClientLayout({
   children,
@@ -9,9 +10,11 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
+    <SessionProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </SessionProvider>
   );
 }
