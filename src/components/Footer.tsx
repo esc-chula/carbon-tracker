@@ -9,6 +9,7 @@ export default function Footer() {
         flexGrow: 1,
         p: "80px",
         pb: "40px",
+        backgroundColor: theme.palette.background.default
       }}
     >
       <Stack direction="row">
