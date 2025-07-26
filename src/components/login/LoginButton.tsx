@@ -8,8 +8,12 @@ import { signIn, signOut, useSession } from "next-auth/react";
 export default function LoginButton() {
   const { data: session } = useSession();
 
-  const handleClick = () => {
-    session ? signOut() : signIn("google");
+  const handleClick = async () => {
+    if (session) {
+      await signOut();
+    } else {
+      await signIn("google");
+    }
   };
 
   return (

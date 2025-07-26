@@ -1,22 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Grid,
-  Typography,
-  Button,
-  useTheme,
-  Divider,
-} from "@mui/material";
+import { Box, Grid, Typography, useTheme, Divider } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 import LoginButton from "@/components/login/LoginButton";
 
 export default function LoginPage() {
   const theme = useTheme();
-  const { data: session } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
 
