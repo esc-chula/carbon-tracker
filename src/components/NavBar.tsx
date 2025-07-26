@@ -1,3 +1,5 @@
+"use client";
+
 import theme from "@/styles/theme/theme";
 import {
   AppBar,
@@ -8,8 +10,11 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export default function NavBar() {
+  const router = useRouter();
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -27,7 +32,7 @@ export default function NavBar() {
               height: 40,
               width: 40,
             }}
-            src="esc-logo.svg"
+            src="/esc-logo.svg"
           />
           <Divider
             orientation="vertical"
@@ -47,9 +52,10 @@ export default function NavBar() {
                       height: 24,
                       width: 24,
                     }}
-                    src="listview.svg"
+                    src="/listview.svg"
                   />
                 }
+                onClick={() => router.push("/create-project")}
               >
                 <Typography
                   sx={{
@@ -63,7 +69,7 @@ export default function NavBar() {
                 </Typography>
               </Button>
             </Box>
-            <Box sx={{ padding: "14px" }}> 
+            <Box sx={{ padding: "14px" }}>
               <Button
                 color="inherit"
                 startIcon={
@@ -73,7 +79,7 @@ export default function NavBar() {
                       height: 24,
                       width: 24,
                     }}
-                    src="questionmark.svg"
+                    src="/questionmark.svg"
                   />
                 }
               >

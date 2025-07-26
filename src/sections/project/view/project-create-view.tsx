@@ -5,7 +5,7 @@ import ProjectForm from "../project-form";
 import ProjectFormStepper from "../project-form-stepper";
 
 function ProjectCreateView() {
-  const [step, setStep] = useState<number>(2);
+  const [step, setStep] = useState<number>(1);
 
   return (
     <>

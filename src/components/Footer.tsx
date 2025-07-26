@@ -21,7 +21,7 @@ export default function Footer() {
               height: 40,
               width: 40,
             }}
-            src="esc-logo.svg"
+            src="/esc-logo.svg"
           />
           <Typography>
             วิศวกรรมศาสตร์
