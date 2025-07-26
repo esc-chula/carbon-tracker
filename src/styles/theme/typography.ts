@@ -1,5 +1,4 @@
 import type { Theme, TypographyVariantsOptions } from "@mui/material";
-import { Noto_Sans_Thai } from "next/font/google";
 
 // ----------------------------------------------------------------------
 
