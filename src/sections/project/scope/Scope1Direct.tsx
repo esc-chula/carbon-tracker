@@ -19,7 +19,6 @@ interface Scope1DirectProps {
 
 export function Scope1Direct({
   activities,
-  errors,
   greyColor,
   disableColor,
   redColor,
