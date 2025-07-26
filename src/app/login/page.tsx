@@ -9,10 +9,10 @@ import {
   useTheme,
   Divider,
 } from "@mui/material";
-import GoogleIcon from "@mui/icons-material/Google";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import LoginButton from "@/components/login/LoginButton";
 
 export default function LoginPage() {
   const theme = useTheme();
@@ -94,41 +94,7 @@ export default function LoginPage() {
             เข้าสู่ระบบด้วย Chula Google Account
           </Typography>
 
-          {session ? (
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              sx={{
-                mt: 2,
-                display: "flex",
-                justifyContent: "center",
-                gap: 1,
-                backgroundColor: "#006B45",
-                "&:hover": { backgroundColor: "#005337" },
-              }}
-              onClick={() => signOut()}
-            >
-              ออกจากระบบ
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              sx={{
-                mt: 2,
-                display: "flex",
-                justifyContent: "center",
-                gap: 1,
-                backgroundColor: "#006B45",
-                "&:hover": { backgroundColor: "#005337" },
-              }}
-              onClick={() => signIn("google")}
-            >
-              <GoogleIcon /> เข้าสู่ระบบ
-            </Button>
-          )}
+          <LoginButton />
           {showError && (
             <Typography
               color="error"
