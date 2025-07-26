@@ -1,9 +1,18 @@
 import { Button, Stack, Typography } from "@mui/material";
 import type { FieldErrors, UseFormWatch } from "react-hook-form";
-import type { ProjectFormValues, Activity, Energy, Participant, Accommodation, Gift, Waste } from "@/sections/project/form/type";
+import type {
+  ProjectFormValues,
+  Activity,
+  Energy,
+  Participant,
+  Accommodation,
+  Gift,
+  Waste,
+} from "@/sections/project/form/type";
 import { Scope1Direct } from "@/sections/project/scope/Scope1Direct";
 import { Scope2Indirect } from "@/sections/project/scope/Scope2Indirect";
 import { Scope3Other } from "@/sections/project/scope/Scope3Other";
+import { useRouter } from "next/navigation";
 
 interface ProjectFormStep2Props {
   step: number;
@@ -70,6 +79,11 @@ export function ProjectFormStep2(props: ProjectFormStep2Props) {
     handleBack,
   } = props;
 
+  const router = useRouter();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    router.push("/create-project/test/success");
+  };
   return (
     <>
       {step === 2 && (
