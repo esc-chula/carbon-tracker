@@ -1,7 +1,7 @@
 "use client";
 import ProjectTable from "@/components/ProjectTable";
 import theme from "@/styles/theme/theme";
-import { AddCircleOutline, Search, CheckBox } from "@mui/icons-material";
+import { AddCircleOutline, Search } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -18,7 +18,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import StatusChips, { type ChipVariant } from "./StatusChips";
 
 const options: ChipVariant[] = ["approved", "pending", "drafted", "rejected"];
@@ -152,16 +152,21 @@ export default function Projects() {
   const [status, setStatus] = useState<ChipVariant[]>([]);
   const [search, setSearch] = useState<string>("");
 
-  const filteredRows = rows.filter((row) => {
-    const matchesSearch =
-      row.id.toLowerCase().includes(search.toLowerCase()) ||
-      row.name.toLowerCase().includes(search.toLowerCase());
+  const filteredRows = useMemo(() => {
+    return rows.filter((row) => {
+      const matchesSearch =
+        row.id.toLowerCase().includes(search.toLowerCase()) ||
+        row.name.toLowerCase().includes(search.toLowerCase());
+      const matchesStatus =
+        !status || status.length === 0 || status.includes(row.status);
+      return matchesSearch && matchesStatus;
+    });
+  }, [search, status]);
 
-    const matchesStatus =
-      !status || status.length === 0 || status.includes(row.status);
-
-    return matchesSearch && matchesStatus;
-  });
+  const handleStatusChange = (e: any) => {
+    const value = e.target.value;
+    setStatus(Array.isArray(value) ? value : []);
+  };
 
   return (
     <Container maxWidth={false}>
@@ -186,10 +191,7 @@ export default function Projects() {
           size="medium"
           variant="contained"
           startIcon={<AddCircleOutline />}
-          sx={{
-            fontSize: "16px",
-            lineHeight: "24px",
-          }}
+          sx={{ fontSize: "16px", lineHeight: "24px" }}
         >
           เพิ่มโครงการ
         </Button>
@@ -203,9 +205,7 @@ export default function Projects() {
               label="ค้นหาด้วยรหัสโครงการหรือชื่อโครงการ"
               onChange={(e) => setSearch(e.target.value)}
               slotProps={{
-                input: {
-                  endAdornment: <Search fontSize="medium" />,
-                },
+                input: { endAdornment: <Search fontSize="medium" /> },
               }}
               fullWidth
             />
@@ -215,13 +215,7 @@ export default function Projects() {
                 labelId="status-select-label"
                 multiple
                 value={status}
-                onChange={(e) => {
-                  if (Array.isArray(e.target.value)) {
-                    setStatus(e.target.value);
-                  } else {
-                    setStatus([]);
-                  }
-                }}
+                onChange={handleStatusChange}
                 input={<OutlinedInput label="สถานะ" />}
                 renderValue={(selected) => (
                   <Box
@@ -241,20 +235,15 @@ export default function Projects() {
               >
                 {options.map((option) => (
                   <MenuItem key={option} value={option}>
-                    <Checkbox checked={status?.includes(option)} />
+                    <Checkbox checked={status.includes(option)} />
                     <StatusChips variantType={option} />
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Stack>
-          <Stack
-            direction="row"
-            spacing={"12px"}
-            sx={{
-              alignItems: "center",
-            }}
-          >
+
+          <Stack direction="row" spacing={"12px"} sx={{ alignItems: "center" }}>
             <Typography
               sx={{
                 fontSize: "20px",
@@ -267,12 +256,10 @@ export default function Projects() {
             <Chip
               size="small"
               label={`${rows.length} โครงการ`}
-              sx={{
-                backgroundColor: "#E6F1ED",
-                color: "#013020",
-              }}
+              sx={{ backgroundColor: "#E6F1ED", color: "#013020" }}
             />
           </Stack>
+
           <ProjectTable rows={filteredRows} />
         </Stack>
       </Paper>
