@@ -1,6 +1,5 @@
-import Link from "next/link";
-import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
 export default function HomePage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center text-black">

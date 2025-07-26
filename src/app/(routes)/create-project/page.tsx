@@ -1,13 +1,7 @@
-import { Box, Stack, Typography } from "@mui/material";
+import ProjectCreateView from "@/sections/project/view/project-create-view";
 
 function CreateProjectPage() {
-  return (
-    <Stack spacing={1}>
-      <Stack sx={{}}>
-        <Typography variant="h1">เพิ่มข้อมูลโครงการใหม่</Typography>
-      </Stack>
-    </Stack>
-  );
+  return <ProjectCreateView />;
 }
 
 export default CreateProjectPage;
