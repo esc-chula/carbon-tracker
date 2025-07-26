@@ -19,7 +19,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useMemo, useState } from "react";
-import StatusChips, { type ChipVariant } from "./StatusChips";
+import StatusChips, { type ChipVariant } from "@/components/StatusChips";
+import type { SelectChangeEvent } from "@mui/material/Select";
 
 const options: ChipVariant[] = ["approved", "pending", "drafted", "rejected"];
 
@@ -163,7 +164,7 @@ export default function Projects() {
     });
   }, [search, status]);
 
-  const handleStatusChange = (e: any) => {
+  const handleStatusChange = (e: SelectChangeEvent<typeof status>) => {
     const value = e.target.value;
     setStatus(Array.isArray(value) ? value : []);
   };

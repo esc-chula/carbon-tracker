@@ -33,7 +33,7 @@ export default function ProjectTable({ rows }: { rows: Row[] }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
@@ -90,9 +90,7 @@ export default function ProjectTable({ rows }: { rows: Row[] }) {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               labelRowsPerPage="แถวต่อหน้า"
-              labelDisplayedRows={({ from, to, count }) =>
-                `${from} จาก ${count}`
-              }
+              labelDisplayedRows={({ from, count }) => `${from} จาก ${count}`}
             />
           </TableRow>
         </TableFooter>
