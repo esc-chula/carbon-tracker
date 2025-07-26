@@ -28,6 +28,7 @@
     "dayjs": "^1.11.13",
     "localizedFormat": "link:dayjs/plugin/localizedFormat",
     "next": "^15.2.3",
+    "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.60.0",
