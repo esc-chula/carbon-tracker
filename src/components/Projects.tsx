@@ -1,30 +1,167 @@
 "use client";
 import ProjectTable from "@/components/ProjectTable";
 import theme from "@/styles/theme/theme";
-import { AddCircleOutline, Search } from "@mui/icons-material";
+import { AddCircleOutline, Search, CheckBox } from "@mui/icons-material";
 import {
-  Autocomplete,
   Box,
   Button,
+  Checkbox,
   Chip,
   Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
   Paper,
+  Select,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import StatusChips, { type ChipVariant } from "./StatusChips";
 
-const options = [
-  "ส่งแล้ว",
-  "กำลังตรวจ",
-  "ผ่านการตรวจ",
-  "ไม่ผ่านการตรวจ",
-  "แบบร่าง",
+const options: ChipVariant[] = ["approved", "pending", "drafted", "rejected"];
+
+function createData(
+  id: string,
+  name: string,
+  status: ChipVariant,
+  updatedDate: string,
+  updatedBy: string,
+) {
+  return { id, name, status, updatedDate, updatedBy };
+}
+
+const rows = [
+  createData(
+    "0002",
+    "ระบบจัดการการเข้าเรียน",
+    "pending",
+    "21/07/2568",
+    "นางสาวจิราภรณ์ ใจดี",
+  ),
+  createData(
+    "0003",
+    "แอปพลิเคชันซ่อมบำรุงอาคาร",
+    "approved",
+    "18/07/2568",
+    "นายธนพล ศรีสุข",
+  ),
+  createData(
+    "0004",
+    "ระบบจองห้องปฏิบัติการ",
+    "rejected",
+    "19/07/2568",
+    "นางสาววริศรา กล้าหาญ",
+  ),
+  createData(
+    "0005",
+    "แอปติดตามการใช้พลังงาน",
+    "drafted",
+    "22/07/2568",
+    "นายภูวดล แสงทอง",
+  ),
+  createData(
+    "0007",
+    "โครงการวัดคุณภาพอากาศในคณะ",
+    "pending",
+    "21/07/2568",
+    "นางสาวจิราภรณ์ ใจดี",
+  ),
+  createData(
+    "0008",
+    "ระบบตรวจสอบความปลอดภัยห้องแลป",
+    "approved",
+    "18/07/2568",
+    "นายธนพล ศรีสุข",
+  ),
+  createData(
+    "0009",
+    "แอปแจ้งเตือนเวลารถรับส่ง",
+    "rejected",
+    "19/07/2568",
+    "นางสาววริศรา กล้าหาญ",
+  ),
+  createData(
+    "0010",
+    "ระบบยืมอุปกรณ์แลปออนไลน์",
+    "drafted",
+    "22/07/2568",
+    "นายภูวดล แสงทอง",
+  ),
+  createData(
+    "0012",
+    "ระบบช่วยเหลือด้านวิชาการ",
+    "pending",
+    "21/07/2568",
+    "นางสาวจิราภรณ์ ใจดี",
+  ),
+  createData(
+    "0013",
+    "แอปติดตามความคืบหน้างานโปรเจกต์",
+    "approved",
+    "18/07/2568",
+    "นายธนพล ศรีสุข",
+  ),
+  createData(
+    "0014",
+    "ระบบแนะนำวิชาเลือก",
+    "rejected",
+    "19/07/2568",
+    "นางสาววริศรา กล้าหาญ",
+  ),
+  createData(
+    "0015",
+    "แอปพลิเคชันบริหารเวลาสำหรับนิสิต",
+    "drafted",
+    "22/07/2568",
+    "นายภูวดล แสงทอง",
+  ),
+  createData(
+    "0017",
+    "ระบบลงทะเบียนกิจกรรมเสริมหลักสูตร",
+    "pending",
+    "21/07/2568",
+    "นางสาวจิราภรณ์ ใจดี",
+  ),
+  createData(
+    "0018",
+    "แพลตฟอร์มรีวิววิชาจากรุ่นพี่",
+    "approved",
+    "18/07/2568",
+    "นายธนพล ศรีสุข",
+  ),
+  createData(
+    "0019",
+    "แอปแนะนำเส้นทางเดินในคณะ",
+    "rejected",
+    "19/07/2568",
+    "นางสาววริศรา กล้าหาญ",
+  ),
+  createData(
+    "0020",
+    "ระบบประเมินความพึงพอใจอาจารย์",
+    "drafted",
+    "22/07/2568",
+    "นายภูวดล แสงทอง",
+  ),
 ];
 
 export default function Projects() {
-  const [status, setStatus] = useState<string | null>(null);
+  const [status, setStatus] = useState<ChipVariant[]>([]);
+  const [search, setSearch] = useState<string>("");
+
+  const filteredRows = rows.filter((row) => {
+    const matchesSearch =
+      row.id.toLowerCase().includes(search.toLowerCase()) ||
+      row.name.toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus =
+      !status || status.length === 0 || status.includes(row.status);
+
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <Container maxWidth={false}>
@@ -64,6 +201,7 @@ export default function Projects() {
             <TextField
               size="medium"
               label="ค้นหาด้วยรหัสโครงการหรือชื่อโครงการ"
+              onChange={(e) => setSearch(e.target.value)}
               slotProps={{
                 input: {
                   endAdornment: <Search fontSize="medium" />,
@@ -71,13 +209,44 @@ export default function Projects() {
               }}
               fullWidth
             />
-            <Autocomplete
-              options={options}
-              value={status}
-              onChange={(_, newValue) => setStatus(newValue ?? null)}
-              sx={{ width: 300 }}
-              renderInput={(params) => <TextField {...params} label="สถานะ" />}
-            />
+            <FormControl sx={{ width: 300 }}>
+              <InputLabel id="status-select-label">สถานะ</InputLabel>
+              <Select
+                labelId="status-select-label"
+                multiple
+                value={status}
+                onChange={(e) => {
+                  if (Array.isArray(e.target.value)) {
+                    setStatus(e.target.value);
+                  } else {
+                    setStatus([]);
+                  }
+                }}
+                input={<OutlinedInput label="สถานะ" />}
+                renderValue={(selected) => (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexWrap: "nowrap",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      gap: 0.5,
+                    }}
+                  >
+                    {selected.map((option, index) => (
+                      <StatusChips key={index} variantType={option} />
+                    ))}
+                  </Box>
+                )}
+              >
+                {options.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    <Checkbox checked={status?.includes(option)} />
+                    <StatusChips variantType={option} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Stack>
           <Stack
             direction="row"
@@ -97,14 +266,14 @@ export default function Projects() {
             </Typography>
             <Chip
               size="small"
-              label="27 โครงการ"
+              label={`${rows.length} โครงการ`}
               sx={{
                 backgroundColor: "#E6F1ED",
                 color: "#013020",
               }}
             />
           </Stack>
-          <ProjectTable />
+          <ProjectTable rows={filteredRows} />
         </Stack>
       </Paper>
     </Container>
