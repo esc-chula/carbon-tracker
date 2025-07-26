@@ -1,18 +1,18 @@
 import { Button, Stack, Typography } from "@mui/material";
 import type { FieldErrors, UseFormWatch } from "react-hook-form";
-import type { ProjectFormValues } from "@/sections/project/form/type";
+import type { ProjectFormValues, Activity, Energy, Participant, Accommodation, Gift, Waste } from "@/sections/project/form/type";
 import { Scope1Direct } from "@/sections/project/scope/Scope1Direct";
 import { Scope2Indirect } from "@/sections/project/scope/Scope2Indirect";
 import { Scope3Other } from "@/sections/project/scope/Scope3Other";
 
 interface ProjectFormStep2Props {
   step: number;
-  activities: any[];
-  energies: any[];
-  participant: any[];
-  accommodation: any[];
-  gift: any[];
-  waste: any[];
+  activities: Activity[];
+  energies: Energy[];
+  participant: Participant[];
+  accommodation: Accommodation[];
+  gift: Gift[];
+  waste: Waste[];
   errors: FieldErrors<ProjectFormValues>;
   projectCode: string;
   projectName: string;
@@ -23,17 +23,17 @@ interface ProjectFormStep2Props {
   redColor: string;
   watch: UseFormWatch<ProjectFormValues>;
   removeActivity: (index: number) => void;
-  appendActivity: (value: any) => void;
+  appendActivity: (value: Activity) => void;
   removeEnergy: (index: number) => void;
-  appendEnergy: (value: any) => void;
+  appendEnergy: (value: Energy) => void;
   removeParticipant: (index: number) => void;
-  appendParticipant: (value: any) => void;
+  appendParticipant: (value: Participant) => void;
   removeAccommodation: (index: number) => void;
-  appendAccommodation: (value: any) => void;
+  appendAccommodation: (value: Accommodation) => void;
   removeGift: (index: number) => void;
-  appendGift: (value: any) => void;
+  appendGift: (value: Gift) => void;
   removeWaste: (index: number) => void;
-  appendWaste: (value: any) => void;
+  appendWaste: (value: Waste) => void;
   handleBack: () => void;
 }
 

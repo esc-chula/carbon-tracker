@@ -3,15 +3,18 @@ import { Grid, IconButton, Typography } from "@mui/material";
 import { StyledAddButton, StyledStack } from "@/sections/project/styles";
 import { SvgColor } from "@/components/svg/svg-color";
 import { Field } from "@/components/hook-form/field";
+import type { Activity } from "@/sections/project/form/type";
+import type { FieldErrors } from "react-hook-form";
+import type { ProjectFormValues } from "@/sections/project/form/type";
 
 interface Scope1DirectProps {
-  activities: any[];
-  errors: any;
+  activities: Activity[];
+  errors: FieldErrors<ProjectFormValues>;
   greyColor: string;
   disableColor: string;
   redColor: string;
   removeActivity: (index: number) => void;
-  appendActivity: (value: any) => void;
+  appendActivity: (value: Activity) => void;
 }
 
 export function Scope1Direct({
@@ -33,7 +36,7 @@ export function Scope1Direct({
       </Typography>
       <Grid container spacing={2} alignItems="center">
         {activities.map((field, index) => (
-          <Fragment key={field.id}>
+          <Fragment key={index}>
             <Grid size={{ xs: 7.5 }}>
               <Field.CustomAutoComplete
                 name={`activities.${index}.type`}

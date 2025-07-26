@@ -5,16 +5,18 @@ import { SvgColor } from "@/components/svg/svg-color";
 import RHFDateTimePicker from "@/components/hook-form/rhf-date-time-picker";
 import { Field } from "@/components/hook-form/field";
 import { equipmentOptions, energyUnitOptions, buildingOptions, roomOptions, type TRoom } from "@/sections/project/form/constant";
+import type { Energy } from "@/sections/project/form/type";
 import type { UseFormWatch } from "react-hook-form";
+import type { ProjectFormValues } from "@/sections/project/form/type";
 
 interface Scope2IndirectProps {
-  energies: any[];
-  watch: UseFormWatch<any>;
+  energies: Energy[];
+  watch: UseFormWatch<ProjectFormValues>;
   disableColor: string;
   redColor: string;
   greyColor: string;
   removeEnergy: (index: number) => void;
-  appendEnergy: (value: any) => void;
+  appendEnergy: (value: Energy) => void;
 }
 
 export function Scope2Indirect({
@@ -40,7 +42,7 @@ export function Scope2Indirect({
         const type = watch(`energies.${index}.type`);
         const building = watch(`energies.${index}.building`);
         return (
-          <Fragment key={field.id}>
+          <Fragment key={index}>
             <Stack direction="row" spacing={2} alignItems="center">
               <Typography variant="body1" fontWeight={400}>
                 การใช้พลังงาน

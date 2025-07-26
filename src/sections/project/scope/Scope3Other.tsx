@@ -6,24 +6,27 @@ import RHFDateTimePicker from "@/components/hook-form/rhf-date-time-picker";
 import CSVUploadComponent from "@/components/hook-form/rhf-upload";
 import { Field } from "@/components/hook-form/field";
 import { giftUnitOptions, wasteOptions } from "@/sections/project/form/constant";
+import type { Participant, Accommodation, Gift, Waste } from "@/sections/project/form/type";
+import type { FieldErrors } from "react-hook-form";
+import type { ProjectFormValues } from "@/sections/project/form/type";
 
 interface Scope3OtherProps {
-  participant: any[];
-  accommodation: any[];
-  gift: any[];
-  waste: any[];
-  errors: any;
+  participant: Participant[];
+  accommodation: Accommodation[];
+  gift: Gift[];
+  waste: Waste[];
+  errors: FieldErrors<ProjectFormValues>;
   disableColor: string;
   redColor: string;
   greyColor: string;
   removeParticipant: (index: number) => void;
-  appendParticipant: (value: any) => void;
+  appendParticipant: (value: Participant) => void;
   removeAccommodation: (index: number) => void;
-  appendAccommodation: (value: any) => void;
+  appendAccommodation: (value: Accommodation) => void;
   removeGift: (index: number) => void;
-  appendGift: (value: any) => void;
+  appendGift: (value: Gift) => void;
   removeWaste: (index: number) => void;
-  appendWaste: (value: any) => void;
+  appendWaste: (value: Waste) => void;
 }
 
 export function Scope3Other({
@@ -62,7 +65,7 @@ export function Scope3Other({
         </Typography>
         <Grid container spacing={2} alignItems="center">
           {participant.map((field, index) => (
-            <Fragment key={field.id}>
+            <Fragment key={index}>
               <Grid size={{ xs: 3 }}>
                 <RHFDateTimePicker
                   name={`participant.${index}.date`}
@@ -110,7 +113,7 @@ export function Scope3Other({
         </Typography>
         <Grid container spacing={2} alignItems="center">
           {accommodation.map((field, index) => (
-            <Fragment key={field.id}>
+            <Fragment key={index}>
               <Grid size={{ xs: 3 }}>
                 <RHFDateTimePicker
                   name={`accommodation.${index}.date`}
@@ -153,7 +156,7 @@ export function Scope3Other({
         </Typography>
         <Grid container spacing={2} alignItems="center">
           {gift.map((field, index) => (
-            <Fragment key={field.id}>
+            <Fragment key={index}>
               <Grid size={{ xs: 7.5 }}>
                 <Field.CustomAutoComplete
                   name={`gift.${index}.type`}
@@ -208,7 +211,7 @@ export function Scope3Other({
         </Typography>
         <Grid container spacing={2} alignItems="center">
           {waste.map((field, index) => (
-            <Fragment key={field.id}>
+            <Fragment key={index}>
               <Grid size={{ xs: 7.5 }}>
                 <Field.CustomAutoComplete
                   name={`waste.${index}.type`}
