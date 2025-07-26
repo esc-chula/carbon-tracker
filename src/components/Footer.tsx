@@ -5,11 +5,12 @@ export default function Footer() {
   return (
     <Box
       component="footer"
+      className="custom-footer"
       sx={{
         flexGrow: 1,
         p: "80px",
         pb: "40px",
-        backgroundColor: theme.palette.background.default
+        backgroundColor: theme.palette.background.default,
       }}
     >
       <Stack direction="row">
@@ -20,7 +21,7 @@ export default function Footer() {
               height: 40,
               width: 40,
             }}
-            src="esc-logo.svg"
+            src="/esc-logo.svg"
           />
           <Typography>
             วิศวกรรมศาสตร์
@@ -33,18 +34,42 @@ export default function Footer() {
           sx={{ justifyContent: "space-between", flexGrow: 1 }}
         >
           <Stack spacing={3}>
-            <Typography sx={{fontSize: 20, lineHeight: "36px", fontWeight: theme.typography.fontWeightBold}}>ฝ่ายจัดทำเว็ปไซต์</Typography>
+            <Typography
+              sx={{
+                fontSize: 20,
+                lineHeight: "36px",
+                fontWeight: theme.typography.fontWeightBold,
+              }}
+            >
+              ฝ่ายจัดทำเว็ปไซต์
+            </Typography>
             <Stack spacing={2}>
               <Typography>ฝ่ายเทคโนโลยี (TECH)</Typography>
               <Typography>ฝ่ายความยั่งยืน (SUSTAIN)</Typography>
             </Stack>
           </Stack>
           <Stack spacing={3}>
-            <Typography sx={{fontSize: 20, lineHeight: "36px", fontWeight: theme.typography.fontWeightBold}}>เพิ่มเติม</Typography>
+            <Typography
+              sx={{
+                fontSize: 20,
+                lineHeight: "36px",
+                fontWeight: theme.typography.fontWeightBold,
+              }}
+            >
+              เพิ่มเติม
+            </Typography>
             <Typography>รูปแบบไฟล์ CSV</Typography>
           </Stack>
           <Stack spacing={3}>
-            <Typography sx={{fontSize: 20, lineHeight: "36px", fontWeight: theme.typography.fontWeightBold}}>ติดต่อเรา</Typography>
+            <Typography
+              sx={{
+                fontSize: 20,
+                lineHeight: "36px",
+                fontWeight: theme.typography.fontWeightBold,
+              }}
+            >
+              ติดต่อเรา
+            </Typography>
             <Typography>IG: escchula</Typography>
           </Stack>
         </Stack>

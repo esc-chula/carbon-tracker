@@ -114,8 +114,8 @@ export const color = {
   BG_WHITE: "#fff",
 
   // Text
-  TEXT_PRIMARY: "#232a34",
-  TEXT_SECONDARY: "#787f89",
+  TEXT_PRIMARY: "#212B36",
+  TEXT_SECONDARY: "#637381",
   TEXT_DISABLE: "#a7b1bc",
   TEXT_WHITE: "#fff",
 

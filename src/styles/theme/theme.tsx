@@ -1,4 +1,13 @@
-import { createTheme } from "@mui/material/styles";
+import { ArrowDownIcon } from "@/components/icon/arrow-down-icon";
+import {
+  autocompleteClasses,
+  Box,
+  inputBaseClasses,
+  menuItemClasses,
+  outlinedInputClasses,
+  svgIconClasses,
+} from "@mui/material";
+import { alpha, createTheme } from "@mui/material/styles";
 import { color } from "../colors";
 import { typography } from "./typography";
 
@@ -151,6 +160,145 @@ const theme = createTheme({
       styleOverrides: {
         body: {
           backgroundColor: "#F4F6F8",
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          "&.Mui-focused": {
+            color: "#1C252E",
+          },
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: () => ({
+          [`&.${inputBaseClasses.disabled}`]: {
+            "& svg": { color: "#919EABCC" },
+          },
+          [`& .${inputBaseClasses.input}:focus`]: {
+            borderRadius: "inherit",
+          },
+          "&.Mui-disabled": {
+            backgroundColor: "#919EAB33",
+          },
+        }),
+        input: ({ theme }) => ({
+          fontSize: theme.typography.pxToRem(15),
+          [theme.breakpoints.down("sm")]: {
+            fontSize: theme.typography.pxToRem(16),
+          },
+          "&::placeholder": {
+            opacity: 1,
+            color: "#919EABCC",
+          },
+        }),
+      },
+    },
+
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: () => ({
+          borderRadius: 8,
+          [`&.${outlinedInputClasses.focused}`]: {
+            [`& .${outlinedInputClasses.notchedOutline}`]: {
+              borderColor: "#1C252E",
+            },
+          },
+          [`&.${outlinedInputClasses.error}`]: {
+            [`& .${outlinedInputClasses.notchedOutline}`]: {
+              borderColor: "#ff5530",
+            },
+          },
+          [`&.${outlinedInputClasses.disabled}`]: {
+            [`& .${outlinedInputClasses.notchedOutline}`]: {
+              borderColor: "#919EAB33",
+            },
+          },
+        }),
+        notchedOutline: ({ theme }) => ({
+          borderColor: "#E5E8EB",
+          transition: theme.transitions.create(["border-color"], {
+            duration: theme.transitions.duration.shortest,
+          }),
+        }),
+      },
+    },
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          [`& span.${autocompleteClasses.tag}`]: {
+            ...theme.typography.subtitle2,
+            height: 24,
+            minWidth: 24,
+            lineHeight: "24px",
+            textAlign: "center",
+            padding: theme.spacing(0, 0.75),
+            color: "#212B36",
+            borderRadius: theme.shape.borderRadius,
+          },
+        }),
+        paper: () => ({
+          padding: 5,
+          elevation: 8,
+          borderRadius: 8,
+          boxShadow: `0px 5px 5px -3px rgba(0, 0, 0, 0.2), 
+                0px 8px 10px 1px rgba(0, 0, 0, 0.14)`,
+        }),
+        listbox: ({ theme }) => ({
+          padding: 0,
+
+          [`& .${autocompleteClasses.option}`]: {
+            padding: theme.spacing(1),
+            borderRadius: 8,
+            "&:not(:last-of-type)": { marginBottom: 4 },
+            [`&.${menuItemClasses.selected}`]: {
+              fontWeight: theme.typography.fontWeightSemiBold,
+              backgroundColor: alpha(theme.palette.grey[500], 0.16),
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.grey[500], 0.08),
+              },
+            },
+            [`&.${autocompleteClasses.option}[aria-selected="true"]`]: {
+              backgroundColor: alpha(theme.palette.grey[500], 0.16),
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.grey[500], 0.08),
+              },
+            },
+          },
+        }),
+        endAdornment: {
+          [`& .${svgIconClasses.root}`]: { width: 18, height: 18 },
+        },
+      },
+      defaultProps: {
+        popupIcon: <ArrowDownIcon />,
+        renderOption: (props, option, _state, ownerState) => {
+          const { key, ...optionProps } = props;
+          return (
+            <Box
+              key={key}
+              component="li"
+              data-testid={`option-${option.value}`}
+              {...optionProps}
+            >
+              {ownerState.getOptionLabel(option)}
+            </Box>
+          );
+        },
+      },
+    },
+    MuiFormLabel: {
+      styleOverrides: {
+        root: {
+          "&.Mui-disabled .MuiFormLabel-asterisk": {
+            color: color.DISABLED, // or theme.palette.text.disabled
+          },
+        },
+        asterisk: {
+          color: "red",
         },
       },
     },

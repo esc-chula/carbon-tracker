@@ -1,3 +1,5 @@
+"use client";
+
 import theme from "@/styles/theme/theme";
 import {
   Box,
@@ -9,8 +11,11 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export default function SubmitPage() {
+  const router = useRouter();
+
   return (
     <Container
       maxWidth={false}
@@ -31,7 +36,7 @@ export default function SubmitPage() {
             height: "100%",
             objectFit: "contain",
           }}
-          image="submit-mark.svg"
+          image="/submit-mark.svg"
         />
         <Box>
           <CardContent sx={{ p: 0 }}>
@@ -63,6 +68,7 @@ export default function SubmitPage() {
           fontSize: "16px",
           lineHeight: "24px",
         }}
+        onClick={() => router.push("/")}
       >
         กลับสู่หน้าหลัก
       </Button>
@@ -102,7 +108,7 @@ export default function SubmitPage() {
             height: 500,
             width: 750,
           }}
-          src="submit.svg"
+          src="/submit.svg"
         />
         <Box>
           <Typography

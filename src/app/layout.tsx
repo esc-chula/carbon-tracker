@@ -1,8 +1,8 @@
 import "@/styles/globals.css";
 
+import type { Metadata } from "next";
 import { Manrope, Noto_Sans_Thai } from "next/font/google";
 import ClientLayout from "./ClientLayout";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Carbon Tracker",
