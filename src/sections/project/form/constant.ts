@@ -76,7 +76,7 @@ const fieldOptions = [
   { value: "โครงการอื่น ๆ ของกวศ.", label: "โครงการอื่น ๆ ของกวศ." },
 ];
 
-const departmentOptins = [
+const departmentOptions = [
   { value: "วิศวกรรมโยธา", label: "วิศวกรรมโยธา" },
   { value: "วิศวกรรมไฟฟ้า", label: "วิศวกรรมไฟฟ้า" },
   { value: "วิศวกรรมเครื่องกล", label: "วิศวกรรมเครื่องกล" },
@@ -185,7 +185,7 @@ const wasteOptions = [
 export type { TRoom };
 export {
   buildingOptions,
-  departmentOptins,
+  departmentOptions,
   energyUnitOptions,
   equipmentOptions,
   fieldOptions,

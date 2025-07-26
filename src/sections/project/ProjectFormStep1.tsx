@@ -4,7 +4,7 @@ import { Button, Grid, Stack, Typography } from "@mui/material";
 import { StyledStack } from "@/sections/project/styles";
 import {
   fieldOptions,
-  departmentOptins,
+  departmentOptions,
 } from "@/sections/project/form/constant";
 import type { FieldErrors } from "react-hook-form";
 import type { ProjectFormValues } from "@/sections/project/form/type";
@@ -159,7 +159,7 @@ export function ProjectFormStep1({
                   <Field.CustomAutoComplete
                     name="department"
                     label="ภาคที่เรียน"
-                    options={departmentOptins}
+                    options={departmentOptions}
                     helperText={errors.department?.message}
                     required
                   />
