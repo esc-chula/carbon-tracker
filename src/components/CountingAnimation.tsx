@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface CountingAnimationProps {
   to: number;
-  duration?: number; // ms
+  duration?: number; // milliseconds
   suffix?: string;
   prefix?: string;
   decimals?: number;
@@ -14,35 +14,43 @@ export default function CountingAnimation({
   suffix = "",
   prefix = "",
   decimals = 0,
-}: CountingAnimationProps) {
-  const [count, setCount] = useState(0);
+}: CountingAnimationProps): React.JSX.Element {
+  const [count, setCount] = useState<number>(0);
+  const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    let start = 0;
+    const start = 0;
     const startTime = performance.now();
+
     const animate = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const value = start + (to - start) * progress;
       setCount(value);
+
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        frameRef.current = requestAnimationFrame(animate);
       } else {
-        setCount(to);
+        setCount(to); // Ensure exact final value
       }
     };
-    requestAnimationFrame(animate);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    frameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
   }, [to, duration]);
 
   return (
     <span>
       {prefix}
-      {count &&
-        count.toLocaleString(undefined, {
-          minimumFractionDigits: decimals,
-          maximumFractionDigits: decimals,
-        })}
+      {Number(count).toLocaleString(undefined, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })}
       {suffix}
     </span>
   );
