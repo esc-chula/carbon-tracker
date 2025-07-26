@@ -2,29 +2,25 @@ import React from "react";
 import { Chip, styled, type ChipProps } from "@mui/material";
 import theme from "@/styles/theme/theme";
 
-export type ChipVariant =
-  | "pending"
-  | "approved"
-  | "rejected"
-  | "drafted";
+export type ChipVariant = "pending" | "approved" | "rejected" | "drafted";
 
 interface StatusChipProps extends ChipProps {
   variantType?: ChipVariant;
 }
 
+const variantStyles: Record<
+  ChipVariant,
+  { backgroundColor: string; color: string }
+> = {
+  pending: { backgroundColor: "#F9F0D5", color: "#876607" },
+  approved: { backgroundColor: "#D8FBDE", color: "#0A5554" },
+  rejected: { backgroundColor: "#FFEBEB", color: "#7A092E" },
+  drafted: { backgroundColor: "#E9EAEB", color: "#212B36" },
+};
+
 const StyledChip = styled(Chip, {
   shouldForwardProp: (prop) => prop !== "variantType",
 })<{ variantType?: ChipVariant }>(({ variantType }) => {
-  const variantStyles: Record<
-    ChipVariant,
-    { backgroundColor: string; color: string }
-  > = {
-    pending: { backgroundColor: "#F9F0D5", color: "#876607" },
-    approved: { backgroundColor: "#D8FBDE", color: "#0A5554" },
-    rejected: { backgroundColor: "#FFEBEB", color: "#7A092E" },
-    drafted: { backgroundColor: "#E9EAEB", color: "#212B36" },
-  };
-
   return variantType ? variantStyles[variantType] : {};
 });
 
@@ -35,18 +31,14 @@ const StatusChips: React.FC<StatusChipProps> = ({ variantType, ...props }) => {
     rejected: "ไม่ผ่านการตรวจ",
     drafted: "แบบร่าง",
   };
-
   const label = variantType ? variantLabels[variantType] : "";
-
   return (
     <StyledChip
       variantType={variantType}
       label={label}
       {...props}
       size="small"
-      sx={{
-        fontWeight: theme.typography.fontWeightBold
-      }}
+      sx={{ fontWeight: theme.typography.fontWeightBold }}
     />
   );
 };
