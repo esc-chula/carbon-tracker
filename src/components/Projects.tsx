@@ -21,6 +21,7 @@ import {
 import { useMemo, useState } from "react";
 import StatusChips, { type ChipVariant } from "@/components/StatusChips";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import { useRouter } from "next/navigation";
 
 const options: ChipVariant[] = ["approved", "pending", "drafted", "rejected"];
 
@@ -152,6 +153,7 @@ const rows = [
 export default function Projects() {
   const [status, setStatus] = useState<ChipVariant[]>([]);
   const [search, setSearch] = useState<string>("");
+  const router = useRouter();
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
@@ -167,6 +169,10 @@ export default function Projects() {
   const handleStatusChange = (e: SelectChangeEvent<typeof status>) => {
     const value = e.target.value;
     setStatus(Array.isArray(value) ? value : []);
+  };
+
+  const handleAddProject = () => {
+    router.push("/create-project");
   };
 
   return (
@@ -192,6 +198,7 @@ export default function Projects() {
           size="medium"
           variant="contained"
           startIcon={<AddCircleOutline />}
+          onClick={handleAddProject}
           sx={{ fontSize: "16px", lineHeight: "24px" }}
         >
           เพิ่มโครงการ

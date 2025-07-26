@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
+import CountingAnimation from "@/components/CountingAnimation";
 
 export default function SubmitPage() {
   const router = useRouter();
@@ -99,7 +100,12 @@ export default function SubmitPage() {
               lineHeight: "64px",
             }}
           >
-            48 tonsCO₂
+            <CountingAnimation
+              to={48}
+              suffix=" tonsCO₂"
+              duration={2000}
+              decimals={0}
+            />
           </Typography>
         </Box>
         <Box
@@ -127,7 +133,41 @@ export default function SubmitPage() {
               lineHeight: "64px",
             }}
           >
-            ขับรถรอบโลก 18 รอบ
+            <CountingAnimation
+              prefix="ขับรถรอบโลก "
+              to={18}
+              suffix=" รอบ"
+              duration={1200}
+              decimals={0}
+            />
+          </Typography>
+        </Box>
+      </Stack>
+      <Stack direction="row">
+        <Box>
+          <Typography
+            sx={{
+              fontSize: "24px",
+              fontWeight: theme.typography.fontWeightBold,
+              lineHeight: "36px",
+            }}
+          >
+            หรือเท่ากับ...
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: "48px",
+              fontWeight: theme.typography.fontWeightBold,
+              lineHeight: "64px",
+            }}
+          >
+            <CountingAnimation
+              to={18}
+              prefix="ขับรถรอบโลก "
+              suffix=" รอบ"
+              duration={1200}
+              decimals={0}
+            />
           </Typography>
         </Box>
       </Stack>

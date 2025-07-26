@@ -1,6 +1,14 @@
 import { Button, Stack, Typography } from "@mui/material";
 import type { FieldErrors, UseFormWatch } from "react-hook-form";
-import type { ProjectFormValues, Activity, Energy, Participant, Accommodation, Gift, Waste } from "@/sections/project/form/type";
+import type {
+  ProjectFormValues,
+  Activity,
+  Energy,
+  Participant,
+  Accommodation,
+  Gift,
+  Waste,
+} from "@/sections/project/form/type";
 import { Scope1Direct } from "@/sections/project/scope/Scope1Direct";
 import { Scope2Indirect } from "@/sections/project/scope/Scope2Indirect";
 import { Scope3Other } from "@/sections/project/scope/Scope3Other";
