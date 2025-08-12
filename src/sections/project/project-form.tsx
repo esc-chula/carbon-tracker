@@ -1,15 +1,16 @@
 "use client";
 
 import { Form } from "@/components/hook-form/form-provider";
+import type { ProjectFormValues } from "@/sections/project/form/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack, useTheme } from "@mui/material";
+import { useRouter } from "next/navigation";
 import { type Dispatch, type SetStateAction } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { defaultValues, ProjectFormSchema } from "./form/schema";
-import type { ProjectFormValues } from "@/sections/project/form/type";
-import { useRouter } from "next/navigation";
-import { ProjectFormStep1 } from "@/sections/project/ProjectFormStep1";
-import { ProjectFormStep2 } from "@/sections/project/ProjectFormStep2";
+
+import { ProjectFormFirstStep } from "./project-form-first-step";
+import { ProjectFormSecondStep } from "./project-form-second-step";
 
 // ---------------------------------------------------------------------------------
 
@@ -35,6 +36,8 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
     handleSubmit,
     trigger,
     formState: { errors },
+    getValues,
+    setError,
   } = methods;
 
   const {
@@ -123,7 +126,27 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
       "tel",
     ]);
 
-    if (isValid) setStep((prev) => prev + 1);
+    const values = getValues();
+    const type = values.underProject?.trim();
+
+    if (type === "กวศ." && !values.field?.trim()) {
+      setError("field", { type: "manual", message: "กรุณากรอกฝ่าย" });
+      return;
+    }
+
+    if (type === "ชมรม" && !values.clubName?.trim()) {
+      setError("clubName", { type: "manual", message: "กรุณากรอกชื่อชมรม" });
+      return;
+    }
+
+    if (type === "other" && !values.otherUnderProject?.trim()) {
+      setError("otherUnderProject", { type: "manual", message: "กรุณาระบุ" });
+      return;
+    }
+
+    if (!isValid) return;
+
+    setStep((prev) => prev + 1);
   };
 
   const handleBack = () => {
@@ -133,6 +156,8 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
   const onSubmit = (data: ProjectFormValues) => {
     router.push(`create-project/${data.projectCode}/success`);
   };
+
+  // --------------------------- Render ---------------------------
 
   return (
     <Form methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -144,13 +169,13 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
           marginBottom: 8,
         }}
       >
-        <ProjectFormStep1
+        <ProjectFormFirstStep
           step={step}
           errors={errors}
           underProject={underProject}
           handleNext={handleNext}
         />
-        <ProjectFormStep2
+        <ProjectFormSecondStep
           step={step}
           activities={activities}
           energies={energies}

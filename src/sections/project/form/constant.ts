@@ -22,7 +22,6 @@ const roomOptions = {
       value: "บาบิโลน (ซุ้มการเวก อาคาร 3 ชั้น 2)",
       label: "บาบิโลน (ซุ้มการเวก อาคาร 3 ชั้น 2)",
     },
-    { value: "other", label: "อื่นๆ" },
   ],
   "อาคารเจริญวิศวกรรม (อาคาร 4)": [
     { value: "หอประชุมชั้น 2", label: "หอประชุมชั้น 2" },
@@ -34,7 +33,6 @@ const roomOptions = {
       value: "โถงอาคารเจริญวิศวกรรม ชั้น 1 (โถงใต้ตึก 4)",
       label: "โถงอาคารเจริญวิศวกรรม ชั้น 1 (โถงใต้ตึก 4)",
     },
-    { value: "other", label: "อื่นๆ" },
   ],
   "อาคารวิศวฯ 100 ปี": [
     { value: "โถงใต้อาคารวิศวฯ 100 ปี", label: "โถงใต้อาคารวิศวฯ 100 ปี" },
@@ -42,12 +40,10 @@ const roomOptions = {
     { value: "Large Meeting Room", label: "Large Meeting Room" },
     { value: "สนามกีฬาชั้น 12", label: "สนามกีฬาชั้น 12" },
     { value: "Fitness ชั้น 12", label: "Fitness ชั้น 12" },
-    { value: "other", label: "อื่นๆ" },
   ],
   "ลานจัดเลี้ยง อาคาร 3 (ที่ราบสูงสวนรวมใจ)": [
     { value: "พื้นที่จัดเลี้ยงหลัก", label: "พื้นที่จัดเลี้ยงหลัก" },
     { value: "เวทีกลางแจ้ง", label: "เวทีกลางแจ้ง" },
-    { value: "other", label: "อื่นๆ" },
   ],
 };
 
@@ -153,13 +149,11 @@ const buildingOptions = [
     label: "ลานจัดเลี้ยง อาคาร 3 (ที่ราบสูงสวนรวมใจ)",
   },
   { value: "กิจนิสิต", label: "กิจนิสิต" },
-  { value: "อื่นๆ", label: "อื่นๆ" },
 ];
 
 const equipmentOptions = [
   { label: "ทีวี", value: "tv" },
   { label: "Projector", value: "projector" },
-  { label: "เครื่องปรับอากาศ", value: "air_conditioner" },
   { label: "ไมโครโฟน", value: "microphone" },
 ];
 
@@ -171,15 +165,15 @@ const energyUnitOptions = [
 const giftUnitOptions = [
   { value: "กระดาษ", label: "กระดาษ" },
   { value: "พลาสติก", label: "พลาสติก" },
-  { value: "อื่นๆ", label: "อื่นๆ" },
 ];
 
 const wasteOptions = [
-  { value: "ขวดน้ำ", label: "ขวดน้ำ" },
-  { value: "ขยะรีไซเคิล", label: "ขยะรีไซเคิล" },
-  { value: "ขยะทั่วไป", label: "ขยะทั่วไป" },
-  { value: "ขยะเศษอาหาร", label: "ขยะเศษอาหาร" },
-  { value: "อื่นๆ", label: "อื่นๆ" },
+  { value: "ขวดพลาสติก (PET)", label: "ขวดพลาสติก (PET)" },
+  { value: "ขวดพลาสติก (HTPE)", label: "ขวดพลาสติก (HTPE) [ขวดขุ่น]" },
+  { value: "อะลูมิเนียม (กระป๋อง)", label: "อะลูมิเนียม (กระป๋อง)" },
+  { value: "เศษอาหาร", label: "เศษอาหาร" },
+  { value: "ขยะรีไซเคิลพลัส", label: "ขยะรีไซเคิลพลัส" },
+  { value: "ทั่วไป", label: "ทั่วไป" },
 ];
 
 export type { TRoom };

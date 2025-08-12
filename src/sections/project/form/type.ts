@@ -1,6 +1,6 @@
 type Activity = {
-  type?: string;
-  amount?: string;
+  activity_type?: string;
+  amount?: number;
   unit?: string;
 };
 
@@ -27,14 +27,14 @@ type Accommodation = {
 };
 
 type Gift = {
-  type?: string;
-  amount?: string;
+  gift_type?: string;
+  amount?: number;
   unit?: string;
 };
 
 type Waste = {
-  type?: string;
-  amount?: string;
+  waste_type?: string;
+  amount?: number;
   unit?: string;
 };
 

@@ -5,12 +5,12 @@ export default function Footer() {
   return (
     <Box
       component="footer"
-      className="custom-footer"
       sx={{
         flexGrow: 1,
         p: "80px",
         pb: "40px",
         backgroundColor: theme.palette.background.default,
+        marginTop: 3,
       }}
     >
       <Stack direction="row">

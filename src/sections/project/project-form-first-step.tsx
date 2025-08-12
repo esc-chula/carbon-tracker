@@ -1,28 +1,29 @@
 import { Field } from "@/components/hook-form/field";
-import FormHelperText from "@mui/material/FormHelperText";
-import { Button, Grid, Stack, Typography } from "@mui/material";
-import { StyledStack } from "@/sections/project/styles";
 import {
-  fieldOptions,
   departmentOptions,
+  fieldOptions,
 } from "@/sections/project/form/constant";
-import type { FieldErrors } from "react-hook-form";
 import type { ProjectFormValues } from "@/sections/project/form/type";
-import React from "react";
+import { StyledStack } from "@/sections/project/styles";
+import { Button, Grid, Stack, Typography } from "@mui/material";
+import FormHelperText from "@mui/material/FormHelperText";
+import type { FieldErrors } from "react-hook-form";
 
-interface ProjectFormStep1Props {
+// ---------------------------------------------------------------------------------
+
+type TProjectFormFirstStepProps = {
   step: number;
   errors: FieldErrors<ProjectFormValues>;
   underProject: string;
   handleNext: () => void;
-}
+};
 
-export function ProjectFormStep1({
+export function ProjectFormFirstStep({
   step,
   errors,
   underProject,
   handleNext,
-}: ProjectFormStep1Props) {
+}: TProjectFormFirstStepProps) {
   return (
     <>
       {step === 1 && (
@@ -56,8 +57,8 @@ export function ProjectFormStep1({
                 helperText={errors.projectName?.message}
                 required
               />
-              <Grid container spacing={2} alignItems="center">
-                <Grid size={{ xs: 1.2 }}>
+              <Grid container spacing={2} alignItems="start">
+                <Grid size={{ xs: 1.2 }} sx={{ paddingTop: 2 }}>
                   <Typography variant="body1" fontWeight={400}>
                     โครงการภายใต้{" "}
                     <Typography component="span" color="red">
@@ -65,7 +66,7 @@ export function ProjectFormStep1({
                     </Typography>
                   </Typography>
                 </Grid>
-                <Grid size={{ xs: 0.8 }}>
+                <Grid size={{ xs: 0.8 }} sx={{ paddingTop: 0.8 }}>
                   <Field.Radio name="underProject" label="กวศ." value="กวศ." />
                 </Grid>
                 <Grid size={{ xs: 2.8 }}>
@@ -78,7 +79,7 @@ export function ProjectFormStep1({
                     disabled={underProject !== "กวศ."}
                   />
                 </Grid>
-                <Grid size={{ xs: 0.8 }}>
+                <Grid size={{ xs: 0.8 }} sx={{ paddingTop: 0.8 }}>
                   <Field.Radio name="underProject" label="ชมรม" value="ชมรม" />
                 </Grid>
                 <Grid size={{ xs: 2.8 }}>
@@ -91,7 +92,7 @@ export function ProjectFormStep1({
                     disabled={underProject !== "ชมรม"}
                   />
                 </Grid>
-                <Grid size={{ xs: 0.8 }}>
+                <Grid size={{ xs: 0.8 }} sx={{ paddingTop: 0.8 }}>
                   <Field.Radio
                     name="underProject"
                     label="อื่นๆ"

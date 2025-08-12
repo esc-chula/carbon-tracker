@@ -4,7 +4,7 @@ import RHFPhone from "./rhf-phone";
 import RHFGroupRadio from "./rhf-group-radio";
 import RHFTextField from "./rhf-textfield";
 import RHFRadio from "./rhf-radio";
-import RHFMultipleAutocomplete from "./rhf-multiple-auto-complete";
+import RHFMultipleAutoComplete from "./rhf-multiple-auto-complete";
 
 // ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ export const Field = {
   Radio: RHFRadio,
   GroupRadio: RHFGroupRadio,
   CustomAutoComplete: RHFCustomAutocomplete,
-  MultipleAutoComplete: RHFMultipleAutocomplete,
+  MultipleAutoComplete: RHFMultipleAutoComplete,
   Phone: RHFPhone,
   DateTimePicker: RHFDateTimePicker,
 };
