@@ -1,5 +1,6 @@
 "use client";
-import ProjectTable from "@/components/ProjectTable";
+
+import StatusChips, { type ChipVariant } from "@/components/StatusChips";
 import theme from "@/styles/theme/theme";
 import { AddCircleOutline, Search } from "@mui/icons-material";
 import {
@@ -7,7 +8,6 @@ import {
   Button,
   Checkbox,
   Chip,
-  Container,
   FormControl,
   InputLabel,
   MenuItem,
@@ -18,12 +18,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useMemo, useState } from "react";
-import StatusChips, { type ChipVariant } from "@/components/StatusChips";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import ProjectTable from "../project-table";
 
-const options: ChipVariant[] = ["approved", "pending", "drafted", "rejected"];
+// ---------------------------------------------------------------------------------
+
+const OPTIONS: ChipVariant[] = ["approved", "pending", "drafted", "rejected"];
 
 function createData(
   id: string,
@@ -35,7 +37,7 @@ function createData(
   return { id, name, status, updatedDate, updatedBy };
 }
 
-const rows = [
+const ROWS = [
   createData(
     "0002",
     "ระบบจัดการการเข้าเรียน",
@@ -150,13 +152,17 @@ const rows = [
   ),
 ];
 
-export default function Projects() {
+// ---------------------------------------------------------------------------------
+
+export default function ProjectView() {
+  // --------------------------- Hook ---------------------------
+
   const [status, setStatus] = useState<ChipVariant[]>([]);
   const [search, setSearch] = useState<string>("");
   const router = useRouter();
 
   const filteredRows = useMemo(() => {
-    return rows.filter((row) => {
+    return ROWS.filter((row) => {
       const matchesSearch =
         row.id.toLowerCase().includes(search.toLowerCase()) ||
         row.name.toLowerCase().includes(search.toLowerCase());
@@ -165,6 +171,8 @@ export default function Projects() {
       return matchesSearch && matchesStatus;
     });
   }, [search, status]);
+
+  // --------------------------- Function ---------------------------
 
   const handleStatusChange = (e: SelectChangeEvent<typeof status>) => {
     const value = e.target.value;
@@ -175,8 +183,10 @@ export default function Projects() {
     router.push("/create-project");
   };
 
+  // --------------------------- Render ---------------------------
+
   return (
-    <Container maxWidth={false}>
+    <>
       <Box
         sx={{
           display: "flex",
@@ -205,7 +215,7 @@ export default function Projects() {
         </Button>
       </Box>
 
-      <Paper sx={{ p: 2, borderRadius: 1.5 }}>
+      <Paper elevation={0} sx={{ p: 2, borderRadius: 1.5 }}>
         <Stack direction="column" spacing={2}>
           <Stack direction="row" spacing={2}>
             <TextField
@@ -241,7 +251,7 @@ export default function Projects() {
                   </Box>
                 )}
               >
-                {options.map((option) => (
+                {OPTIONS.map((option) => (
                   <MenuItem key={option} value={option}>
                     <Checkbox checked={status.includes(option)} />
                     <StatusChips variantType={option} />
@@ -263,7 +273,7 @@ export default function Projects() {
             </Typography>
             <Chip
               size="small"
-              label={`${rows.length} โครงการ`}
+              label={`${ROWS.length} โครงการ`}
               sx={{ backgroundColor: "#E6F1ED", color: "#013020" }}
             />
           </Stack>
@@ -271,6 +281,6 @@ export default function Projects() {
           <ProjectTable rows={filteredRows} />
         </Stack>
       </Paper>
-    </Container>
+    </>
   );
 }

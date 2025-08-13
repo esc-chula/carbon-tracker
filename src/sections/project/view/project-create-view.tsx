@@ -4,8 +4,14 @@ import { useState } from "react";
 import ProjectForm from "../project-form";
 import ProjectFormStepper from "../project-form-stepper";
 
+// ---------------------------------------------------------------------------------
+
 function ProjectCreateView() {
+  // --------------------------- Hook ---------------------------
+
   const [step, setStep] = useState<number>(1);
+
+  // --------------------------- Render ---------------------------
 
   return (
     <>

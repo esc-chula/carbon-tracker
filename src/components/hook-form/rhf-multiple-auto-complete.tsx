@@ -1,27 +1,32 @@
+"use client";
+
 import { Controller, useFormContext } from "react-hook-form";
 import {
-  TextField,
   Autocomplete,
-  type AutocompleteProps,
+  TextField,
   Chip,
+  Checkbox,
+  type AutocompleteProps,
+  MenuItem,
 } from "@mui/material";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
-// ----------------------------------------------------------------------
+type TOption = { label: string; value: string | number };
 
-type TOption = {
-  label: string;
-  value: string | number;
-};
-
-type RHFMultipleAutocomplete<T> = {
+type TRHFMultipleAutoCompleteProps<T extends TOption> = {
   name: string;
   label?: string;
   placeholder?: string;
   helperText?: React.ReactNode;
   required?: boolean;
-} & Omit<AutocompleteProps<T, true, false, false>, "renderInput" | "multiple">;
+  options: T[];
+} & Omit<
+  AutocompleteProps<T, true, false, false>,
+  "renderInput" | "multiple" | "options"
+>;
 
-function RHFMultipleAutocomplete<T extends TOption>({
+export default function RHFMultipleAutoComplete<T extends TOption>({
   name,
   label,
   placeholder,
@@ -29,39 +34,58 @@ function RHFMultipleAutocomplete<T extends TOption>({
   required,
   options,
   ...other
-}: RHFMultipleAutocomplete<T>) {
+}: TRHFMultipleAutoCompleteProps<T>) {
   const { control } = useFormContext();
+
+  const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+  const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => {
-        // Find the selected options based on the current field values
+        // field.value is an array of primitive values (value: string | number)
         const selectedOptions = Array.isArray(field.value)
-          ? options.filter((option) => field.value.includes(option.value))
+          ? options.filter((o) => field.value.includes(o.value))
           : [];
 
         return (
           <Autocomplete
             multiple
+            disableCloseOnSelect
             options={options}
+            getOptionLabel={(option) => option.label}
             value={selectedOptions}
-            onChange={(event, newValues) => {
-              // Update the form field with an array of values
-              const values = newValues.map((option) => option.value);
-              field.onChange(values);
-            }}
-            isOptionEqualToValue={(option, value) => {
-              // Handle comparison between options
-              if (!option || !value) return false;
-              return option.value === value.value;
+            onChange={(_, newValues) =>
+              field.onChange(newValues.map((o) => o.value))
+            }
+            isOptionEqualToValue={(option, value) =>
+              option.value === value.value
+            }
+            renderOption={(props, option, { selected }) => {
+              const { key, ...optionProps } = props;
+              return (
+                <MenuItem
+                  key={key}
+                  sx={{ padding: "0 !important" }}
+                  {...optionProps}
+                >
+                  <Checkbox
+                    icon={icon}
+                    checkedIcon={checkedIcon}
+                    sx={{ mr: 1 }}
+                    checked={selected}
+                  />
+                  {option.label}
+                </MenuItem>
+              );
             }}
             renderTags={(tagValue, getTagProps) =>
               tagValue.map((option, index) => (
                 <Chip
                   {...getTagProps({ index })}
-                  key={option.value}
+                  key={String(option.value)}
                   label={option.label}
                   size="small"
                 />
@@ -73,7 +97,7 @@ function RHFMultipleAutocomplete<T extends TOption>({
                 label={label}
                 placeholder={placeholder}
                 error={!!error}
-                helperText={error ? error.message : helperText}
+                helperText={helperText}
                 required={required}
               />
             )}
@@ -84,5 +108,3 @@ function RHFMultipleAutocomplete<T extends TOption>({
     />
   );
 }
-
-export default RHFMultipleAutocomplete;

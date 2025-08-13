@@ -1,6 +1,6 @@
 import { useBoolean } from "@/hooks/use-boolean";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-
+import type { SxProps, Theme } from "@mui/material/styles";
+import { DatePicker, DateTimePicker } from "@mui/x-date-pickers";
 import dayjs, { type Dayjs } from "dayjs";
 import "dayjs/locale/th";
 import buddhistEra from "dayjs/plugin/buddhistEra";
@@ -17,23 +17,36 @@ type RHFDateTimePickerProps = {
   label?: string;
   required?: boolean;
   helperText?: React.ReactNode;
+  mode?: "datetime" | "date";
+  dateOnlyToStartOfDay?: boolean;
+  disabled?: boolean;
 };
 
 function AddThaiYearToDate(date: string | Dayjs | null): Dayjs | null {
-  if (!date) {
-    return null;
-  }
-
-  const addYear = dayjs(date).add(543, "year");
-
-  return addYear;
+  if (!date) return null;
+  return dayjs(date).add(543, "year");
 }
 
-function RHFDateTimePicker({
+const commonSx: SxProps<Theme> = {
+  "& .MuiPickersInputBase-root": {
+    borderRadius: 2,
+    "& .MuiPickersOutlinedInput-notchedOutline": { borderColor: "#E5E8EB" },
+    "&.Mui-focused:not(.Mui-error) .MuiPickersOutlinedInput-notchedOutline": {
+      borderColor: (theme) => theme.palette.text.primary,
+    },
+    "&:hover:not(.Mui-focused):not(.Mui-error) .MuiPickersOutlinedInput-notchedOutline":
+      { borderColor: (theme) => theme.palette.text.secondary },
+  },
+};
+
+export default function RHFDateTimePicker({
   name,
   label,
   required,
   helperText,
+  mode = "datetime",
+  dateOnlyToStartOfDay = true,
+  disabled = false,
 }: RHFDateTimePickerProps) {
   const isOpenCalendar = useBoolean();
   const { control } = useFormContext();
@@ -50,45 +63,68 @@ function RHFDateTimePicker({
           ? AddThaiYearToDate(field.value as string | Dayjs | null)
           : null;
 
+        if (mode === "date") {
+          return (
+            <DatePicker
+              sx={commonSx}
+              value={value}
+              format="DD/MM/YYYY"
+              views={["year", "month", "day"]}
+              onChange={(date: Dayjs | null) => {
+                if (!date) return field.onChange(null);
+                const d = dateOnlyToStartOfDay ? date.startOf("day") : date;
+                field.onChange(d.format());
+              }}
+              slotProps={{
+                textField: {
+                  value: transFormDate,
+                  label,
+                  fullWidth: true,
+                  error: !!error,
+                  helperText: error ? error.message : helperText,
+                  required,
+                  onClick: isOpenCalendar.onTrue,
+                  InputProps: {
+                    endAdornment: (
+                      <ArrowDownIcon
+                        sx={{
+                          width: 18,
+                          height: 18,
+                          color: "text.secondary",
+                          transform: isOpenCalendar.value
+                            ? "rotate(180deg)"
+                            : "rotate(0deg)",
+                        }}
+                      />
+                    ),
+                  },
+                  disabled: disabled,
+                },
+              }}
+              onOpen={isOpenCalendar.onTrue}
+              onClose={isOpenCalendar.onFalse}
+              open={isOpenCalendar.value}
+              disabled={disabled}
+            />
+          );
+        }
+
         return (
           <DateTimePicker
-            sx={{
-              "& .MuiPickersInputBase-root": {
-                borderRadius: 2,
-
-                "& .MuiPickersOutlinedInput-notchedOutline": {
-                  borderColor: "#E5E8EB",
-                },
-
-                "&.Mui-focused:not(.Mui-error)": {
-                  "& .MuiPickersOutlinedInput-notchedOutline": {
-                    borderColor: (theme) => theme.palette.text.primary,
-                  },
-                },
-                "&:hover:not(.Mui-focused):not(.Mui-error)": {
-                  "& .MuiPickersOutlinedInput-notchedOutline": {
-                    borderColor: (theme) => theme.palette.text.secondary,
-                  },
-                },
-              },
-            }}
+            sx={commonSx}
             value={value}
-            onChange={(date) => {
-              field.onChange(
-                dayjs(
-                  date as string | number | Dayjs | Date | null | undefined,
-                ).format(),
-              );
-            }}
             ampm={false}
             format="DD/MM/YYYY HH:mm [น.]"
+            onChange={(date: Dayjs | null) => {
+              field.onChange(date ? date.format() : null);
+            }}
             slotProps={{
               textField: {
                 value: transFormDate,
-                label: label,
+                label,
                 fullWidth: true,
                 error: !!error,
-                helperText: error ? error?.message : helperText,
+                helperText: error ? error.message : helperText,
                 required,
                 onClick: isOpenCalendar.onTrue,
                 InputProps: {
@@ -105,16 +141,16 @@ function RHFDateTimePicker({
                     />
                   ),
                 },
+                disabled: disabled,
               },
             }}
             onOpen={isOpenCalendar.onTrue}
             onClose={isOpenCalendar.onFalse}
             open={isOpenCalendar.value}
+            disabled={disabled}
           />
         );
       }}
     />
   );
 }
-
-export default RHFDateTimePicker;

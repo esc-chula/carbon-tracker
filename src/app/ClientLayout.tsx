@@ -2,12 +2,13 @@
 
 import theme from "@/styles/theme/theme";
 import { ThemeProvider, CssBaseline } from "@mui/material";
-import NavBar from "@/components/NavBar";
+
 import Footer from "@/components/Footer";
 import { LocalizationProvider, type AdapterFormats } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { SessionProvider } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import NavBar from "@/components/NavBar";
 
 export default function ClientLayout({
   children,

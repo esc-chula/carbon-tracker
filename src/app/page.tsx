@@ -1,5 +1,5 @@
-import Projects from "@/components/Projects";
+import ProjectView from "@/sections/project/view/project-view";
 
 export default function HomePage() {
-  return <Projects />;
+  return <ProjectView />;
 }

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, useTheme, Divider } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import LoginButton from "@/components/login/LoginButton";
+import LoginButton from "@/components/login/login-button";
 
 export default function LoginPage() {
   const theme = useTheme();
