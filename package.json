@@ -26,6 +26,7 @@
     "@mui/x-date-pickers": "^8.9.0",
     "@t3-oss/env-nextjs": "^0.12.0",
     "dayjs": "^1.11.13",
+    "firebase": "^12.1.0",
     "localizedFormat": "link:dayjs/plugin/localizedFormat",
     "next": "^15.2.3",
     "next-auth": "^4.24.11",

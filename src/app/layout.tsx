@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 
 import type { Metadata } from "next";
 import { Manrope, Noto_Sans_Thai } from "next/font/google";
-import ClientLayout from "./ClientLayout";
+import ClientLayout from "./client-layout";
 import { Container } from "@mui/material";
 
 export const metadata: Metadata = {
