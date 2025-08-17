@@ -5,6 +5,8 @@ import RHFGroupRadio from "./rhf-group-radio";
 import RHFTextField from "./rhf-textfield";
 import RHFRadio from "./rhf-radio";
 import RHFMultipleAutoComplete from "./rhf-multiple-auto-complete";
+import RHFPassword from "./rhf-password";
+import CSVUploadField from "./rhf-upload";
 
 // ----------------------------------------------------------------------
 
@@ -16,4 +18,6 @@ export const Field = {
   MultipleAutoComplete: RHFMultipleAutoComplete,
   Phone: RHFPhone,
   DateTimePicker: RHFDateTimePicker,
+  Password: RHFPassword,
+  CSVUploadField: CSVUploadField,
 };

@@ -1,7 +1,10 @@
 "use client";
-import StatusChips, { type ChipVariant } from "@/components/StatusChips";
+import StatusChips from "@/components/StatusChips";
+import { SvgColor } from "@/components/svg/svg-color";
+import { fetchGetCertificate } from "@/services/project/query/project-query";
 import theme from "@/styles/theme/theme";
-import { Stack, TablePagination } from "@mui/material";
+import type { TListProjectsItem } from "@/types/project/list-project";
+import { MenuItem, Stack, TablePagination, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -9,7 +12,14 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { useState, type ChangeEvent } from "react";
+import { useMutation } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+import { type ChangeEvent, type Dispatch, type SetStateAction } from "react";
+import ProjectPopoverMenu from "./project-popover-menu";
+import { showError, showSuccess } from "@/components/toast/toast";
+
+dayjs.extend(buddhistEra);
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -23,21 +33,52 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 // ---------------------------------------------------------------------------------
 
-type Row = {
-  id: string;
-  name: string;
-  status: ChipVariant;
-  updatedDate: string;
-  updatedBy: string;
+type TProjectTableProps = {
+  rows: Array<TListProjectsItem>;
+
+  count: number;
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+  rowsPerPage: number;
+  setRowsPerPage: Dispatch<SetStateAction<number>>;
 };
 
-export default function ProjectTable({ rows }: { rows: Row[] }) {
-  // --------------------------- Hook ---------------------------
+export default function ProjectTable({
+  count,
+  rows,
+  page,
+  rowsPerPage,
+  setPage,
+  setRowsPerPage,
+}: TProjectTableProps) {
+  // --------------------------- API ---------------------------
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const generateCertificate = useMutation({
+    mutationFn: fetchGetCertificate,
+    onSuccess: (data) => {
+      if (!(data.blob instanceof Blob)) return;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const url = URL.createObjectURL(data.blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = data.filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      showSuccess("พิมพ์ใบรับรองสำเร็จ");
+    },
+    onError: () => {
+      showError("พิมพ์ใบรับรองไม่สำเร็จ");
+    },
+  });
 
   // --------------------------- Function ---------------------------
+
+  const handleExport = (projectId: string) => {
+    generateCertificate.mutate({ id: projectId });
+  };
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -82,21 +123,50 @@ export default function ProjectTable({ rows }: { rows: Row[] }) {
               <StyledTableCell sx={{ minWidth: 220 }}>
                 อัปเดตโดย
               </StyledTableCell>
+              <StyledTableCell sx={{ minWidth: 80 }} />
             </TableRow>
           </TableHead>
-          <TableBody sx={{ height: "calc(100vh - 600px)", overflow: "scroll" }}>
-            {(rowsPerPage > 0
-              ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              : rows
-            ).map((row) => (
+          <TableBody sx={{ overflow: "scroll" }}>
+            {rows.map((row) => (
               <TableRow key={row.id}>
-                <StyledTableCell>{row.id}</StyledTableCell>
-                <StyledTableCell>{row.name}</StyledTableCell>
+                <StyledTableCell>{row.custom_id}</StyledTableCell>
+                <StyledTableCell>{row.title}</StyledTableCell>
                 <StyledTableCell>
                   <StatusChips variantType={row.status} />
                 </StyledTableCell>
-                <StyledTableCell>{row.updatedDate}</StyledTableCell>
-                <StyledTableCell>{row.updatedBy}</StyledTableCell>
+                <StyledTableCell>
+                  {dayjs(row.updated_at).format("DD/MM/BBBB")}
+                </StyledTableCell>
+                <StyledTableCell>{row.updated_by}</StyledTableCell>
+                <StyledTableCell align="center">
+                  <ProjectPopoverMenu>
+                    <MenuItem onClick={() => handleExport(row.id)}>
+                      <Stack spacing={1.5} direction="row" alignItems="center">
+                        <SvgColor src="/assets/icons/ic-document.svg" />
+
+                        <Typography variant="subtitle2" fontWeight={500}>
+                          พิมพ์ใบรับรอง
+                        </Typography>
+                      </Stack>
+                    </MenuItem>
+                    <MenuItem disabled>
+                      <Stack spacing={1.5} direction="row" alignItems="center">
+                        <SvgColor
+                          src="/assets/icons/ic-trash.svg"
+                          color="#B71931"
+                        />
+
+                        <Typography
+                          variant="subtitle2"
+                          fontWeight={500}
+                          color="#B71931"
+                        >
+                          ลบ
+                        </Typography>
+                      </Stack>
+                    </MenuItem>
+                  </ProjectPopoverMenu>
+                </StyledTableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -111,13 +181,15 @@ export default function ProjectTable({ rows }: { rows: Row[] }) {
           borderTopRightRadius: 0,
           border: `1px solid ${theme.palette.grayOpa[24]}`,
         }}
-        count={rows.length}
+        count={count}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage="แถวต่อหน้า"
-        labelDisplayedRows={({ from, count }) => `${from} จาก ${count}`}
+        labelDisplayedRows={({ count }) =>
+          `${page + 1} จาก ${Math.ceil(count / rowsPerPage)}`
+        }
       />
     </Stack>
   );

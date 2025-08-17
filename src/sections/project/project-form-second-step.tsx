@@ -1,6 +1,6 @@
 import { Field } from "@/components/hook-form/field";
 import RHFDateTimePicker from "@/components/hook-form/rhf-date-time-picker";
-import CSVUploadComponent from "@/components/hook-form/rhf-upload";
+
 import { SvgColor } from "@/components/svg/svg-color";
 import type {
   Accommodation,
@@ -11,9 +11,22 @@ import type {
   ProjectFormValues,
   Waste,
 } from "@/sections/project/form/type";
-import { Button, Grid, IconButton, Stack, Typography } from "@mui/material";
-import { Fragment } from "react";
-import type { FieldErrors, UseFormWatch } from "react-hook-form";
+import {
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { Fragment, useState } from "react";
+import {
+  useFormContext,
+  type FieldErrors,
+  type UseFormHandleSubmit,
+  type UseFormSetValue,
+  type UseFormWatch,
+} from "react-hook-form";
 import {
   buildingOptions,
   energyUnitOptions,
@@ -24,6 +37,8 @@ import {
   type TRoom,
 } from "./form/constant";
 import { StyledAddButton, StyledStack } from "./styles";
+import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
+import { useBoolean } from "@/hooks/use-boolean";
 
 // ---------------------------------------------------------------------------------
 
@@ -44,6 +59,7 @@ type TProjectFormSecondStepProps = {
   disableColor: string;
   redColor: string;
   watch: UseFormWatch<ProjectFormValues>;
+  setValue: UseFormSetValue<ProjectFormValues>;
   removeActivity: (index: number) => void;
   appendActivity: (value: Activity) => void;
   removeEnergy: (index: number) => void;
@@ -57,6 +73,8 @@ type TProjectFormSecondStepProps = {
   removeWaste: (index: number) => void;
   appendWaste: (value: Waste) => void;
   handleBack: () => void;
+  onSubmit: (data: ProjectFormValues, status: "draft" | "pending") => void;
+  handleSubmit: UseFormHandleSubmit<ProjectFormValues, ProjectFormValues>;
 };
 
 export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
@@ -90,9 +108,29 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     removeWaste,
     appendWaste,
     handleBack,
+    onSubmit,
+    handleSubmit,
   } = props;
 
-  // --------------------------- Render ---------------------------
+  // --------------------------- Hook ---------------------------
+
+  const { control } = useFormContext();
+  const isOpenDialog = useBoolean();
+  const [disabled, setDisabled] = useState(false);
+
+  // --------------------------- Function ---------------------------
+
+  const handleClick = () => {
+    setDisabled(true);
+
+    void handleSubmit((data: ProjectFormValues) => onSubmit(data, "pending"))();
+
+    setTimeout(() => {
+      setDisabled(false);
+    }, 2000);
+  };
+
+  // --------------------------- Render ---------------------------F
 
   const renderFirstScope = (
     <StyledStack>
@@ -208,8 +246,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                       options={equipmentOptions}
                       value={[
                         {
-                          label: "เครื่องปั่นไฟฟ้า",
                           value: "เครื่องปั่นไฟฟ้า",
+                          label: "เครื่องปั่นไฟฟ้า",
                         },
                       ]}
                       disabled
@@ -237,7 +275,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     <IconButton onClick={() => removeEnergy(index)}>
                       <SvgColor
                         src="/assets/icons/ic-trash.svg"
-                        color={energies.length === 1 ? disableColor : redColor}
+                        color={redColor}
                       />
                     </IconButton>
                   </Grid>
@@ -328,7 +366,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           การเดินทางของผู้เข้าร่วมและ staff
         </Typography>
       </Stack>
-      <CSVUploadComponent />
+
+      <Field.CSVUploadField control={control} name="transportations_csv_file" />
+
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
           จำนวนผู้เข้าร่วมรวมกับ staff ตลอดทั้งโครงการ
@@ -592,15 +632,57 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
               spacing={2}
               sx={{ padding: "16px 24px", justifyContent: "end" }}
             >
-              <Button variant="text" onClick={handleBack}>
+              <Button variant="outlined" onClick={handleBack}>
                 ย้อนกลับ
               </Button>
-              <Button variant="outlined">บันทึกแบบร่าง</Button>
-              <Button variant="contained" type="submit">
+              {/* <Button
+                type="button"
+                variant="outlined"
+                onClick={() => {
+                  void handleSubmit((data) => onSubmit(data, "draft"))();
+                }}
+              >
+                บันทึกแบบร่าง
+              </Button> */}
+
+              <Button
+                type="button"
+                variant="contained"
+                onClick={isOpenDialog.onTrue}
+              >
                 ส่งแบบฟอร์ม
               </Button>
             </Stack>
           </Stack>
+
+          <ConfirmDialog
+            open={isOpenDialog.value}
+            title={
+              <Box component="img" src="/assets/icons/ic-upload-form.svg" />
+            }
+            content={
+              <Stack spacing={1}>
+                <Typography variant="h3">
+                  คุณต้องการส่งแบบฟอร์มหรือไม่
+                </Typography>
+                <Typography variant="h5" fontWeight={500} color="#637381">
+                  ข้อมูลของโครงการจะไม่สามารถแก้ไขได้
+                  <br />
+                  หลังจากส่งแบบฟอร์ม
+                </Typography>
+              </Stack>
+            }
+            action={
+              <Button
+                variant="contained"
+                onClick={handleClick}
+                disabled={disabled}
+              >
+                ส่งแบบฟอร์ม
+              </Button>
+            }
+            onClose={isOpenDialog.onFalse}
+          />
         </>
       )}
     </>

@@ -1,16 +1,17 @@
 "use client";
 
-import { Controller, useFormContext } from "react-hook-form";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import {
   Autocomplete,
-  TextField,
-  Chip,
   Checkbox,
-  type AutocompleteProps,
+  Chip,
   MenuItem,
+  TextField,
+  type AutocompleteProps,
 } from "@mui/material";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import { useEffect } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 
 type TOption = { label: string; value: string | number };
 
@@ -35,10 +36,15 @@ export default function RHFMultipleAutoComplete<T extends TOption>({
   options,
   ...other
 }: TRHFMultipleAutoCompleteProps<T>) {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+  useEffect(() => {
+    if (other.value) setValue(name, ["เครื่องปั่นไฟ"]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Controller

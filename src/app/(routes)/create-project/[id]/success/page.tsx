@@ -1,7 +1,7 @@
-import SubmitPage from "@/components/SubmitPage";
+import ProjectSuccessView from "@/sections/project/view/project-success-view";
 
 function SuccessPage() {
-  return <SubmitPage />;
+  return <ProjectSuccessView />;
 }
 
 export default SuccessPage;

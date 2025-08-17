@@ -4,22 +4,26 @@ import { Form } from "@/components/hook-form/form-provider";
 import type { ProjectFormValues } from "@/sections/project/form/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack, useTheme } from "@mui/material";
-import { useRouter } from "next/navigation";
 import { type Dispatch, type SetStateAction } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { defaultValues, ProjectFormSchema } from "./form/schema";
+import { ProjectFormSchema } from "./form/schema";
 
+import { useCreateProjectMutation } from "@/services/project/mutation";
+import CreateProjectFormatter from "./helper/create-project-formatter";
 import { ProjectFormFirstStep } from "./project-form-first-step";
 import { ProjectFormSecondStep } from "./project-form-second-step";
+import { useRouter } from "next/navigation";
+import { showError } from "@/components/toast/toast";
 
 // ---------------------------------------------------------------------------------
 
 type TProjectFormProps = {
   step: number;
   setStep: Dispatch<SetStateAction<number>>;
+  initialValues: ProjectFormValues;
 };
 
-function ProjectForm({ step, setStep }: TProjectFormProps) {
+function ProjectForm({ step, setStep, initialValues }: TProjectFormProps) {
   const theme = useTheme();
   const router = useRouter();
 
@@ -27,7 +31,7 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
 
   const methods = useForm<ProjectFormValues>({
     resolver: zodResolver(ProjectFormSchema),
-    defaultValues: defaultValues,
+    defaultValues: initialValues,
   });
 
   const {
@@ -38,6 +42,7 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
     formState: { errors },
     getValues,
     setError,
+    setValue,
   } = methods;
 
   const {
@@ -109,6 +114,10 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
 
   const telText = `${tel.substring(0, 3)}-${tel.substring(3, 6)}-${tel.substring(6, 10)}`;
 
+  // --------------------------- API ---------------------------
+
+  const createProject = useCreateProjectMutation();
+
   // --------------------------- Function ---------------------------
 
   const handleNext = async () => {
@@ -118,7 +127,7 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
       "underProject",
       "fullName",
       "nickname",
-      "year",
+      "student_id",
       "department",
       "clubName",
       "otherUnderProject",
@@ -153,14 +162,28 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
     setStep((prev) => prev - 1);
   };
 
-  const onSubmit = (data: ProjectFormValues) => {
-    router.push(`create-project/${data.projectCode}/success`);
+  const onSubmit = async (
+    data: ProjectFormValues,
+    status: "draft" | "pending",
+  ) => {
+    const formattedData = CreateProjectFormatter(data, status);
+
+    try {
+      const response = await createProject.mutateAsync(formattedData);
+
+      if (status === "pending")
+        return router.push(`create-project/${response.project_id}/success`);
+
+      if (status === "draft") return router.push("/");
+    } catch (error) {
+      showError("ส่งแบบฟอร์มไม่สำเร็จ");
+    }
   };
 
   // --------------------------- Render ---------------------------
 
   return (
-    <Form methods={methods} onSubmit={handleSubmit(onSubmit)}>
+    <Form methods={methods}>
       <Stack
         sx={{
           width: "100%",
@@ -192,6 +215,7 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
           disableColor={disableColor}
           redColor={redColor}
           watch={watch}
+          setValue={setValue}
           removeActivity={removeActivity}
           appendActivity={appendActivity}
           removeEnergy={removeEnergy}
@@ -205,6 +229,8 @@ function ProjectForm({ step, setStep }: TProjectFormProps) {
           removeWaste={removeWaste}
           appendWaste={appendWaste}
           handleBack={handleBack}
+          onSubmit={onSubmit}
+          handleSubmit={handleSubmit}
         />
       </Stack>
     </Form>
