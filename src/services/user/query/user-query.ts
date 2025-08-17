@@ -1,0 +1,27 @@
+import { queryOptions } from "@tanstack/react-query";
+import { ky } from "@/services/ky";
+import type { TGetOwnerResponse } from "@/types/user/get-owner";
+
+// ---------------------------------------------------------------------------------
+
+async function fetchGetOwner(): Promise<TGetOwnerResponse> {
+  const res = await ky.get("owners/me").json<TGetOwnerResponse>();
+  return res;
+}
+
+// ---------------------------------------------------------------------------------
+
+const ownersQueryKeys = {
+  all: () => ["owners-management"] as const,
+
+  me: () => [...ownersQueryKeys.all(), "me"] as const,
+
+  meOptions: () =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    queryOptions({
+      queryKey: [...ownersQueryKeys.me()] as const,
+      queryFn: () => fetchGetOwner(),
+    }),
+};
+
+export { ownersQueryKeys, fetchGetOwner };

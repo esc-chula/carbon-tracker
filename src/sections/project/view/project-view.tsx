@@ -1,6 +1,7 @@
 "use client";
 
 import StatusChips, { type ChipVariant } from "@/components/StatusChips";
+import { projectsQueryKeys } from "@/services/project/query/project-query";
 import theme from "@/styles/theme/theme";
 import { AddCircleOutline, Search } from "@mui/icons-material";
 import {
@@ -19,138 +20,16 @@ import {
   Typography,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import ProjectTable from "../project-table";
+import { useSetState } from "@/hooks/use-set-state";
+import { useDebounce } from "@/hooks/use-debounce";
 
 // ---------------------------------------------------------------------------------
 
-const OPTIONS: ChipVariant[] = ["approved", "pending", "drafted", "rejected"];
-
-function createData(
-  id: string,
-  name: string,
-  status: ChipVariant,
-  updatedDate: string,
-  updatedBy: string,
-) {
-  return { id, name, status, updatedDate, updatedBy };
-}
-
-const ROWS = [
-  createData(
-    "0002",
-    "ระบบจัดการการเข้าเรียน",
-    "pending",
-    "21/07/2568",
-    "นางสาวจิราภรณ์ ใจดี",
-  ),
-  createData(
-    "0003",
-    "แอปพลิเคชันซ่อมบำรุงอาคาร",
-    "approved",
-    "18/07/2568",
-    "นายธนพล ศรีสุข",
-  ),
-  createData(
-    "0004",
-    "ระบบจองห้องปฏิบัติการ",
-    "rejected",
-    "19/07/2568",
-    "นางสาววริศรา กล้าหาญ",
-  ),
-  createData(
-    "0005",
-    "แอปติดตามการใช้พลังงาน",
-    "drafted",
-    "22/07/2568",
-    "นายภูวดล แสงทอง",
-  ),
-  createData(
-    "0007",
-    "โครงการวัดคุณภาพอากาศในคณะ",
-    "pending",
-    "21/07/2568",
-    "นางสาวจิราภรณ์ ใจดี",
-  ),
-  createData(
-    "0008",
-    "ระบบตรวจสอบความปลอดภัยห้องแลป",
-    "approved",
-    "18/07/2568",
-    "นายธนพล ศรีสุข",
-  ),
-  createData(
-    "0009",
-    "แอปแจ้งเตือนเวลารถรับส่ง",
-    "rejected",
-    "19/07/2568",
-    "นางสาววริศรา กล้าหาญ",
-  ),
-  createData(
-    "0010",
-    "ระบบยืมอุปกรณ์แลปออนไลน์",
-    "drafted",
-    "22/07/2568",
-    "นายภูวดล แสงทอง",
-  ),
-  createData(
-    "0012",
-    "ระบบช่วยเหลือด้านวิชาการ",
-    "pending",
-    "21/07/2568",
-    "นางสาวจิราภรณ์ ใจดี",
-  ),
-  createData(
-    "0013",
-    "แอปติดตามความคืบหน้างานโปรเจกต์",
-    "approved",
-    "18/07/2568",
-    "นายธนพล ศรีสุข",
-  ),
-  createData(
-    "0014",
-    "ระบบแนะนำวิชาเลือก",
-    "rejected",
-    "19/07/2568",
-    "นางสาววริศรา กล้าหาญ",
-  ),
-  createData(
-    "0015",
-    "แอปพลิเคชันบริหารเวลาสำหรับนิสิต",
-    "drafted",
-    "22/07/2568",
-    "นายภูวดล แสงทอง",
-  ),
-  createData(
-    "0017",
-    "ระบบลงทะเบียนกิจกรรมเสริมหลักสูตร",
-    "pending",
-    "21/07/2568",
-    "นางสาวจิราภรณ์ ใจดี",
-  ),
-  createData(
-    "0018",
-    "แพลตฟอร์มรีวิววิชาจากรุ่นพี่",
-    "approved",
-    "18/07/2568",
-    "นายธนพล ศรีสุข",
-  ),
-  createData(
-    "0019",
-    "แอปแนะนำเส้นทางเดินในคณะ",
-    "rejected",
-    "19/07/2568",
-    "นางสาววริศรา กล้าหาญ",
-  ),
-  createData(
-    "0020",
-    "ระบบประเมินความพึงพอใจอาจารย์",
-    "drafted",
-    "22/07/2568",
-    "นายภูวดล แสงทอง",
-  ),
-];
+const OPTIONS: ChipVariant[] = ["approved", "pending", "draft", "rejected"];
 
 // ---------------------------------------------------------------------------------
 
@@ -158,19 +37,29 @@ export default function ProjectView() {
   // --------------------------- Hook ---------------------------
 
   const [status, setStatus] = useState<ChipVariant[]>([]);
-  const [search, setSearch] = useState<string>("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   const router = useRouter();
 
-  const filteredRows = useMemo(() => {
-    return ROWS.filter((row) => {
-      const matchesSearch =
-        row.id.toLowerCase().includes(search.toLowerCase()) ||
-        row.name.toLowerCase().includes(search.toLowerCase());
-      const matchesStatus =
-        !status || status.length === 0 || status.includes(row.status);
-      return matchesSearch && matchesStatus;
-    });
-  }, [search, status]);
+  // --------------------------- Filters ---------------------------
+
+  const searchFilter = useSetState({
+    search: "",
+  });
+
+  const debouncedSearchFilter = useDebounce(searchFilter, 1000);
+
+  // --------------------------- API ---------------------------
+
+  const projects = useQuery({
+    ...projectsQueryKeys.listOptions({
+      limit: rowsPerPage,
+      offset: page,
+      search: debouncedSearchFilter.state.search,
+      status: status.join(","),
+    }),
+  });
 
   // --------------------------- Function ---------------------------
 
@@ -221,7 +110,7 @@ export default function ProjectView() {
             <TextField
               size="medium"
               label="ค้นหาด้วยรหัสโครงการหรือชื่อโครงการ"
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => searchFilter.setField("search", e.target.value)}
               slotProps={{
                 input: { endAdornment: <Search fontSize="medium" /> },
               }}
@@ -273,12 +162,19 @@ export default function ProjectView() {
             </Typography>
             <Chip
               size="small"
-              label={`${ROWS.length} โครงการ`}
+              label={`${projects.data?.projects?.length} โครงการ`}
               sx={{ backgroundColor: "#E6F1ED", color: "#013020" }}
             />
           </Stack>
 
-          <ProjectTable rows={filteredRows} />
+          <ProjectTable
+            count={projects.data?.count ?? 0}
+            rows={projects.data?.projects ?? []}
+            page={page}
+            setPage={setPage}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+          />
         </Stack>
       </Paper>
     </>

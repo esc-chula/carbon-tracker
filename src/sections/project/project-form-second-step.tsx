@@ -1,6 +1,6 @@
 import { Field } from "@/components/hook-form/field";
 import RHFDateTimePicker from "@/components/hook-form/rhf-date-time-picker";
-import CSVUploadComponent from "@/components/hook-form/rhf-upload";
+
 import { SvgColor } from "@/components/svg/svg-color";
 import type {
   Accommodation,
@@ -13,7 +13,13 @@ import type {
 } from "@/sections/project/form/type";
 import { Button, Grid, IconButton, Stack, Typography } from "@mui/material";
 import { Fragment } from "react";
-import type { FieldErrors, UseFormWatch } from "react-hook-form";
+import {
+  useFormContext,
+  type FieldErrors,
+  type UseFormHandleSubmit,
+  type UseFormSetValue,
+  type UseFormWatch,
+} from "react-hook-form";
 import {
   buildingOptions,
   energyUnitOptions,
@@ -44,6 +50,7 @@ type TProjectFormSecondStepProps = {
   disableColor: string;
   redColor: string;
   watch: UseFormWatch<ProjectFormValues>;
+  setValue: UseFormSetValue<ProjectFormValues>;
   removeActivity: (index: number) => void;
   appendActivity: (value: Activity) => void;
   removeEnergy: (index: number) => void;
@@ -57,6 +64,8 @@ type TProjectFormSecondStepProps = {
   removeWaste: (index: number) => void;
   appendWaste: (value: Waste) => void;
   handleBack: () => void;
+  onSubmit: (data: ProjectFormValues, status: "draft" | "pending") => void;
+  handleSubmit: UseFormHandleSubmit<ProjectFormValues, ProjectFormValues>;
 };
 
 export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
@@ -90,7 +99,11 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     removeWaste,
     appendWaste,
     handleBack,
+    onSubmit,
+    handleSubmit,
   } = props;
+
+  const { control } = useFormContext();
 
   // --------------------------- Render ---------------------------
 
@@ -208,8 +221,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                       options={equipmentOptions}
                       value={[
                         {
-                          label: "เครื่องปั่นไฟฟ้า",
                           value: "เครื่องปั่นไฟฟ้า",
+                          label: "เครื่องปั่นไฟฟ้า",
                         },
                       ]}
                       disabled
@@ -328,7 +341,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           การเดินทางของผู้เข้าร่วมและ staff
         </Typography>
       </Stack>
-      <CSVUploadComponent />
+
+      <Field.CSVUploadField control={control} name="transportations_csv_file" />
+
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
           จำนวนผู้เข้าร่วมรวมกับ staff ตลอดทั้งโครงการ
@@ -595,8 +610,23 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
               <Button variant="text" onClick={handleBack}>
                 ย้อนกลับ
               </Button>
-              <Button variant="outlined">บันทึกแบบร่าง</Button>
-              <Button variant="contained" type="submit">
+              <Button
+                type="button"
+                variant="outlined"
+                onClick={() => {
+                  void handleSubmit((data) => onSubmit(data, "draft"))();
+                }}
+              >
+                บันทึกแบบร่าง
+              </Button>
+
+              <Button
+                type="button"
+                variant="contained"
+                onClick={() => {
+                  void handleSubmit((data) => onSubmit(data, "pending"))();
+                }}
+              >
                 ส่งแบบฟอร์ม
               </Button>
             </Stack>

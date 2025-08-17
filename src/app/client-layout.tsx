@@ -10,6 +10,7 @@ import { LocalizationProvider, type AdapterFormats } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { usePathname } from "next/navigation";
 import RequireAuth from "@/components/auth/require-auth";
+import ReactQueryProvider from "./react-client-provider";
 
 export default function ClientLayout({
   children,
@@ -27,21 +28,23 @@ export default function ClientLayout({
   const shouldHideLayout = hideLayout.includes(pathname);
 
   return (
-    <AuthProvider>
-      <RequireAuth>
-        <LocalizationProvider
-          dateAdapter={AdapterDayjs}
-          adapterLocale="th"
-          dateFormats={configDatePicker}
-        >
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            {!shouldHideLayout && <NavBar />}
-            {children}
-            {!shouldHideLayout && <Footer />}
-          </ThemeProvider>
-        </LocalizationProvider>
-      </RequireAuth>
-    </AuthProvider>
+    <ReactQueryProvider>
+      <AuthProvider>
+        <RequireAuth>
+          <LocalizationProvider
+            dateAdapter={AdapterDayjs}
+            adapterLocale="th"
+            dateFormats={configDatePicker}
+          >
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              {!shouldHideLayout && <NavBar />}
+              {children}
+              {!shouldHideLayout && <Footer />}
+            </ThemeProvider>
+          </LocalizationProvider>
+        </RequireAuth>
+      </AuthProvider>
+    </ReactQueryProvider>
   );
 }

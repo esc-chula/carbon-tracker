@@ -7,6 +7,7 @@ import type { ProjectFormValues } from "@/sections/project/form/type";
 import { StyledStack } from "@/sections/project/styles";
 import { Button, Grid, Stack, Typography } from "@mui/material";
 import FormHelperText from "@mui/material/FormHelperText";
+import { useRouter } from "next/navigation";
 import type { FieldErrors } from "react-hook-form";
 
 // ---------------------------------------------------------------------------------
@@ -24,6 +25,8 @@ export function ProjectFormFirstStep({
   underProject,
   handleNext,
 }: TProjectFormFirstStepProps) {
+  const router = useRouter();
+
   return (
     <>
       {step === 1 && (
@@ -143,16 +146,11 @@ export function ProjectFormFirstStep({
                   />
                 </Grid>
                 <Grid size={{ xs: 2 }}>
-                  <Field.CustomAutoComplete
-                    name="year"
-                    label="ชั้นปี"
-                    options={[
-                      { value: "ปี 1", label: "ปี 1" },
-                      { value: "ปี 2", label: "ปี 2" },
-                      { value: "ปี 3", label: "ปี 3" },
-                      { value: "ปี 4", label: "ปี 4" },
-                    ]}
-                    helperText={errors.year?.message}
+                  <Field.Phone
+                    name="student_id"
+                    label="รหัสนิสิต"
+                    error={!!errors.student_id}
+                    helperText={errors?.student_id?.message}
                     required
                   />
                 </Grid>
@@ -182,7 +180,9 @@ export function ProjectFormFirstStep({
             spacing={1}
             sx={{ padding: "16px 24px", justifyContent: "end" }}
           >
-            <Button variant="outlined">ยกเลิก</Button>
+            <Button variant="outlined" onClick={() => router.push("/")}>
+              ยกเลิก
+            </Button>
             <Button variant="contained" onClick={handleNext}>
               ถัดไป
             </Button>

@@ -47,7 +47,8 @@ type ProjectFormValues = {
   otherUnderProject?: string;
   fullName: string;
   nickname: string;
-  year: string;
+  student_id: string;
+  transportations_csv_file?: File;
   department: string;
   tel: string;
   activities?: Array<Activity>;
