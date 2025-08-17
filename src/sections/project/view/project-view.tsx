@@ -54,7 +54,7 @@ export default function ProjectView() {
 
   const projects = useQuery({
     ...projectsQueryKeys.listOptions({
-      limit: 1000,
+      limit: rowsPerPage,
       offset: page * rowsPerPage,
       search: debouncedSearchFilter.state.search,
       status: status.join(","),

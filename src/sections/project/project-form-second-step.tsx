@@ -19,7 +19,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import {
   useFormContext,
   type FieldErrors,
@@ -116,8 +116,21 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
   const { control } = useFormContext();
   const isOpenDialog = useBoolean();
+  const [disabled, setDisabled] = useState(false);
 
-  // --------------------------- Render ---------------------------
+  // --------------------------- Function ---------------------------
+
+  const handleClick = () => {
+    setDisabled(true);
+
+    void handleSubmit((data: ProjectFormValues) => onSubmit(data, "pending"))();
+
+    setTimeout(() => {
+      setDisabled(false);
+    }, 2000);
+  };
+
+  // --------------------------- Render ---------------------------F
 
   const renderFirstScope = (
     <StyledStack>
@@ -662,9 +675,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             action={
               <Button
                 variant="contained"
-                onClick={() => {
-                  void handleSubmit((data) => onSubmit(data, "pending"))();
-                }}
+                onClick={handleClick}
+                disabled={disabled}
               >
                 ส่งแบบฟอร์ม
               </Button>

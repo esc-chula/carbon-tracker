@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Manrope, Noto_Sans_Thai } from "next/font/google";
 import ClientLayout from "./client-layout";
 import { Container } from "@mui/material";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Carbon Tracker",
@@ -30,9 +31,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${manrope.variable} ${notoSansThai.variable}`}>
       <body>
-        <ClientLayout>
-          <Container maxWidth={false}>{children}</Container>
-        </ClientLayout>
+        <Suspense fallback={null}>
+          <ClientLayout>
+            <Container maxWidth={false}>{children}</Container>
+          </ClientLayout>
+        </Suspense>
       </body>
     </html>
   );
