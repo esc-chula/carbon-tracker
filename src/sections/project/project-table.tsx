@@ -1,6 +1,7 @@
 "use client";
 import StatusChips from "@/components/StatusChips";
 import { SvgColor } from "@/components/svg/svg-color";
+import { fetchGetCertificate } from "@/services/project/query/project-query";
 import theme from "@/styles/theme/theme";
 import type { TListProjectsItem } from "@/types/project/list-project";
 import { MenuItem, Stack, TablePagination, Typography } from "@mui/material";
@@ -11,10 +12,11 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { type ChangeEvent, type Dispatch, type SetStateAction } from "react";
-import ProjectPopoverMenu from "./project-popover-menu";
+import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
+import { type ChangeEvent, type Dispatch, type SetStateAction } from "react";
+import ProjectPopoverMenu from "./project-popover-menu";
 
 dayjs.extend(buddhistEra);
 
@@ -48,7 +50,29 @@ export default function ProjectTable({
   setPage,
   setRowsPerPage,
 }: TProjectTableProps) {
+  // --------------------------- API ---------------------------
+
+  const generateCertificate = useMutation({
+    mutationFn: fetchGetCertificate,
+    onSuccess: (data) => {
+      if (!(data.blob instanceof Blob)) return;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const url = URL.createObjectURL(data.blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = data.filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    },
+  });
+
   // --------------------------- Function ---------------------------
+
+  const handleExport = (projectId: string) => {
+    generateCertificate.mutate({ id: projectId });
+  };
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -113,7 +137,7 @@ export default function ProjectTable({
                 <StyledTableCell>{row.updated_by}</StyledTableCell>
                 <StyledTableCell align="center">
                   <ProjectPopoverMenu>
-                    <MenuItem>
+                    <MenuItem onClick={() => handleExport(row.id)}>
                       <Stack spacing={1.5} direction="row" alignItems="center">
                         <SvgColor src="/assets/icons/ic-document.svg" />
 
@@ -122,7 +146,7 @@ export default function ProjectTable({
                         </Typography>
                       </Stack>
                     </MenuItem>
-                    <MenuItem>
+                    <MenuItem disabled>
                       <Stack spacing={1.5} direction="row" alignItems="center">
                         <SvgColor
                           src="/assets/icons/ic-trash.svg"

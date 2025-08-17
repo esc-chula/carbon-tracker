@@ -13,6 +13,10 @@ import type {
   TGetProjectRequest,
   TGetProjectResponse,
 } from "@/types/project/get-project";
+import type {
+  TGetCertificateRequest,
+  TGetCertificateResponse,
+} from "@/types/project/get-certificate";
 
 // ---------------------------------------------------------------------------------
 
@@ -60,6 +64,32 @@ async function fetchGetProject(
   return res;
 }
 
+async function fetchGetCertificate(
+  payload: TGetCertificateRequest,
+): Promise<TGetCertificateResponse> {
+  const res = await ky.get(`projects/${payload.id}/certificate`, {
+    headers: { Accept: "application/pdf" },
+  });
+
+  const blob = await res.blob();
+  const contentType = res.headers.get("content-type") ?? "application/pdf";
+
+  const disposition = res.headers.get("content-disposition") ?? "";
+  let filename = "certificate.pdf";
+  const match = /filename\*?=(?:UTF-8'')?["']?([^"';]+)["']?/i.exec(
+    disposition,
+  );
+  if (match?.[1]) {
+    try {
+      filename = decodeURIComponent(match[1]);
+    } catch {
+      filename = match[1];
+    }
+  }
+
+  return { blob, filename, contentType };
+}
+
 // ---------------------------------------------------------------------------------
 
 const projectsQueryKeys = {
@@ -94,11 +124,22 @@ const projectsQueryKeys = {
       queryKey: [...projectsQueryKeys.project(payload)] as const,
       queryFn: () => fetchGetProject(payload),
     }),
+
+  certificate: (payload: TGetCertificateRequest) =>
+    [...projectsQueryKeys.all(), "certificate", { payload }] as const,
+
+  certificateOptions: (payload: TGetCertificateRequest) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    queryOptions({
+      queryKey: [...projectsQueryKeys.certificate(payload)] as const,
+      queryFn: () => fetchGetCertificate(payload),
+    }),
 };
 
 export {
   projectsQueryKeys,
   fetchListProjects,
   fetchGetCarbonEmission,
-  fetchGetProject, // <-- export
+  fetchGetProject,
+  fetchGetCertificate,
 };

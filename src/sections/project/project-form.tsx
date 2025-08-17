@@ -170,7 +170,10 @@ function ProjectForm({ step, setStep, initialValues }: TProjectFormProps) {
     try {
       const response = await createProject.mutateAsync(formattedData);
 
-      router.push(`create-project/${response.project_id}/success`);
+      if (status === "pending")
+        return router.push(`create-project/${response.project_id}/success`);
+
+      if (status === "draft") return router.push("/");
     } catch (error) {
       console.log("error", error);
     }
