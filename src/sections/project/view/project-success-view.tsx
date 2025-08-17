@@ -11,11 +11,37 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import CountingAnimation from "@/components/CountingAnimation";
+import { useQuery } from "@tanstack/react-query";
+import { projectsQueryKeys } from "@/services/project/query/project-query";
 
-export default function SubmitPage() {
+// ---------------------------------------------------------------------------------
+
+type Params = { id: string };
+
+export default function ProjectSuccessView() {
+  // --------------------------- Hook ---------------------------
+
   const router = useRouter();
+  const params = useParams<Params>();
+  const { id } = params;
+
+  // --------------------------- API ---------------------------
+
+  const carbon = useQuery({
+    ...projectsQueryKeys.calculateOptions({ id: id }),
+    enabled: !!id,
+  });
+
+  const project = useQuery({
+    ...projectsQueryKeys.projectOptions({ id: id }),
+    enabled: !!id,
+  });
+
+  // --------------------------- Value ---------------------------
+
+  const drives = Math.floor((carbon.data?.carbon_emission ?? 0) / 6.5);
 
   return (
     <Container
@@ -80,7 +106,7 @@ export default function SubmitPage() {
           lineHeight: "56px",
         }}
       >
-        โครงการ ค่ายวิศนุกรรมบุตร ครั้งที่ 60
+        {project.data?.project.title}
       </Typography>
       <Stack direction="row">
         <Box>
@@ -101,7 +127,7 @@ export default function SubmitPage() {
             }}
           >
             <CountingAnimation
-              to={48}
+              to={carbon.data?.carbon_emission ?? 0}
               suffix=" tonsCO₂"
               duration={2000}
               decimals={0}
@@ -135,35 +161,7 @@ export default function SubmitPage() {
           >
             <CountingAnimation
               prefix="ขับรถรอบโลก "
-              to={18}
-              suffix=" รอบ"
-              duration={1200}
-              decimals={0}
-            />
-          </Typography>
-        </Box>
-      </Stack>
-      <Stack direction="row">
-        <Box>
-          <Typography
-            sx={{
-              fontSize: "24px",
-              fontWeight: theme.typography.fontWeightBold,
-              lineHeight: "36px",
-            }}
-          >
-            หรือเท่ากับ...
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: "48px",
-              fontWeight: theme.typography.fontWeightBold,
-              lineHeight: "64px",
-            }}
-          >
-            <CountingAnimation
-              to={18}
-              prefix="ขับรถรอบโลก "
+              to={drives}
               suffix=" รอบ"
               duration={1200}
               decimals={0}

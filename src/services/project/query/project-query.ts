@@ -5,6 +5,14 @@ import type {
   TListProjectsRequest,
   TListProjectsResponse,
 } from "@/types/project/list-project";
+import type {
+  TGetCarbonEmissionRequest,
+  TGetCarbonEmissionResponse,
+} from "@/types/project/get-carbon";
+import type {
+  TGetProjectRequest,
+  TGetProjectResponse,
+} from "@/types/project/get-project";
 
 // ---------------------------------------------------------------------------------
 
@@ -26,7 +34,29 @@ async function fetchListProjects(
       searchParams: buildSearchParams(payload),
     })
     .json<TListProjectsResponse>();
+  return res;
+}
 
+async function fetchGetCarbonEmission(
+  payload: TGetCarbonEmissionRequest,
+): Promise<TGetCarbonEmissionResponse> {
+  const res = await ky
+    .get(`projects/${payload.id}/calculate`)
+    .json<TGetCarbonEmissionResponse>();
+  return res;
+}
+
+async function fetchGetProject(
+  payload: TGetProjectRequest,
+): Promise<TGetProjectResponse> {
+  const res = await ky
+    .get(`projects/${payload.id}`, {
+      searchParams:
+        payload.include_transportations !== undefined
+          ? { include_transportations: payload.include_transportations }
+          : undefined,
+    })
+    .json<TGetProjectResponse>();
   return res;
 }
 
@@ -44,6 +74,31 @@ const projectsQueryKeys = {
       queryKey: [...projectsQueryKeys.list(payload)] as const,
       queryFn: () => fetchListProjects(payload),
     }),
+
+  calculate: (payload: TGetCarbonEmissionRequest) =>
+    [...projectsQueryKeys.all(), "calculate", { payload }] as const,
+
+  calculateOptions: (payload: TGetCarbonEmissionRequest) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    queryOptions({
+      queryKey: [...projectsQueryKeys.calculate(payload)] as const,
+      queryFn: () => fetchGetCarbonEmission(payload),
+    }),
+
+  project: (payload: TGetProjectRequest) =>
+    [...projectsQueryKeys.all(), "project", { payload }] as const,
+
+  projectOptions: (payload: TGetProjectRequest) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    queryOptions({
+      queryKey: [...projectsQueryKeys.project(payload)] as const,
+      queryFn: () => fetchGetProject(payload),
+    }),
 };
 
-export { projectsQueryKeys, fetchListProjects };
+export {
+  projectsQueryKeys,
+  fetchListProjects,
+  fetchGetCarbonEmission,
+  fetchGetProject, // <-- export
+};

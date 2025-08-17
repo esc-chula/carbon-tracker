@@ -12,6 +12,7 @@ import { useCreateProjectMutation } from "@/services/project/mutation";
 import CreateProjectFormatter from "./helper/create-project-formatter";
 import { ProjectFormFirstStep } from "./project-form-first-step";
 import { ProjectFormSecondStep } from "./project-form-second-step";
+import { useRouter } from "next/navigation";
 
 // ---------------------------------------------------------------------------------
 
@@ -23,7 +24,7 @@ type TProjectFormProps = {
 
 function ProjectForm({ step, setStep, initialValues }: TProjectFormProps) {
   const theme = useTheme();
-  // const router = useRouter();
+  const router = useRouter();
 
   // --------------------------- Form ---------------------------
 
@@ -160,19 +161,19 @@ function ProjectForm({ step, setStep, initialValues }: TProjectFormProps) {
     setStep((prev) => prev - 1);
   };
 
-  const onSubmit = (data: ProjectFormValues, status: "draft" | "pending") => {
+  const onSubmit = async (
+    data: ProjectFormValues,
+    status: "draft" | "pending",
+  ) => {
     const formattedData = CreateProjectFormatter(data, status);
 
-    createProject.mutate(formattedData, {
-      onSuccess: () => {
-        console.log("success");
-      },
-      onError: (error) => {
-        console.log(error);
-      },
-    });
+    try {
+      const response = await createProject.mutateAsync(formattedData);
 
-    // router.push(`create-project/${data.projectCode}/success`);
+      router.push(`create-project/${response.project_id}/success`);
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   // --------------------------- Render ---------------------------
