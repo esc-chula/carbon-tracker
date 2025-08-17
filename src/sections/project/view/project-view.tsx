@@ -1,6 +1,8 @@
 "use client";
 
 import StatusChips, { type ChipVariant } from "@/components/StatusChips";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useSetState } from "@/hooks/use-set-state";
 import { projectsQueryKeys } from "@/services/project/query/project-query";
 import theme from "@/styles/theme/theme";
 import { AddCircleOutline, Search } from "@mui/icons-material";
@@ -24,8 +26,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ProjectTable from "../project-table";
-import { useSetState } from "@/hooks/use-set-state";
-import { useDebounce } from "@/hooks/use-debounce";
 
 // ---------------------------------------------------------------------------------
 
@@ -54,10 +54,11 @@ export default function ProjectView() {
 
   const projects = useQuery({
     ...projectsQueryKeys.listOptions({
-      limit: rowsPerPage,
-      offset: page,
+      limit: 1000,
+      offset: page * rowsPerPage,
       search: debouncedSearchFilter.state.search,
       status: status.join(","),
+      sort: "-created_at",
     }),
   });
 
@@ -162,7 +163,7 @@ export default function ProjectView() {
             </Typography>
             <Chip
               size="small"
-              label={`${projects.data?.projects?.length} โครงการ`}
+              label={`${projects.data?.count} โครงการ`}
               sx={{ backgroundColor: "#E6F1ED", color: "#013020" }}
             />
           </Stack>

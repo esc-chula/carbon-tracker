@@ -11,6 +11,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { usePathname } from "next/navigation";
 import RequireAuth from "@/components/auth/require-auth";
 import ReactQueryProvider from "./react-client-provider";
+import SonnerProvider from "./sonner-provider";
 
 export default function ClientLayout({
   children,
@@ -37,6 +38,7 @@ export default function ClientLayout({
             dateFormats={configDatePicker}
           >
             <ThemeProvider theme={theme}>
+              <SonnerProvider />
               <CssBaseline />
               {!shouldHideLayout && <NavBar />}
               {children}

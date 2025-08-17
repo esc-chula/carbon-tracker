@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import { type ChangeEvent, type Dispatch, type SetStateAction } from "react";
 import ProjectPopoverMenu from "./project-popover-menu";
+import { showError, showSuccess } from "@/components/toast/toast";
 
 dayjs.extend(buddhistEra);
 
@@ -65,6 +66,11 @@ export default function ProjectTable({
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+
+      showSuccess("พิมพ์ใบรับรองสำเร็จ");
+    },
+    onError: () => {
+      showError("พิมพ์ใบรับรองไม่สำเร็จ");
     },
   });
 
@@ -121,10 +127,7 @@ export default function ProjectTable({
             </TableRow>
           </TableHead>
           <TableBody sx={{ overflow: "scroll" }}>
-            {(rowsPerPage > 0
-              ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              : rows
-            ).map((row) => (
+            {rows.map((row) => (
               <TableRow key={row.id}>
                 <StyledTableCell>{row.custom_id}</StyledTableCell>
                 <StyledTableCell>{row.title}</StyledTableCell>
@@ -184,8 +187,8 @@ export default function ProjectTable({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage="แถวต่อหน้า"
-        labelDisplayedRows={({ from, count }) =>
-          `${from} จาก ${Math.ceil(count / rowsPerPage)}`
+        labelDisplayedRows={({ count }) =>
+          `${page + 1} จาก ${Math.ceil(count / rowsPerPage)}`
         }
       />
     </Stack>

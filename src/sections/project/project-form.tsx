@@ -13,6 +13,7 @@ import CreateProjectFormatter from "./helper/create-project-formatter";
 import { ProjectFormFirstStep } from "./project-form-first-step";
 import { ProjectFormSecondStep } from "./project-form-second-step";
 import { useRouter } from "next/navigation";
+import { showError } from "@/components/toast/toast";
 
 // ---------------------------------------------------------------------------------
 
@@ -175,7 +176,7 @@ function ProjectForm({ step, setStep, initialValues }: TProjectFormProps) {
 
       if (status === "draft") return router.push("/");
     } catch (error) {
-      console.log("error", error);
+      showError("ส่งแบบฟอร์มไม่สำเร็จ");
     }
   };
 

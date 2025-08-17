@@ -25,13 +25,20 @@ export function ConfirmDialog({
   ...other
 }: TConfirmDialogProps) {
   return (
-    <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose} {...other}>
+    <Dialog
+      fullWidth
+      maxWidth="xs"
+      open={open}
+      onClose={onClose}
+      slotProps={{ paper: { sx: { borderRadius: 6 } } }}
+      {...other}
+    >
       <DialogTitle sx={{ pb: 2 }}>{title}</DialogTitle>
 
       {content && (
         <DialogContent sx={{ typography: "body2" }}> {content} </DialogContent>
       )}
-      <DialogActions>
+      <DialogActions sx={{ padding: 3 }}>
         <Button id="dialog-cancel-button" variant="outlined" onClick={onClose}>
           {cancelLabel}
         </Button>

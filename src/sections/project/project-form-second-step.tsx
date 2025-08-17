@@ -11,7 +11,14 @@ import type {
   ProjectFormValues,
   Waste,
 } from "@/sections/project/form/type";
-import { Button, Grid, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Fragment } from "react";
 import {
   useFormContext,
@@ -30,6 +37,8 @@ import {
   type TRoom,
 } from "./form/constant";
 import { StyledAddButton, StyledStack } from "./styles";
+import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
+import { useBoolean } from "@/hooks/use-boolean";
 
 // ---------------------------------------------------------------------------------
 
@@ -103,7 +112,10 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     handleSubmit,
   } = props;
 
+  // --------------------------- Hook ---------------------------
+
   const { control } = useFormContext();
+  const isOpenDialog = useBoolean();
 
   // --------------------------- Render ---------------------------
 
@@ -250,7 +262,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     <IconButton onClick={() => removeEnergy(index)}>
                       <SvgColor
                         src="/assets/icons/ic-trash.svg"
-                        color={energies.length === 1 ? disableColor : redColor}
+                        color={redColor}
                       />
                     </IconButton>
                   </Grid>
@@ -607,10 +619,10 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
               spacing={2}
               sx={{ padding: "16px 24px", justifyContent: "end" }}
             >
-              <Button variant="text" onClick={handleBack}>
+              <Button variant="outlined" onClick={handleBack}>
                 ย้อนกลับ
               </Button>
-              <Button
+              {/* <Button
                 type="button"
                 variant="outlined"
                 onClick={() => {
@@ -618,10 +630,37 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 }}
               >
                 บันทึกแบบร่าง
-              </Button>
+              </Button> */}
 
               <Button
                 type="button"
+                variant="contained"
+                onClick={isOpenDialog.onTrue}
+              >
+                ส่งแบบฟอร์ม
+              </Button>
+            </Stack>
+          </Stack>
+
+          <ConfirmDialog
+            open={isOpenDialog.value}
+            title={
+              <Box component="img" src="/assets/icons/ic-upload-form.svg" />
+            }
+            content={
+              <Stack spacing={1}>
+                <Typography variant="h3">
+                  คุณต้องการส่งแบบฟอร์มหรือไม่
+                </Typography>
+                <Typography variant="h5" fontWeight={500} color="#637381">
+                  ข้อมูลของโครงการจะไม่สามารถแก้ไขได้
+                  <br />
+                  หลังจากส่งแบบฟอร์ม
+                </Typography>
+              </Stack>
+            }
+            action={
+              <Button
                 variant="contained"
                 onClick={() => {
                   void handleSubmit((data) => onSubmit(data, "pending"))();
@@ -629,8 +668,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
               >
                 ส่งแบบฟอร์ม
               </Button>
-            </Stack>
-          </Stack>
+            }
+            onClose={isOpenDialog.onFalse}
+          />
         </>
       )}
     </>
