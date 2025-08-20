@@ -130,6 +130,10 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     }, 2000);
   };
 
+  // --------------------------- Value ---------------------------
+
+  const file = watch("transportations_csv_file");
+
   // --------------------------- Render ---------------------------F
 
   const renderFirstScope = (
@@ -368,6 +372,18 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
       </Stack>
 
       <Field.CSVUploadField control={control} name="transportations_csv_file" />
+
+      {!file && (
+        <Button
+          component="a"
+          href={"/files/ตัวอย่างข้อมูลการเดินทาง.csv"}
+          download="ตัวอย่างข้อมูลการเดินทาง"
+          variant="contained"
+          sx={{ alignSelf: "start" }}
+        >
+          ดาวน์โหลด CSV Template
+        </Button>
+      )}
 
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
