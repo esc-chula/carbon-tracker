@@ -95,6 +95,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     disableColor,
     redColor,
     watch,
+    setValue,
     removeActivity,
     appendActivity,
     removeEnergy,
@@ -130,6 +131,10 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     }, 2000);
   };
 
+  // --------------------------- Value ---------------------------
+
+  const file = watch("transportations_csv_file");
+
   // --------------------------- Render ---------------------------F
 
   const renderFirstScope = (
@@ -159,6 +164,15 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                   helperText={
                     errors.activities?.[index]?.activity_type?.message
                   }
+                  onInputChange={(_, value) => {
+                    if (!value) return setValue(`activities.${index}.unit`, "");
+
+                    if (value === "ก๊าซหุงต้ม") {
+                      setValue(`activities.${index}.unit`, "kg");
+                    } else {
+                      setValue(`activities.${index}.unit`, "box");
+                    }
+                  }}
                 />
               </Grid>
               <Grid size={{ xs: 2 }}>
@@ -182,6 +196,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                   helperText={errors.activities?.[index]?.unit?.message}
                   disabled={!amount}
                   creatable
+                  readOnly
                 />
               </Grid>
               <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
@@ -369,6 +384,18 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
       <Field.CSVUploadField control={control} name="transportations_csv_file" />
 
+      {!file && (
+        <Button
+          component="a"
+          href={"/files/ตัวอย่างข้อมูลการเดินทาง.csv"}
+          download="ตัวอย่างข้อมูลการเดินทาง"
+          variant="contained"
+          sx={{ alignSelf: "start" }}
+        >
+          ดาวน์โหลด CSV Template
+        </Button>
+      )}
+
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
           จำนวนผู้เข้าร่วมรวมกับ staff ตลอดทั้งโครงการ
@@ -502,6 +529,13 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     label="เลือกประเภทของแจก"
                     options={giftUnitOptions}
                     helperText={errors.gift?.[index]?.gift_type?.message}
+                    onInputChange={(_, value) => {
+                      if (value) {
+                        setValue(`gift.${index}.unit`, "kg");
+                      } else {
+                        setValue(`gift.${index}.unit`, "");
+                      }
+                    }}
                     creatable
                   />
                 </Grid>
@@ -521,6 +555,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     options={[{ value: "kg", label: "กิโลกรัม" }]}
                     helperText={errors.gift?.[index]?.unit?.message}
                     disabled={!amount}
+                    readOnly
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
@@ -562,6 +597,13 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     label="เลือกประเภทของเสีย"
                     options={wasteOptions}
                     helperText={errors.waste?.[index]?.waste_type?.message}
+                    onInputChange={(_, value) => {
+                      if (value) {
+                        setValue(`waste.${index}.unit`, "kg");
+                      } else {
+                        setValue(`waste.${index}.unit`, "");
+                      }
+                    }}
                     creatable
                   />
                 </Grid>
@@ -581,6 +623,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     options={[{ value: "kg", label: "กิโลกรัม" }]}
                     helperText={errors.waste?.[index]?.unit?.message}
                     disabled={!amount}
+                    readOnly
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
