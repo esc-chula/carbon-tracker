@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/sections/login/context/auth-provider";
 import theme from "@/styles/theme/theme";
 import {
   AppBar,
@@ -14,6 +15,7 @@ import { useRouter } from "next/navigation";
 
 export default function NavBar() {
   const router = useRouter();
+  const { signOutAll } = useAuth();
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -92,6 +94,33 @@ export default function NavBar() {
                   }}
                 >
                   ความช่วยเหลือ
+                </Typography>
+              </Button>
+            </Box>
+            <Box sx={{ padding: "14px" }}>
+              <Button
+                color="inherit"
+                startIcon={
+                  <Box
+                    component="img"
+                    sx={{
+                      height: 24,
+                      width: 24,
+                    }}
+                    src="/assets/icons/ic-logout.svg"
+                  />
+                }
+                onClick={() => signOutAll()}
+              >
+                <Typography
+                  sx={{
+                    fontSize: theme.typography.body1.fontSize,
+                    lineHeight: theme.typography.body1.lineHeight,
+                    fontWeight: theme.typography.fontWeightBold,
+                    color: theme.palette.common.black,
+                  }}
+                >
+                  ออกจากระบบ
                 </Typography>
               </Button>
             </Box>
