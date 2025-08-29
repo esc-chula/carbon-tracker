@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 
 export default function NavBar() {
   const router = useRouter();
-  const { signOutAll } = useAuth();
+  const { user, signOutAll } = useAuth();
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -44,33 +44,35 @@ export default function NavBar() {
           />
           <Box sx={{ flexGrow: 1 }} />
           <Stack direction="row" spacing={1}>
-            <Box sx={{ padding: "14px" }}>
-              <Button
-                color="inherit"
-                startIcon={
-                  <Box
-                    component="img"
-                    sx={{
-                      height: 24,
-                      width: 24,
-                    }}
-                    src="/listview.svg"
-                  />
-                }
-                onClick={() => router.push("/create-project")}
-              >
-                <Typography
-                  sx={{
-                    fontSize: theme.typography.body1.fontSize,
-                    lineHeight: theme.typography.body1.lineHeight,
-                    fontWeight: theme.typography.fontWeightBold,
-                    color: theme.palette.common.black,
-                  }}
+            {user && (
+              <Box sx={{ padding: "14px" }}>
+                <Button
+                  color="inherit"
+                  startIcon={
+                    <Box
+                      component="img"
+                      sx={{
+                        height: 24,
+                        width: 24,
+                      }}
+                      src="/listview.svg"
+                    />
+                  }
+                  onClick={() => router.push("/create-project")}
                 >
-                  กรอกแบบฟอร์ม
-                </Typography>
-              </Button>
-            </Box>
+                  <Typography
+                    sx={{
+                      fontSize: theme.typography.body1.fontSize,
+                      lineHeight: theme.typography.body1.lineHeight,
+                      fontWeight: theme.typography.fontWeightBold,
+                      color: theme.palette.common.black,
+                    }}
+                  >
+                    กรอกแบบฟอร์ม
+                  </Typography>
+                </Button>
+              </Box>
+            )}
             <Box sx={{ padding: "14px" }}>
               <Button
                 color="inherit"
@@ -97,33 +99,64 @@ export default function NavBar() {
                 </Typography>
               </Button>
             </Box>
-            <Box sx={{ padding: "14px" }}>
-              <Button
-                color="inherit"
-                startIcon={
-                  <Box
-                    component="img"
-                    sx={{
-                      height: 24,
-                      width: 24,
-                    }}
-                    src="/assets/icons/ic-logout.svg"
-                  />
-                }
-                onClick={() => signOutAll()}
-              >
-                <Typography
-                  sx={{
-                    fontSize: theme.typography.body1.fontSize,
-                    lineHeight: theme.typography.body1.lineHeight,
-                    fontWeight: theme.typography.fontWeightBold,
-                    color: theme.palette.common.black,
-                  }}
+            {user && (
+              <Box sx={{ padding: "14px" }}>
+                <Button
+                  color="inherit"
+                  startIcon={
+                    <Box
+                      component="img"
+                      sx={{
+                        height: 24,
+                        width: 24,
+                      }}
+                      src="/assets/icons/ic-logout.svg"
+                    />
+                  }
+                  onClick={() => signOutAll()}
                 >
-                  ออกจากระบบ
-                </Typography>
-              </Button>
-            </Box>
+                  <Typography
+                    sx={{
+                      fontSize: theme.typography.body1.fontSize,
+                      lineHeight: theme.typography.body1.lineHeight,
+                      fontWeight: theme.typography.fontWeightBold,
+                      color: theme.palette.common.black,
+                    }}
+                  >
+                    ออกจากระบบ
+                  </Typography>
+                </Button>
+              </Box>
+            )}
+            {!user && (
+              <Box sx={{ padding: "14px" }}>
+                <Button
+                  color="inherit"
+                  startIcon={
+                    <Box
+                      component="img"
+                      sx={{
+                        height: 24,
+                        width: 24,
+                      }}
+                      src="/assets/icons/ic-login.svg"
+                    />
+                  }
+                  onClick={() => router.replace("/login")}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: theme.typography.body1.fontSize,
+                      lineHeight: theme.typography.body1.lineHeight,
+                      fontWeight: theme.typography.fontWeightBold,
+                      color: theme.palette.common.black,
+                    }}
+                  >
+                    เข้าสู่ระบบ
+                  </Typography>
+                </Button>
+              </Box>
+            )}
           </Stack>
         </Toolbar>
       </AppBar>
