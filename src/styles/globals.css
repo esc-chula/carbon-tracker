@@ -2,6 +2,8 @@
 
 @import "tailwindcss";
 
+@import "react-calendar-heatmap/dist/styles.css";
+
 @theme {
   --color-primary-50: #e6f1ed;
   --color-primary-100: #b1d3c8;
