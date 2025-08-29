@@ -146,6 +146,7 @@ const fieldOptions = [
 ];
 
 const departmentOptions = [
+  { value: "วิศวกรรมภาครวม", label: "วิศวกรรมภาครวม" },
   { value: "วิศวกรรมโยธา", label: "วิศวกรรมโยธา" },
   { value: "วิศวกรรมไฟฟ้า", label: "วิศวกรรมไฟฟ้า" },
   { value: "วิศวกรรมเครื่องกล", label: "วิศวกรรมเครื่องกล" },

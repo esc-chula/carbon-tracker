@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/sections/login/context/auth-provider";
 
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = ["/login", "/dashboard"];
 
 export default function RequireAuth({
   children,
@@ -27,7 +27,7 @@ export default function RequireAuth({
 
   useEffect(() => {
     if (!loading && !user && !isPublic) {
-      void router.replace("/login");
+      void router.replace("/dashboard");
     }
   }, [loading, user, isPublic, pathname, router]);
 
