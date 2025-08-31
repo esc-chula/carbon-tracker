@@ -387,12 +387,14 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
       {!file && (
         <Button
           component="a"
-          href={"/files/ตัวอย่างข้อมูลการเดินทาง.csv"}
-          download="ตัวอย่างข้อมูลการเดินทาง"
+          href={
+            "https://docs.google.com/spreadsheets/d/1aZXR5jRYHNlC6jHlkh0Qa4R4gYYiy-A7OMuFdhPZ0AI/edit?usp=sharing"
+          }
+          target="_blank"
           variant="contained"
           sx={{ alignSelf: "start" }}
         >
-          ดาวน์โหลด CSV Template
+          ดูตัวอย่าง CSV Template
         </Button>
       )}
 
