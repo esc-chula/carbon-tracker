@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/sections/login/context/auth-provider";
 import theme from "@/styles/theme/theme";
+import { Dashboard } from "@mui/icons-material";
 import {
   AppBar,
   Box,
@@ -44,6 +45,25 @@ export default function NavBar() {
           />
           <Box sx={{ flexGrow: 1 }} />
           <Stack direction="row" spacing={1}>
+            <Box sx={{ padding: "14px" }}>
+              <Button
+                color="inherit"
+                startIcon={<Dashboard sx={{ color: "#000000" }} />}
+                onClick={() => router.replace("/dashboard")}
+              >
+                <Typography
+                  sx={{
+                    fontSize: theme.typography.body1.fontSize,
+                    lineHeight: theme.typography.body1.lineHeight,
+                    fontWeight: theme.typography.fontWeightBold,
+                    color: theme.palette.common.black,
+                  }}
+                >
+                  แดชบอร์ด
+                </Typography>
+              </Button>
+            </Box>
+
             {user && (
               <Box sx={{ padding: "14px" }}>
                 <Button
