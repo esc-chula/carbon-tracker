@@ -251,10 +251,10 @@ function DashboardView() {
         <Grid size={{ xs: 12 }}>
           <StyledPaper elevation={2} sx={{ paddingBottom: 0 }}>
             <Typography variant="h2" fontWeight={700}>
-              ฝ่ายไหนปล่อย carbon มากที่สุด?
+              ฤดูกาลแห่งการกินไฟ
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              ปริมาณการปล่อย carbon แยกตามฝ่าย
+              Heatmap การใช้ไฟฟ้าตลอดทั้งปีการศึกษา 2568
             </Typography>
 
             <DashboardCalendarHeatmap
