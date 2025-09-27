@@ -29,11 +29,17 @@ import ProjectTable from "../project-table";
 
 // ---------------------------------------------------------------------------------
 
-const OPTIONS: ChipVariant[] = ["approved", "pending", "draft", "rejected"];
+const OPTIONS: ChipVariant[] = [
+  "approved",
+  "pending",
+  "draft",
+  "fixing",
+  "rejected",
+];
 
 // ---------------------------------------------------------------------------------
 
-export default function ProjectView() {
+export default function ProjectsView() {
   // --------------------------- Hook ---------------------------
 
   const [status, setStatus] = useState<ChipVariant[]>([]);
@@ -70,7 +76,7 @@ export default function ProjectView() {
   };
 
   const handleAddProject = () => {
-    router.push("/create-project");
+    router.push("/project/create");
   };
 
   // --------------------------- Render ---------------------------

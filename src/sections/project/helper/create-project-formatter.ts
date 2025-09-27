@@ -6,91 +6,91 @@ function CreateProjectFormatter(
   data: ProjectFormValues,
   status: "draft" | "pending",
 ): TCreateProjectRequest {
-  const formattedOrganizeDetail = (org: "กวศ." | "ชมรม" | "อื่นๆ") => {
+  const resolveOrgDetail = () => {
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    const org = data.org as "กวศ." | "ชมรม" | "other" | string;
+
     switch (org) {
       case "กวศ.":
-        return data.field;
+        return data.field?.trim() ?? "";
       case "ชมรม":
-        return data.clubName;
+        return data.clubName?.trim() ?? "";
+      case "other":
       case "อื่นๆ":
-        return data.otherUnderProject;
-
+        return data.otherUnderProject?.trim() ?? "";
       default:
-        return "";
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return data.org_detail?.trim() ?? "";
     }
   };
 
   const carbonDetails: CarbonDetail = {
     scope1: {
       activities:
-        data.activities?.map((item) => {
-          return {
-            name: item?.activity_type ?? "",
-            value: item.amount ?? 0,
-            unit: item.unit ?? "",
-          };
-        }) ?? null,
+        data.scope1_activities?.map((item) => ({
+          name: item?.name ?? "",
+          value: item?.value ?? 0,
+          unit: item?.unit ?? "",
+        })) ?? null,
     },
     scope2: {
       buildings:
-        data.energies
-          ?.filter((item) => item.type === "building")
+        data.scope2_entries
+          ?.filter((item) => item.kind === "building")
           .map((item) => ({
-            name: item.building ?? "",
+            name: item.name ?? "",
             room: item.room ?? "",
-            start_time: item.startDate ?? "",
-            end_time: item.endDate ?? "",
-            facilities: item.equipment ?? null,
+            start_time: item.start_time ?? "",
+            end_time: item.end_time ?? "",
+            facilities: item.facilities ?? null,
           })) ?? null,
       generators:
-        data.energies
-          ?.filter((item) => item.type === "electric")
+        data.scope2_entries
+          ?.filter((item) => item.kind === "generator")
           .map((item) => ({
-            facilities: item.equipment ?? null,
+            facilities: item.facilities ?? null,
             unit: item.unit ?? "",
-            value: item.quantity ?? 0,
+            value: item.value ?? 0,
           })) ?? null,
     },
     scope3: {
       attendee:
-        data.participant.map((item) => ({
+        data.scope3_attendee.map((item) => ({
           date: item.date ?? "",
-          value: item.participant_amount ?? 0,
+          value: item.value ?? 0,
         })) ?? null,
       overnight:
-        data.accommodation?.map((item) => ({
+        data.scope3_overnight?.map((item) => ({
           date: item.date ?? "",
-          value: item.participant_amount ?? 0,
+          value: item.value ?? 0,
         })) ?? null,
       souvenir:
-        data.gift?.map((item) => ({
-          type: item.gift_type ?? "",
+        data.scope3_souvenir?.map((item) => ({
+          type: item.type ?? "",
           unit: item.unit ?? "",
-          value: item.amount ?? 0,
+          value: item.value ?? 0,
         })) ?? null,
       transportations: undefined,
       waste:
-        data.waste?.map((item) => ({
-          type: item.waste_type ?? "",
+        data.scope3_waste?.map((item) => ({
+          type: item.type ?? "",
           unit: item.unit ?? "",
-          value: item.amount ?? 0,
+          value: item.value ?? 0,
         })) ?? null,
     },
   };
 
   const formattedData: TCreateProjectRequest = {
-    custom_id: data.projectCode,
-    org: data.underProject,
-    org_detail:
-      formattedOrganizeDetail(data.underProject as "กวศ." | "ชมรม" | "อื่นๆ") ??
-      "",
-    owner_fullname: data.fullName,
-    owner_major: data.department,
-    owner_nickname: data.nickname,
-    owner_phone_number: data.tel,
-    owner_student_id: data.student_id,
-    status: status,
-    title: data.projectName,
+    custom_id: data.custom_id,
+    org: data.org,
+    org_detail: resolveOrgDetail(),
+    owner_fullname: data.owner_fullname,
+    owner_major: data.owner_major,
+    owner_nickname: data.owner_nickname,
+    owner_phone_number: data.owner_phone_number,
+    owner_student_id: data.owner_student_id,
+    status,
+    title: data.title,
     transportations_csv_file: data.transportations_csv_file,
     carbon_detail: JSON.stringify(carbonDetails),
   };

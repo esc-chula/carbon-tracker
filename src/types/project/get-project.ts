@@ -1,6 +1,32 @@
+import type {
+  CarbonDetail,
+  Scope3Transportation,
+} from "./project";
+
 export type TGetProjectRequest = {
   id: string;
   include_transportations?: boolean;
+};
+
+export type CarbonResult = {
+  scope1: { activity: number };
+  scope2: {
+    building: number;
+    generator: number;
+  };
+  scope3: {
+    attendee: number;
+    overnight: number;
+    souvenir: number;
+    transportation: number;
+    waste: number;
+  };
+};
+
+type ProjectCarbonDetail = CarbonDetail & {
+  scope3: CarbonDetail["scope3"] & {
+    transportations?: Scope3Transportation[] | null;
+  };
 };
 
 export type TGetProjectResponse = {
@@ -15,38 +41,9 @@ export type TGetProjectResponse = {
     created_at: string;
     updated_at: string;
     updated_by: string;
+    updated_owner_id: string;
     deleted_at: string | null;
-    transportations: Array<{
-      id: string;
-      project_id: string;
-      type: string;
-      origin: { district: string; province: string };
-    }> | null;
-  };
-  carbon_detail: {
-    scope1: {
-      activities: Array<{ name: string; unit: string; value: number }> | null;
-    };
-    scope2: {
-      buildings: Array<{
-        name: string;
-        room: string;
-        start_time: string;
-        end_time: string;
-        facilities: string[] | null;
-      }> | null;
-      generators: Array<{
-        unit: string;
-        value: number;
-        facilities: string[] | null;
-      }> | null;
-    };
-    scope3: {
-      attendee: Array<{ date: string; value: number }> | null;
-      overnight: Array<{ date: string; value: number }> | null;
-      souvenir: Array<{ type: string; unit: string; value: number }> | null;
-      transportations: Array<unknown> | null; // refine if you have schema
-      waste: Array<{ type: string; unit: string; value: number }> | null;
-    };
+    carbon_detail: ProjectCarbonDetail;
+    carbon_result: CarbonResult;
   };
 };

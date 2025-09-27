@@ -1,4 +1,9 @@
-export type TProjectStatus = "draft" | "pending" | "approved" | "rejected";
+export type TProjectStatus =
+  | "fixing"
+  | "draft"
+  | "pending"
+  | "approved"
+  | "rejected";
 
 export type TListProjectsRequest = {
   limit: number;

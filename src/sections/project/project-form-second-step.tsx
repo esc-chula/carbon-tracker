@@ -3,13 +3,13 @@ import RHFDateTimePicker from "@/components/hook-form/rhf-date-time-picker";
 
 import { SvgColor } from "@/components/svg/svg-color";
 import type {
-  Accommodation,
-  Activity,
-  Energy,
-  Gift,
-  Participant,
   ProjectFormValues,
-  Waste,
+  Scope1ActivityForm,
+  Scope2EntryForm,
+  Scope3AttendeeForm,
+  Scope3OvernightForm,
+  Scope3SouvenirForm,
+  Scope3WasteForm,
 } from "@/sections/project/form/type";
 import {
   Box,
@@ -44,34 +44,34 @@ import { useBoolean } from "@/hooks/use-boolean";
 
 type TProjectFormSecondStepProps = {
   step: number;
-  activities: Activity[];
-  energies: Energy[];
-  participant: Participant[];
-  accommodation: Accommodation[];
-  gift: Gift[];
-  waste: Waste[];
+  scope1Activities: Scope1ActivityForm[];
+  scope2Entries: Scope2EntryForm[];
+  scope3Attendee: Scope3AttendeeForm[];
+  scope3Overnight: Scope3OvernightForm[];
+  scope3Souvenir: Scope3SouvenirForm[];
+  scope3Waste: Scope3WasteForm[];
   errors: FieldErrors<ProjectFormValues>;
-  projectCode: string;
-  projectName: string;
-  fullName: string;
-  telText: string;
+  customId: string;
+  title: string;
+  ownerFullName: string;
+  phoneNumberText: string;
   greyColor: string;
   disableColor: string;
   redColor: string;
   watch: UseFormWatch<ProjectFormValues>;
   setValue: UseFormSetValue<ProjectFormValues>;
-  removeActivity: (index: number) => void;
-  appendActivity: (value: Activity) => void;
-  removeEnergy: (index: number) => void;
-  appendEnergy: (value: Energy) => void;
-  removeParticipant: (index: number) => void;
-  appendParticipant: (value: Participant) => void;
-  removeAccommodation: (index: number) => void;
-  appendAccommodation: (value: Accommodation) => void;
-  removeGift: (index: number) => void;
-  appendGift: (value: Gift) => void;
-  removeWaste: (index: number) => void;
-  appendWaste: (value: Waste) => void;
+  removeScope1Activity: (index: number) => void;
+  appendScope1Activity: (value: Scope1ActivityForm) => void;
+  removeScope2Entry: (index: number) => void;
+  appendScope2Entry: (value: Scope2EntryForm) => void;
+  removeScope3Attendee: (index: number) => void;
+  appendScope3Attendee: (value: Scope3AttendeeForm) => void;
+  removeScope3Overnight: (index: number) => void;
+  appendScope3Overnight: (value: Scope3OvernightForm) => void;
+  removeScope3Souvenir: (index: number) => void;
+  appendScope3Souvenir: (value: Scope3SouvenirForm) => void;
+  removeScope3Waste: (index: number) => void;
+  appendScope3Waste: (value: Scope3WasteForm) => void;
   handleBack: () => void;
   onSubmit: (data: ProjectFormValues, status: "draft" | "pending") => void;
   handleSubmit: UseFormHandleSubmit<ProjectFormValues, ProjectFormValues>;
@@ -80,34 +80,34 @@ type TProjectFormSecondStepProps = {
 export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const {
     step,
-    activities,
-    energies,
-    participant,
-    accommodation,
-    gift,
-    waste,
+    scope1Activities,
+    scope2Entries,
+    scope3Attendee,
+    scope3Overnight,
+    scope3Souvenir,
+    scope3Waste,
     errors,
-    projectCode,
-    projectName,
-    fullName,
-    telText,
+    customId,
+    title,
+    ownerFullName,
+    phoneNumberText,
     greyColor,
     disableColor,
     redColor,
     watch,
     setValue,
-    removeActivity,
-    appendActivity,
-    removeEnergy,
-    appendEnergy,
-    removeParticipant,
-    appendParticipant,
-    removeAccommodation,
-    appendAccommodation,
-    removeGift,
-    appendGift,
-    removeWaste,
-    appendWaste,
+    removeScope1Activity,
+    appendScope1Activity,
+    removeScope2Entry,
+    appendScope2Entry,
+    removeScope3Attendee,
+    appendScope3Attendee,
+    removeScope3Overnight,
+    appendScope3Overnight,
+    removeScope3Souvenir,
+    appendScope3Souvenir,
+    removeScope3Waste,
+    appendScope3Waste,
     handleBack,
     onSubmit,
     handleSubmit,
@@ -118,6 +118,11 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const { control } = useFormContext();
   const isOpenDialog = useBoolean();
   const [disabled, setDisabled] = useState(false);
+
+  const fieldErrorMessage = (error: unknown) =>
+    typeof error === "object" && error != null && "message" in error
+      ? (error as { message?: string }).message
+      : undefined;
 
   // --------------------------- Function ---------------------------
 
@@ -146,31 +151,30 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         สามารถประมาณได้จากบิลงบประมาณจบโครงการ
       </Typography>
       <Grid container spacing={2} alignItems="start">
-        {activities.map((field, index) => {
-          const activity_type = watch(`activities.${index}.activity_type`);
-          const amount = watch(`activities.${index}.amount`);
+        {scope1Activities.map((field, index) => {
+          const activityName = watch(`scope1_activities.${index}.name`);
+          const activityValue = watch(`scope1_activities.${index}.value`);
 
           return (
             <Fragment key={index}>
               <Grid size={{ xs: 7.5 }}>
                 <Field.CustomAutoComplete
-                  name={`activities.${index}.activity_type`}
+                  name={`scope1_activities.${index}.name`}
                   label="ประเภทกิจกรรม"
                   options={[
                     { value: "gas", label: "ก๊าซหุงต้ม" },
                     { value: "normal_food", label: "อาหารปกติ" },
                     { value: "vegan", label: "อาหารมังสวิรัติ" },
                   ]}
-                  helperText={
-                    errors.activities?.[index]?.activity_type?.message
-                  }
+                  helperText={errors.scope1_activities?.[index]?.name?.message}
                   onInputChange={(_, value) => {
-                    if (!value) return setValue(`activities.${index}.unit`, "");
+                    if (!value)
+                      return setValue(`scope1_activities.${index}.unit`, "");
 
                     if (value === "ก๊าซหุงต้ม") {
-                      setValue(`activities.${index}.unit`, "kg");
+                      setValue(`scope1_activities.${index}.unit`, "kg");
                     } else {
-                      setValue(`activities.${index}.unit`, "box");
+                      setValue(`scope1_activities.${index}.unit`, "box");
                     }
                   }}
                 />
@@ -178,29 +182,29 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
               <Grid size={{ xs: 2 }}>
                 <Field.Text
                   type="number"
-                  name={`activities.${index}.amount`}
+                  name={`scope1_activities.${index}.value`}
                   label="ปริมาณพลังงานที่ใช้"
                   slotProps={{ htmlInput: { min: 0 } }}
-                  disabled={!activity_type}
+                  disabled={!activityName}
                 />
               </Grid>
               <Grid size={{ xs: 2 }}>
                 <Field.CustomAutoComplete
-                  name={`activities.${index}.unit`}
+                  name={`scope1_activities.${index}.unit`}
                   label="หน่วย"
                   options={[
                     { value: "box", label: "กล่อง" },
                     { value: "kg", label: "กิโลกรัม" },
                     { value: "g", label: "กรัม" },
                   ]}
-                  helperText={errors.activities?.[index]?.unit?.message}
-                  disabled={!amount}
+                  helperText={errors.scope1_activities?.[index]?.unit?.message}
+                  disabled={!activityValue}
                   creatable
                   readOnly
                 />
               </Grid>
               <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                <IconButton onClick={() => removeActivity(index)}>
+                <IconButton onClick={() => removeScope1Activity(index)}>
                   <SvgColor src="/assets/icons/ic-trash.svg" color={redColor} />
                 </IconButton>
               </Grid>
@@ -212,7 +216,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         variant="outlined"
         startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
         onClick={() =>
-          appendActivity({ activity_type: "", amount: undefined, unit: "" })
+          appendScope1Activity({ name: "", value: undefined, unit: "" })
         }
       >
         เพิ่มกิจกรรม
@@ -230,12 +234,12 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           สามารถประมาณได้จากบิลงบประมาณจบโครงการ
         </Typography>
       </Stack>
-      {energies.map((field, index) => {
-        const type = watch(`energies.${index}.type`);
-        const building = watch(`energies.${index}.building`);
-        const equipment = watch(`energies.${index}.equipment`);
-        const quantity = watch(`energies.${index}.quantity`);
-        const room = watch(`energies.${index}.room`);
+      {scope2Entries.map((field, index) => {
+        const kind = watch(`scope2_entries.${index}.kind`);
+        const building = watch(`scope2_entries.${index}.name`);
+        const facilities = watch(`scope2_entries.${index}.facilities`);
+        const energyValue = watch(`scope2_entries.${index}.value`);
+        const room = watch(`scope2_entries.${index}.room`);
 
         return (
           <Fragment key={index}>
@@ -244,19 +248,19 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 การใช้พลังงาน
               </Typography>
               <Field.GroupRadio
-                name={`energies.${index}.type`}
+                name={`scope2_entries.${index}.kind`}
                 options={[
                   { value: "building", label: "การใช้งานอาคาร." },
-                  { value: "electric", label: "การใช้เครื่องปั่นไฟ" },
+                  { value: "generator", label: "การใช้เครื่องปั่นไฟ" },
                 ]}
               />
             </Stack>
             <Grid container spacing={2} alignItems="start">
-              {type === "electric" ? (
+              {kind === "generator" ? (
                 <>
                   <Grid size={{ xs: 2 }}>
                     <Field.MultipleAutoComplete
-                      name={`energies.${index}.equipment`}
+                      name={`scope2_entries.${index}.facilities`}
                       label="อุปกรณ์ที่ใช้"
                       options={equipmentOptions}
                       value={[
@@ -271,23 +275,23 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                   <Grid size={{ xs: 7.5 }}>
                     <Field.Text
                       type="number"
-                      name={`energies.${index}.quantity`}
+                      name={`scope2_entries.${index}.value`}
                       label="ปริมาณพลังงานที่ใช้"
                       slotProps={{ htmlInput: { min: 0 } }}
-                      disabled={!equipment}
+                      disabled={!facilities}
                     />
                   </Grid>
                   <Grid size={{ xs: 2 }}>
                     <Field.CustomAutoComplete
-                      name={`energies.${index}.unit`}
+                      name={`scope2_entries.${index}.unit`}
                       label="หน่วย"
                       options={energyUnitOptions}
-                      helperText={errors.energies?.[index]?.unit?.message}
-                      disabled={!quantity}
+                      helperText={errors.scope2_entries?.[index]?.unit?.message}
+                      disabled={!energyValue}
                     />
                   </Grid>
                   <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                    <IconButton onClick={() => removeEnergy(index)}>
+                    <IconButton onClick={() => removeScope2Entry(index)}>
                       <SvgColor
                         src="/assets/icons/ic-trash.svg"
                         color={redColor}
@@ -299,16 +303,16 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <>
                   <Grid size={{ xs: 2.3 }}>
                     <Field.CustomAutoComplete
-                      name={`energies.${index}.building`}
+                      name={`scope2_entries.${index}.name`}
                       label="อาคารที่ใช้"
                       options={buildingOptions}
-                      helperText={errors.energies?.[index]?.building?.message}
+                      helperText={errors.scope2_entries?.[index]?.name?.message}
                       creatable
                     />
                   </Grid>
                   <Grid size={{ xs: 2.3 }}>
                     <Field.CustomAutoComplete
-                      name={`energies.${index}.room`}
+                      name={`scope2_entries.${index}.room`}
                       label="ห้องที่ใช้"
                       options={roomOptions[building as TRoom] ?? []}
                       disabled={!building}
@@ -317,27 +321,35 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                   </Grid>
                   <Grid size={{ xs: 2.3 }}>
                     <Field.MultipleAutoComplete
-                      name={`energies.${index}.equipment`}
+                      name={`scope2_entries.${index}.facilities`}
                       label="อุปกรณ์ที่ใช้"
                       options={equipmentOptions}
-                      helperText={errors.energies?.[index]?.equipment?.message}
+                      helperText={
+                        errors.scope2_entries?.[index]?.facilities?.message
+                      }
                       disabled={!room}
                     />
                   </Grid>
                   <Grid size={{ xs: 2.3 }}>
                     <RHFDateTimePicker
-                      name={`energies.${index}.startDate`}
+                      name={`scope2_entries.${index}.start_time`}
                       label="วันและเวลาเริ่มใช้"
+                      helperText={
+                        errors.scope2_entries?.[index]?.start_time?.message
+                      }
                     />
                   </Grid>
                   <Grid size={{ xs: 2.3 }}>
                     <RHFDateTimePicker
-                      name={`energies.${index}.endDate`}
+                      name={`scope2_entries.${index}.end_time`}
                       label="วันและเวลาหยุดใช้"
+                      helperText={
+                        errors.scope2_entries?.[index]?.end_time?.message
+                      }
                     />
                   </Grid>
                   <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                    <IconButton onClick={() => removeEnergy(index)}>
+                    <IconButton onClick={() => removeScope2Entry(index)}>
                       <SvgColor
                         src="/assets/icons/ic-trash.svg"
                         color={redColor}
@@ -354,14 +366,14 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         variant="outlined"
         startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
         onClick={() =>
-          appendEnergy({
-            type: "building",
-            building: "",
+          appendScope2Entry({
+            kind: "building",
+            name: "",
             room: "",
-            equipment: [],
-            startDate: undefined,
-            endDate: undefined,
-            quantity: undefined,
+            facilities: [],
+            start_time: undefined,
+            end_time: undefined,
+            value: undefined,
             unit: "",
           })
         }
@@ -406,42 +418,42 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           </Typography>
         </Typography>
         <Grid container spacing={2} alignItems="start">
-          {participant.map((field, index) => {
-            const date = watch(`participant.${index}.date`);
+          {scope3Attendee.map((field, index) => {
+            const date = watch(`scope3_attendee.${index}.date`);
 
             return (
               <Fragment key={index}>
                 <Grid size={{ xs: 3 }}>
                   <RHFDateTimePicker
                     mode="date"
-                    name={`participant.${index}.date`}
+                    name={`scope3_attendee.${index}.date`}
                     label="เลือกวันที่"
-                    helperText={errors.participant?.[index]?.date?.message}
+                    helperText={errors.scope3_attendee?.[index]?.date?.message}
                     required
                   />
                 </Grid>
                 <Grid size={{ xs: 8.5 }}>
                   <Field.Text
                     type="number"
-                    name={`participant.${index}.participant_amount`}
+                    name={`scope3_attendee.${index}.value`}
                     label="จำนวนคน"
                     slotProps={{ htmlInput: { min: 0 } }}
-                    error={!!errors.participant?.[index]?.participant_amount}
-                    helperText={
-                      errors.participant?.[index]?.participant_amount?.message
-                    }
+                    error={!!errors.scope3_attendee?.[index]?.value}
+                    helperText={errors.scope3_attendee?.[index]?.value?.message}
                     disabled={!date}
                     required
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
                   <IconButton
-                    onClick={() => removeParticipant(index)}
-                    disabled={participant.length === 1}
+                    onClick={() => removeScope3Attendee(index)}
+                    disabled={scope3Attendee.length === 1}
                   >
                     <SvgColor
                       src="/assets/icons/ic-trash.svg"
-                      color={participant.length === 1 ? disableColor : redColor}
+                      color={
+                        scope3Attendee.length === 1 ? disableColor : redColor
+                      }
                     />
                   </IconButton>
                 </Grid>
@@ -453,9 +465,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           variant="outlined"
           startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
           onClick={() =>
-            appendParticipant({
+            appendScope3Attendee({
               date: undefined,
-              participant_amount: undefined,
+              value: undefined,
             })
           }
         >
@@ -467,30 +479,32 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           การพักแรมของผู้เข้าร่วมและ staff ตลอดทั้งโครงการ
         </Typography>
         <Grid container spacing={2} alignItems="start">
-          {accommodation.map((field, index) => {
-            const date = watch(`accommodation.${index}.date`);
+          {scope3Overnight?.map((field, index) => {
+            const date = watch(`scope3_overnight.${index}.date`);
 
             return (
               <Fragment key={index}>
                 <Grid size={{ xs: 3 }}>
                   <RHFDateTimePicker
                     mode="date"
-                    name={`accommodation.${index}.date`}
+                    name={`scope3_overnight.${index}.date`}
                     label="เลือกวันที่พักแรม"
-                    helperText={errors.accommodation?.[index]?.date?.message}
+                    helperText={
+                      errors.scope3_overnight?.[index]?.date?.message
+                    }
                   />
                 </Grid>
                 <Grid size={{ xs: 8.5 }}>
                   <Field.Text
                     type="number"
-                    name={`accommodation.${index}.participant_amount`}
+                    name={`scope3_overnight.${index}.value`}
                     label="จำนวนคน"
                     slotProps={{ htmlInput: { min: 0 } }}
                     disabled={!date}
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                  <IconButton onClick={() => removeAccommodation(index)}>
+                  <IconButton onClick={() => removeScope3Overnight(index)}>
                     <SvgColor
                       src="/assets/icons/ic-trash.svg"
                       color={redColor}
@@ -505,9 +519,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           variant="outlined"
           startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
           onClick={() =>
-            appendAccommodation({
+            appendScope3Overnight({
               date: undefined,
-              participant_amount: undefined,
+              value: undefined,
             })
           }
         >
@@ -519,23 +533,25 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           ของแจกผู้เข้าร่วมและ staff
         </Typography>
         <Grid container spacing={2} alignItems="start">
-          {gift.map((field, index) => {
-            const gift_type = watch(`gift.${index}.gift_type`);
-            const amount = watch(`gift.${index}.amount`);
+          {scope3Souvenir?.map((field, index) => {
+            const souvenirType = watch(`scope3_souvenir.${index}.type`);
+            const amount = watch(`scope3_souvenir.${index}.value`);
 
             return (
               <Fragment key={index}>
                 <Grid size={{ xs: 7.5 }}>
                   <Field.CustomAutoComplete
-                    name={`gift.${index}.gift_type`}
+                    name={`scope3_souvenir.${index}.type`}
                     label="เลือกประเภทของแจก"
                     options={giftUnitOptions}
-                    helperText={errors.gift?.[index]?.gift_type?.message}
+                    helperText={fieldErrorMessage(
+                      errors.scope3_souvenir?.[index]?.type,
+                    )}
                     onInputChange={(_, value) => {
                       if (value) {
-                        setValue(`gift.${index}.unit`, "kg");
+                        setValue(`scope3_souvenir.${index}.unit`, "kg");
                       } else {
-                        setValue(`gift.${index}.unit`, "");
+                        setValue(`scope3_souvenir.${index}.unit`, "");
                       }
                     }}
                     creatable
@@ -544,24 +560,26 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <Grid size={{ xs: 2 }}>
                   <Field.Text
                     type="number"
-                    name={`gift.${index}.amount`}
+                    name={`scope3_souvenir.${index}.value`}
                     label="ปริมาณของแจก"
                     slotProps={{ htmlInput: { min: 0 } }}
-                    disabled={!gift_type}
+                    disabled={!souvenirType}
                   />
                 </Grid>
                 <Grid size={{ xs: 2 }}>
                   <Field.CustomAutoComplete
-                    name={`gift.${index}.unit`}
+                    name={`scope3_souvenir.${index}.unit`}
                     label="หน่วย"
                     options={[{ value: "kg", label: "กิโลกรัม" }]}
-                    helperText={errors.gift?.[index]?.unit?.message}
+                    helperText={fieldErrorMessage(
+                      errors.scope3_souvenir?.[index]?.unit,
+                    )}
                     disabled={!amount}
                     readOnly
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                  <IconButton onClick={() => removeGift(index)}>
+                  <IconButton onClick={() => removeScope3Souvenir(index)}>
                     <SvgColor
                       src="/assets/icons/ic-trash.svg"
                       color={redColor}
@@ -576,7 +594,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           variant="outlined"
           startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
           onClick={() =>
-            appendGift({ gift_type: "", amount: undefined, unit: "" })
+            appendScope3Souvenir({ type: "", value: undefined, unit: "" })
           }
         >
           เพิ่มของแจก
@@ -587,23 +605,25 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           ของเสียหลังการจัดงาน
         </Typography>
         <Grid container spacing={2} alignItems="start">
-          {waste.map((field, index) => {
-            const waste_type = watch(`waste.${index}.waste_type`);
-            const amount = watch(`waste.${index}.amount`);
+          {scope3Waste?.map((field, index) => {
+            const wasteType = watch(`scope3_waste.${index}.type`);
+            const amount = watch(`scope3_waste.${index}.value`);
 
             return (
               <Fragment key={index}>
                 <Grid size={{ xs: 7.5 }}>
                   <Field.CustomAutoComplete
-                    name={`waste.${index}.waste_type`}
+                    name={`scope3_waste.${index}.type`}
                     label="เลือกประเภทของเสีย"
                     options={wasteOptions}
-                    helperText={errors.waste?.[index]?.waste_type?.message}
+                    helperText={fieldErrorMessage(
+                      errors.scope3_waste?.[index]?.type,
+                    )}
                     onInputChange={(_, value) => {
                       if (value) {
-                        setValue(`waste.${index}.unit`, "kg");
+                        setValue(`scope3_waste.${index}.unit`, "kg");
                       } else {
-                        setValue(`waste.${index}.unit`, "");
+                        setValue(`scope3_waste.${index}.unit`, "");
                       }
                     }}
                     creatable
@@ -612,24 +632,26 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <Grid size={{ xs: 2 }}>
                   <Field.Text
                     type="number"
-                    name={`waste.${index}.amount`}
+                    name={`scope3_waste.${index}.value`}
                     label="ปริมาณของเสีย"
                     slotProps={{ htmlInput: { min: 0 } }}
-                    disabled={!waste_type}
+                    disabled={!wasteType}
                   />
                 </Grid>
                 <Grid size={{ xs: 2 }}>
                   <Field.CustomAutoComplete
-                    name={`waste.${index}.unit`}
+                    name={`scope3_waste.${index}.unit`}
                     label="หน่วย"
                     options={[{ value: "kg", label: "กิโลกรัม" }]}
-                    helperText={errors.waste?.[index]?.unit?.message}
+                    helperText={fieldErrorMessage(
+                      errors.scope3_waste?.[index]?.unit,
+                    )}
                     disabled={!amount}
                     readOnly
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                  <IconButton onClick={() => removeWaste(index)}>
+                  <IconButton onClick={() => removeScope3Waste(index)}>
                     <SvgColor
                       src="/assets/icons/ic-trash.svg"
                       color={redColor}
@@ -644,7 +666,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           variant="outlined"
           startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
           onClick={() =>
-            appendWaste({ waste_type: "", amount: undefined, unit: "" })
+            appendScope3Waste({ type: "", value: undefined, unit: "" })
           }
         >
           เพิ่มของเสีย
@@ -658,11 +680,11 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
       {step === 2 && (
         <>
           <Stack sx={{ padding: "16px 24px" }}>
-            <Typography variant="h4">{`[${projectCode}] ${projectName}`}</Typography>
+            <Typography variant="h4">{`[${customId}] ${title}`}</Typography>
             <Typography
               variant="body2"
               color="text.secondary"
-            >{`ผู้กรอก: ${fullName} (${telText})`}</Typography>
+            >{`ผู้กรอก: ${ownerFullName} (${phoneNumberText})`}</Typography>
           </Stack>
 
           <Stack sx={{ padding: 3, gap: 4, marginBottom: 10 }}>

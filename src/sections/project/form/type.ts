@@ -1,70 +1,74 @@
-type Activity = {
-  activity_type?: string;
-  amount?: number;
+type Scope1ActivityForm = {
+  name?: string;
+  value?: number;
   unit?: string;
 };
 
-type Energy = {
-  type?: string;
+type Scope2EntryForm = {
+  kind?: "building" | "generator";
 
-  building?: string;
+  name?: string;
   room?: string;
-  equipment?: Array<string>;
-  startDate?: string;
-  endDate?: string;
+  facilities?: Array<string>;
+  start_time?: string;
+  end_time?: string;
 
-  quantity?: number;
+  value?: number;
   unit?: string;
 };
 
-type Participant = {
+type Scope3AttendeeForm = {
   date: string | undefined;
-  participant_amount: number | undefined;
-};
-type Accommodation = {
-  date?: string | undefined;
-  participant_amount?: number | undefined;
+  value: number | undefined;
 };
 
-type Gift = {
-  gift_type?: string;
-  amount?: number;
+type Scope3OvernightForm = {
+  date?: string | undefined;
+  value?: number | undefined;
+};
+
+type Scope3SouvenirForm = {
+  type?: string;
+  value?: number;
   unit?: string;
 };
 
-type Waste = {
-  waste_type?: string;
-  amount?: number;
+type Scope3WasteForm = {
+  type?: string;
+  value?: number;
   unit?: string;
 };
 
 type ProjectFormValues = {
-  projectCode: string;
-  projectName: string;
-  underProject: string;
+  custom_id: string;
+  title: string;
+  org: string;
+  org_detail: string;
+  owner_fullname: string;
+  owner_nickname: string;
+  owner_student_id: string;
+  owner_major: string;
+  owner_phone_number: string;
+  transportations_csv_file?: File;
+  scope1_activities?: Array<Scope1ActivityForm>;
+  scope2_entries?: Array<Scope2EntryForm>;
+  scope3_attendee: Array<Scope3AttendeeForm>;
+  scope3_overnight?: Array<Scope3OvernightForm>;
+  scope3_souvenir?: Array<Scope3SouvenirForm>;
+  scope3_waste?: Array<Scope3WasteForm>;
+
+  // UI helper fields for org detail selection
   field?: string;
   clubName?: string;
   otherUnderProject?: string;
-  fullName: string;
-  nickname: string;
-  student_id: string;
-  transportations_csv_file?: File;
-  department: string;
-  tel: string;
-  activities?: Array<Activity>;
-  energies?: Array<Energy>;
-  participant: Array<Participant>;
-  accommodation?: Array<Accommodation>;
-  gift?: Array<Gift>;
-  waste?: Array<Waste>;
 };
 
 export type {
-  Accommodation,
-  Activity,
-  Energy,
-  Gift,
-  Participant,
   ProjectFormValues,
-  Waste,
+  Scope1ActivityForm,
+  Scope2EntryForm,
+  Scope3AttendeeForm,
+  Scope3OvernightForm,
+  Scope3SouvenirForm,
+  Scope3WasteForm,
 };

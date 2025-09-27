@@ -21,17 +21,23 @@ function ProjectCreateView() {
 
   // --------------------------- Form ---------------------------
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { fullName, nickname, department, student_id, tel, ...other } =
-    defaultValues;
+  const {
+    owner_fullname,
+    owner_nickname,
+    owner_major,
+    owner_student_id,
+    owner_phone_number,
+    ...other
+  } = defaultValues;
 
   const initialValues: ProjectFormValues = {
     ...other,
-    fullName: owner.data?.owner.fullname ?? "",
-    nickname: owner.data?.owner.nickname ?? "",
-    department: owner.data?.owner.major ?? "",
-    student_id: owner.data?.owner.student_id ?? "",
-    tel: owner.data?.owner.phone_number ?? "",
+    owner_fullname: owner.data?.owner.fullname ?? owner_fullname,
+    owner_nickname: owner.data?.owner.nickname ?? owner_nickname,
+    owner_major: owner.data?.owner.major ?? owner_major,
+    owner_student_id: owner.data?.owner.student_id ?? owner_student_id,
+    owner_phone_number:
+      owner.data?.owner.phone_number ?? owner_phone_number,
   };
 
   // --------------------------- Render ---------------------------

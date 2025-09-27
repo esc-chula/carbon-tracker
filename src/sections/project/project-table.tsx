@@ -140,12 +140,24 @@ export default function ProjectTable({
                 <StyledTableCell>{row.updated_by}</StyledTableCell>
                 <StyledTableCell align="center">
                   <ProjectPopoverMenu>
-                    <MenuItem onClick={() => handleExport(row.id)}>
+                    <MenuItem
+                      onClick={() => handleExport(row.id)}
+                      disabled={row.status !== "approved"}
+                    >
                       <Stack spacing={1.5} direction="row" alignItems="center">
                         <SvgColor src="/assets/icons/ic-document.svg" />
 
                         <Typography variant="subtitle2" fontWeight={500}>
                           พิมพ์ใบรับรอง
+                        </Typography>
+                      </Stack>
+                    </MenuItem>
+                    <MenuItem onClick={() => handleExport(row.id)}>
+                      <Stack spacing={1.5} direction="row" alignItems="center">
+                        <SvgColor src="/assets/icons/ic-eye.svg" />
+
+                        <Typography variant="subtitle2" fontWeight={500}>
+                          ดูข้อมูลคาร์บอน
                         </Typography>
                       </Stack>
                     </MenuItem>
