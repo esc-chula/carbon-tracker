@@ -42,9 +42,17 @@ export default function RHFMultipleAutoComplete<T extends TOption>({
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   useEffect(() => {
-    if (other.value) setValue(name, ["เครื่องปั่นไฟ"]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (Array.isArray(other.value)) {
+      setValue(
+        name,
+        other.value.map((option) =>
+          typeof option === "object" && option != null && "value" in option
+            ? option.value
+            : option,
+        ),
+      );
+    }
+  }, [name, other.value, setValue]);
 
   return (
     <Controller

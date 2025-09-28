@@ -1,5 +1,7 @@
-function ProjectView() {
-  return <>123</>;
+import ProjectView from "@/sections/project/view/project-view";
+
+function ProjectPage() {
+  return <ProjectView />;
 }
 
-export default ProjectView;
+export default ProjectPage;

@@ -237,7 +237,12 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
       {scope2Entries.map((field, index) => {
         const kind = watch(`scope2_entries.${index}.kind`);
         const building = watch(`scope2_entries.${index}.name`);
-        const facilities = watch(`scope2_entries.${index}.facilities`);
+        // const buildingFacilities = watch(
+        //   `scope2_entries.${index}.building_facilities`,
+        // );
+        const generatorFacilities = watch(
+          `scope2_entries.${index}.generator_facilities`,
+        );
         const energyValue = watch(`scope2_entries.${index}.value`);
         const room = watch(`scope2_entries.${index}.room`);
 
@@ -260,9 +265,13 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <>
                   <Grid size={{ xs: 2 }}>
                     <Field.MultipleAutoComplete
-                      name={`scope2_entries.${index}.facilities`}
+                      name={`scope2_entries.${index}.generator_facilities`}
                       label="อุปกรณ์ที่ใช้"
                       options={equipmentOptions}
+                      helperText={
+                        errors.scope2_entries?.[index]?.generator_facilities
+                          ?.message
+                      }
                       value={[
                         {
                           value: "เครื่องปั่นไฟฟ้า",
@@ -278,7 +287,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                       name={`scope2_entries.${index}.value`}
                       label="ปริมาณพลังงานที่ใช้"
                       slotProps={{ htmlInput: { min: 0 } }}
-                      disabled={!facilities}
+                      disabled={!generatorFacilities?.length}
                     />
                   </Grid>
                   <Grid size={{ xs: 2 }}>
@@ -321,11 +330,12 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                   </Grid>
                   <Grid size={{ xs: 2.3 }}>
                     <Field.MultipleAutoComplete
-                      name={`scope2_entries.${index}.facilities`}
+                      name={`scope2_entries.${index}.building_facilities`}
                       label="อุปกรณ์ที่ใช้"
                       options={equipmentOptions}
                       helperText={
-                        errors.scope2_entries?.[index]?.facilities?.message
+                        errors.scope2_entries?.[index]?.building_facilities
+                          ?.message
                       }
                       disabled={!room}
                     />
@@ -370,7 +380,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             kind: "building",
             name: "",
             room: "",
-            facilities: [],
+            building_facilities: [],
+            generator_facilities: [],
             start_time: undefined,
             end_time: undefined,
             value: undefined,
@@ -489,9 +500,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     mode="date"
                     name={`scope3_overnight.${index}.date`}
                     label="เลือกวันที่พักแรม"
-                    helperText={
-                      errors.scope3_overnight?.[index]?.date?.message
-                    }
+                    helperText={errors.scope3_overnight?.[index]?.date?.message}
                   />
                 </Grid>
                 <Grid size={{ xs: 8.5 }}>

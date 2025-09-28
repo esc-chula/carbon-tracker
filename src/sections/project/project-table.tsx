@@ -18,6 +18,7 @@ import buddhistEra from "dayjs/plugin/buddhistEra";
 import { type ChangeEvent, type Dispatch, type SetStateAction } from "react";
 import ProjectPopoverMenu from "./project-popover-menu";
 import { showError, showSuccess } from "@/components/toast/toast";
+import { useRouter } from "next/navigation";
 
 dayjs.extend(buddhistEra);
 
@@ -51,6 +52,10 @@ export default function ProjectTable({
   setPage,
   setRowsPerPage,
 }: TProjectTableProps) {
+  // --------------------------- Hook ---------------------------
+
+  const router = useRouter();
+
   // --------------------------- API ---------------------------
 
   const generateCertificate = useMutation({
@@ -152,7 +157,7 @@ export default function ProjectTable({
                         </Typography>
                       </Stack>
                     </MenuItem>
-                    <MenuItem onClick={() => handleExport(row.id)}>
+                    <MenuItem onClick={() => router.push(`/project/${row.id}`)}>
                       <Stack spacing={1.5} direction="row" alignItems="center">
                         <SvgColor src="/assets/icons/ic-eye.svg" />
 

@@ -1,14 +1,36 @@
 import type { CarbonDetail } from "@/types/project/project";
-import type { ProjectFormValues } from "../form/type";
 import type { TCreateProjectRequest } from "@/types/project/create-project";
+import type { ProjectFormValues } from "../form/type";
+
+const toNullableArray = <T>(values: T[] | undefined) =>
+  values && values.length > 0 ? values : null;
 
 function CreateProjectFormatter(
   data: ProjectFormValues,
   status: "draft" | "pending",
 ): TCreateProjectRequest {
+  const scope2Entries = data.scope2_entries ?? [];
+
+  const scope2Buildings = scope2Entries
+    .filter((item) => item.kind === "building")
+    .map((item) => ({
+      name: item.name?.trim() ?? "",
+      room: item.room?.trim() ?? "",
+      start_time: item.start_time?.trim() ?? "",
+      end_time: item.end_time?.trim() ?? "",
+      facilities: toNullableArray(item.building_facilities),
+    }));
+
+  const scope2Generators = scope2Entries
+    .filter((item) => item.kind === "generator")
+    .map((item) => ({
+      facilities: toNullableArray(item.generator_facilities),
+      unit: item.unit?.trim() ?? "",
+      value: item.value ?? 0,
+    }));
+
   const resolveOrgDetail = () => {
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    const org = data.org as "กวศ." | "ชมรม" | "other" | string;
+    const org = data.org;
 
     switch (org) {
       case "กวศ.":
@@ -19,7 +41,6 @@ function CreateProjectFormatter(
       case "อื่นๆ":
         return data.otherUnderProject?.trim() ?? "";
       default:
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return data.org_detail?.trim() ?? "";
     }
   };
@@ -34,24 +55,8 @@ function CreateProjectFormatter(
         })) ?? null,
     },
     scope2: {
-      buildings:
-        data.scope2_entries
-          ?.filter((item) => item.kind === "building")
-          .map((item) => ({
-            name: item.name ?? "",
-            room: item.room ?? "",
-            start_time: item.start_time ?? "",
-            end_time: item.end_time ?? "",
-            facilities: item.facilities ?? null,
-          })) ?? null,
-      generators:
-        data.scope2_entries
-          ?.filter((item) => item.kind === "generator")
-          .map((item) => ({
-            facilities: item.facilities ?? null,
-            unit: item.unit ?? "",
-            value: item.value ?? 0,
-          })) ?? null,
+      buildings: scope2Buildings.length ? scope2Buildings : null,
+      generators: scope2Generators.length ? scope2Generators : null,
     },
     scope3: {
       attendee:

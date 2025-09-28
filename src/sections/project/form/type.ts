@@ -9,7 +9,8 @@ type Scope2EntryForm = {
 
   name?: string;
   room?: string;
-  facilities?: Array<string>;
+  building_facilities?: Array<string>;
+  generator_facilities?: Array<string>;
   start_time?: string;
   end_time?: string;
 

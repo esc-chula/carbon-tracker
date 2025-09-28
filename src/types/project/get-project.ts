@@ -1,7 +1,5 @@
-import type {
-  CarbonDetail,
-  Scope3Transportation,
-} from "./project";
+import type { TOwner } from "../user/get-owner";
+import type { CarbonDetail, Scope3Transportation } from "./project";
 
 export type TGetProjectRequest = {
   id: string;
@@ -35,6 +33,7 @@ export type TGetProjectResponse = {
     org: string;
     org_detail: string;
     owner_id: string;
+    owner?: TOwner;
     status: string;
     title: string;
     custom_id: string;

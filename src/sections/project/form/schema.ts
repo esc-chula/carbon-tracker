@@ -44,7 +44,8 @@ const Scope2EntrySchema = z
     kind: z.enum(["building", "generator"]),
     name: z.string().optional(),
     room: z.string().optional(),
-    facilities: z.array(z.string()).min(1, "กรุณาเลือกอุปกรณ์ที่ใช้"),
+    building_facilities: z.array(z.string()).optional(),
+    generator_facilities: z.array(z.string()).optional(),
     start_time: z.string().optional(),
     end_time: z.string().optional(),
     value: z.preprocess(
@@ -83,6 +84,14 @@ const Scope2EntrySchema = z
           message: "กรุณาเลือกวันและเวลาสิ้นสุด",
         });
       }
+
+      if (!data.building_facilities?.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["building_facilities"],
+          message: "กรุณาเลือกอุปกรณ์ที่ใช้",
+        });
+      }
     }
 
     if (data.kind === "generator") {
@@ -98,6 +107,14 @@ const Scope2EntrySchema = z
           code: z.ZodIssueCode.custom,
           path: ["unit"],
           message: "กรุณาเลือกหน่วย",
+        });
+      }
+
+      if (!data.generator_facilities?.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["generator_facilities"],
+          message: "กรุณาเลือกอุปกรณ์ที่ใช้",
         });
       }
     }
@@ -280,7 +297,8 @@ const defaultValues: ProjectFormValues = {
       kind: "building",
       name: "",
       room: "",
-      facilities: [],
+      building_facilities: [],
+      generator_facilities: [],
       start_time: undefined,
       end_time: undefined,
       value: undefined,

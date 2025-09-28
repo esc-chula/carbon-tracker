@@ -38,7 +38,6 @@ function ProjectForm({ step, setStep, initialValues }: TProjectFormProps) {
     control,
     watch,
     handleSubmit,
-    trigger,
     formState: { errors },
     getValues,
     setError,

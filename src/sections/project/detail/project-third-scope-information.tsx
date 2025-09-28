@@ -1,0 +1,142 @@
+import ContainerWithOutlined from "@/components/container/container-with-outlined";
+import {
+  TableCustom,
+  type DisplayColumn,
+} from "@/components/table/table-custom";
+import { transFormDate } from "@/helper/formatter/date-formatter";
+import type { TGetProjectResponse } from "@/types/project/get-project";
+import type {
+  Scope3Attendee,
+  Scope3Overnight,
+  Scope3Souvenir,
+  Scope3Waste,
+} from "@/types/project/project";
+import { Stack, Typography } from "@mui/material";
+
+type TProjectThirdScopeInformationProps = {
+  data: TGetProjectResponse["project"]["carbon_detail"]["scope3"] | undefined;
+};
+
+function ProjectThirdScopeInformation({
+  data,
+}: TProjectThirdScopeInformationProps) {
+  // --------------------------- Values ---------------------------
+
+  const attendeeColumns: DisplayColumn<Scope3Attendee>[] = [
+    { id: "date", label: "วันที่", width: 250 },
+    { id: "value", label: "จำนวนคน", width: 250 },
+  ];
+
+  const attendeeRows: Scope3Attendee[] =
+    data?.attendee?.map((attendee) => ({
+      date: transFormDate(attendee.date),
+      value: attendee.value,
+    })) ?? [];
+
+  const overnightColumns: DisplayColumn<Scope3Overnight>[] = [
+    { id: "date", label: "วันที่", width: 250 },
+    { id: "value", label: "จำนวนคน", width: 250 },
+  ];
+
+  const overnightRows: Scope3Overnight[] =
+    data?.overnight?.map((overnight) => ({
+      date: transFormDate(overnight.date),
+      value: overnight.value,
+    })) ?? [];
+
+  const souvenirColumns: DisplayColumn<Scope3Souvenir>[] = [
+    { id: "type", label: "ประเภทเอกสาร", width: 410 },
+    { id: "value", label: "ปริมาณ", width: 220 },
+    { id: "unit", label: "หน่วย", width: 250 },
+  ];
+
+  const souvenirRows: Scope3Souvenir[] =
+    data?.souvenir?.map((souvenir) => ({
+      type: souvenir.type,
+      unit: souvenir.unit === "kg" ? "กิโลกรัม" : souvenir.unit,
+      value: souvenir.value,
+    })) ?? [];
+
+  const wasteColumns: DisplayColumn<Scope3Waste>[] = [
+    { id: "type", label: "ประเภทของเสีย", width: 410 },
+    { id: "value", label: "ปริมาณ", width: 220 },
+    { id: "unit", label: "หน่วย", width: 250 },
+  ];
+
+  const wasteRows: Scope3Waste[] =
+    data?.waste?.map((waste) => ({
+      type: waste.type,
+      unit: waste.unit === "kg" ? "กิโลกรัม" : waste.unit,
+      value: waste.value,
+    })) ?? [];
+
+  return (
+    <ContainerWithOutlined>
+      <Stack>
+        <Typography variant="h5" fontSize={16}>
+          Scope 3 : อื่นๆ
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          การเดินทางของผู้เข้าร่วมและ staff
+        </Typography>
+      </Stack>
+
+      <ContainerWithOutlined borderRadius={2}>
+        <Typography variant="h5" fontSize={14}>
+          จำนวนผู้เข้าร่วมรวมกับ staff ตลอดทั้งโครงการ
+          <Typography component="span" color="#FF3333">
+            *
+          </Typography>
+        </Typography>
+
+        <TableCustom
+          rows={attendeeRows}
+          columns={attendeeColumns}
+          showIndex
+          indexHeader="รายการที่"
+        />
+      </ContainerWithOutlined>
+
+      <ContainerWithOutlined borderRadius={2}>
+        <Typography variant="h5" fontSize={14}>
+          การพักแรมของผู้เข้าร่วมและ staff ตลอดทั้งโครงการ
+        </Typography>
+
+        <TableCustom
+          rows={overnightRows}
+          columns={overnightColumns}
+          showIndex
+          indexHeader="รายการที่"
+        />
+      </ContainerWithOutlined>
+
+      <ContainerWithOutlined borderRadius={2}>
+        <Typography variant="h5" fontSize={14}>
+          ของแจกผู้เข้าร่วมและ staff
+        </Typography>
+
+        <TableCustom
+          rows={souvenirRows}
+          columns={souvenirColumns}
+          showIndex
+          indexHeader="รายการที่"
+        />
+      </ContainerWithOutlined>
+
+      <ContainerWithOutlined borderRadius={2}>
+        <Typography variant="h5" fontSize={14}>
+          ของเสียหลังการจัดงาน
+        </Typography>
+
+        <TableCustom
+          rows={wasteRows}
+          columns={wasteColumns}
+          showIndex
+          indexHeader="รายการที่"
+        />
+      </ContainerWithOutlined>
+    </ContainerWithOutlined>
+  );
+}
+
+export default ProjectThirdScopeInformation;
