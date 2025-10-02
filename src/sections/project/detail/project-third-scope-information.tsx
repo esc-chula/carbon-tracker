@@ -12,13 +12,24 @@ import type {
   Scope3Waste,
 } from "@/types/project/project";
 import { Stack, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 
 type TProjectThirdScopeInformationProps = {
   data: TGetProjectResponse["project"]["carbon_detail"]["scope3"] | undefined;
+  attendeeChildren?: ReactNode;
+  overnightChildren?: ReactNode;
+  souvenirChildren?: ReactNode;
+  wasteChildren?: ReactNode;
+  children?: ReactNode;
 };
 
 function ProjectThirdScopeInformation({
   data,
+  attendeeChildren,
+  overnightChildren,
+  souvenirChildren,
+  wasteChildren,
+  children,
 }: TProjectThirdScopeInformationProps) {
   // --------------------------- Values ---------------------------
 
@@ -95,6 +106,8 @@ function ProjectThirdScopeInformation({
           showIndex
           indexHeader="รายการที่"
         />
+
+        {attendeeChildren}
       </ContainerWithOutlined>
 
       <ContainerWithOutlined borderRadius={2}>
@@ -108,6 +121,8 @@ function ProjectThirdScopeInformation({
           showIndex
           indexHeader="รายการที่"
         />
+
+        {overnightChildren}
       </ContainerWithOutlined>
 
       <ContainerWithOutlined borderRadius={2}>
@@ -121,6 +136,8 @@ function ProjectThirdScopeInformation({
           showIndex
           indexHeader="รายการที่"
         />
+
+        {souvenirChildren}
       </ContainerWithOutlined>
 
       <ContainerWithOutlined borderRadius={2}>
@@ -134,7 +151,11 @@ function ProjectThirdScopeInformation({
           showIndex
           indexHeader="รายการที่"
         />
+
+        {wasteChildren}
       </ContainerWithOutlined>
+
+      {children}
     </ContainerWithOutlined>
   );
 }

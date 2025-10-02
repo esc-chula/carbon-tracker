@@ -1,4 +1,4 @@
-import ProjectSuccessView from "@/sections/project/view/project-success-view";
+import ProjectSuccessView from "@/sections/project/view/user/project-success-view";
 
 function SuccessPage() {
   return <ProjectSuccessView />;

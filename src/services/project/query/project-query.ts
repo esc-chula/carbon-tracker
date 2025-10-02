@@ -99,7 +99,6 @@ const projectsQueryKeys = {
     [...projectsQueryKeys.all(), { payload }] as const,
 
   listOptions: (payload: TListProjectsRequest) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     queryOptions({
       queryKey: [...projectsQueryKeys.list(payload)] as const,
       queryFn: () => fetchListProjects(payload),
@@ -109,7 +108,6 @@ const projectsQueryKeys = {
     [...projectsQueryKeys.all(), "calculate", { payload }] as const,
 
   calculateOptions: (payload: TGetCarbonEmissionRequest) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     queryOptions({
       queryKey: [...projectsQueryKeys.calculate(payload)] as const,
       queryFn: () => fetchGetCarbonEmission(payload),
@@ -119,7 +117,6 @@ const projectsQueryKeys = {
     [...projectsQueryKeys.all(), "project", { payload }] as const,
 
   projectOptions: (payload: TGetProjectRequest) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     queryOptions({
       queryKey: [...projectsQueryKeys.project(payload)] as const,
       queryFn: () => fetchGetProject(payload),
@@ -129,7 +126,6 @@ const projectsQueryKeys = {
     [...projectsQueryKeys.all(), "certificate", { payload }] as const,
 
   certificateOptions: (payload: TGetCertificateRequest) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     queryOptions({
       queryKey: [...projectsQueryKeys.certificate(payload)] as const,
       queryFn: () => fetchGetCertificate(payload),

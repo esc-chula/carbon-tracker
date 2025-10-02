@@ -28,6 +28,11 @@ const theme = createTheme({
       900: color.PRIMARY_900,
       contrastText: color.PRIMARY_CONTRAST,
     },
+    secondary: {
+      main: "#919EAB",
+
+      contrastText: color.TEXT_SECONDARY,
+    },
     action: {
       disabled: color.DISABLED,
     },
@@ -129,6 +134,7 @@ const theme = createTheme({
       main: color.ERROR_500,
       contrastText: color.TEXT_WHITE,
     },
+
     background: {
       lightBlue: "#e1e7f4",
       neutral: "#f4f6f8",

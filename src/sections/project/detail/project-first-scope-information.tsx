@@ -7,15 +7,18 @@ import type { TGetProjectResponse } from "@/types/project/get-project";
 import type { Scope1Activity } from "@/types/project/project";
 import { ActivityNameMapper, ActivityUnitMapper } from "../helper/value-mapper";
 import { Stack, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 
 // ---------------------------------------------------------------------------------
 
 type TProjectFirstScopeInformationProps = {
   data: TGetProjectResponse["project"]["carbon_detail"]["scope1"]["activities"];
+  children?: ReactNode;
 };
 
 function ProjectFirstScopeInformation({
   data,
+  children,
 }: TProjectFirstScopeInformationProps) {
   // --------------------------- Values ---------------------------
 
@@ -49,6 +52,8 @@ function ProjectFirstScopeInformation({
         showIndex
         indexHeader="รายการที่"
       />
+
+      {children}
     </ContainerWithOutlined>
   );
 }

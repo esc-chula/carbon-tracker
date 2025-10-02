@@ -1,4 +1,4 @@
-import ProjectView from "@/sections/project/view/project-view";
+import ProjectView from "@/sections/project/view/user/project-view";
 
 function ProjectPage() {
   return <ProjectView />;

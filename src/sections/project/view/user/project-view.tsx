@@ -4,12 +4,12 @@ import { projectsQueryKeys } from "@/services/project/query/project-query";
 import { Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import ProjectHeader from "../detail/project-header";
-import ProjectInformation from "../detail/project-information";
-import ProjectOwnerInformation from "../detail/project-owner-information";
-import ProjectFirstScopeInformation from "../detail/project-first-scope-information";
-import ProjectSecondScopeInformation from "../detail/project-second-scope-information";
-import ProjectThirdScopeInformation from "../detail/project-third-scope-information";
+import ProjectHeader from "../../detail/project-header";
+import ProjectInformation from "../../detail/project-information";
+import ProjectOwnerInformation from "../../detail/project-owner-information";
+import ProjectFirstScopeInformation from "../../detail/project-first-scope-information";
+import ProjectSecondScopeInformation from "../../detail/project-second-scope-information";
+import ProjectThirdScopeInformation from "../../detail/project-third-scope-information";
 
 type Params = {
   id: string;

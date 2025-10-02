@@ -2,6 +2,7 @@ import StatusChips from "@/components/StatusChips";
 import type { TGetProjectResponse } from "@/types/project/get-project";
 import type { TProjectStatus } from "@/types/project/list-project";
 import { Stack, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 
 // ---------------------------------------------------------------------------------
 
@@ -10,9 +11,10 @@ type TProjectHeaderProps = {
     TGetProjectResponse["project"],
     "custom_id" | "title" | "status" | "owner"
   >;
+  children?: ReactNode;
 };
 
-function ProjectHeader({ data }: TProjectHeaderProps) {
+function ProjectHeader({ data, children }: TProjectHeaderProps) {
   // --------------------------- Values ---------------------------
 
   const phoneNumberText =
@@ -39,6 +41,8 @@ function ProjectHeader({ data }: TProjectHeaderProps) {
       <Typography variant="body2" color="text.secondary">
         ผู้กรอก: {data?.owner?.fullname} ({phoneNumberText})
       </Typography>
+
+      {children}
     </Stack>
   );
 }

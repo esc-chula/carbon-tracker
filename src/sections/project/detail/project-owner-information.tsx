@@ -1,14 +1,16 @@
 import ContainerWithOutlined from "@/components/container/container-with-outlined";
 import type { TGetProjectResponse } from "@/types/project/get-project";
 import { Stack, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 
 // ---------------------------------------------------------------------------------
 
 type TProjectOwnerInformationProps = {
   data: TGetProjectResponse["project"]["owner"];
+  children?: ReactNode;
 };
 
-function ProjectOwnerInformation({ data }: TProjectOwnerInformationProps) {
+function ProjectOwnerInformation({ data, children }: TProjectOwnerInformationProps) {
   // --------------------------- Values ---------------------------
 
   const phoneNumberText =
@@ -94,6 +96,8 @@ function ProjectOwnerInformation({ data }: TProjectOwnerInformationProps) {
           {phoneNumberText}
         </Typography>
       </Stack>
+
+      {children}
     </ContainerWithOutlined>
   );
 }

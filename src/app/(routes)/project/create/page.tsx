@@ -1,4 +1,4 @@
-import ProjectCreateView from "@/sections/project/view/project-create-view";
+import ProjectCreateView from "@/sections/project/view/user/project-create-view";
 
 function CreateProjectPage() {
   return <ProjectCreateView />;

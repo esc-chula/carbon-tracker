@@ -6,6 +6,7 @@ import {
 import { transFormDateToThai } from "@/helper/formatter/date-formatter";
 import type { TGetProjectResponse } from "@/types/project/get-project";
 import { Box, Stack, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 import { FacilityMapper } from "../helper/value-mapper";
 
 // ---------------------------------------------------------------------------------
@@ -20,10 +21,12 @@ type Scope2Building = {
 
 type TProjectSecondScopeInformationProps = {
   data: TGetProjectResponse["project"]["carbon_detail"]["scope2"];
+  children?: ReactNode;
 };
 
 function ProjectSecondScopeInformation({
   data,
+  children,
 }: TProjectSecondScopeInformationProps) {
   // --------------------------- Values ---------------------------
 
@@ -81,6 +84,8 @@ function ProjectSecondScopeInformation({
           มีการใช้งานเครื่องปั่นไฟ พลังงาน {generatorUsage} หน่วย
         </Typography>
       </Stack>
+
+      {children}
     </ContainerWithOutlined>
   );
 }

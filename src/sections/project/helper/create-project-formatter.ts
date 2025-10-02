@@ -2,8 +2,7 @@ import type { CarbonDetail } from "@/types/project/project";
 import type { TCreateProjectRequest } from "@/types/project/create-project";
 import type { ProjectFormValues } from "../form/type";
 
-const toNullableArray = <T>(values: T[] | undefined) =>
-  values && values.length > 0 ? values : null;
+const toArray = <T>(values: T[] | undefined) => values?.length ? values : [];
 
 function CreateProjectFormatter(
   data: ProjectFormValues,
@@ -18,13 +17,13 @@ function CreateProjectFormatter(
       room: item.room?.trim() ?? "",
       start_time: item.start_time?.trim() ?? "",
       end_time: item.end_time?.trim() ?? "",
-      facilities: toNullableArray(item.building_facilities),
+      facilities: toArray(item.building_facilities),
     }));
 
   const scope2Generators = scope2Entries
     .filter((item) => item.kind === "generator")
     .map((item) => ({
-      facilities: toNullableArray(item.generator_facilities),
+      facilities: toArray(item.generator_facilities),
       unit: item.unit?.trim() ?? "",
       value: item.value ?? 0,
     }));
@@ -52,36 +51,36 @@ function CreateProjectFormatter(
           name: item?.name ?? "",
           value: item?.value ?? 0,
           unit: item?.unit ?? "",
-        })) ?? null,
+        })) ?? [],
     },
     scope2: {
-      buildings: scope2Buildings.length ? scope2Buildings : null,
-      generators: scope2Generators.length ? scope2Generators : null,
+      buildings: scope2Buildings,
+      generators: scope2Generators,
     },
     scope3: {
       attendee:
-        data.scope3_attendee.map((item) => ({
+        data.scope3_attendee?.map((item) => ({
           date: item.date ?? "",
           value: item.value ?? 0,
-        })) ?? null,
+        })) ?? [],
       overnight:
         data.scope3_overnight?.map((item) => ({
           date: item.date ?? "",
           value: item.value ?? 0,
-        })) ?? null,
+        })) ?? [],
       souvenir:
         data.scope3_souvenir?.map((item) => ({
           type: item.type ?? "",
           unit: item.unit ?? "",
           value: item.value ?? 0,
-        })) ?? null,
-      transportations: undefined,
+        })) ?? [],
+      transportations: [],
       waste:
         data.scope3_waste?.map((item) => ({
           type: item.type ?? "",
           unit: item.unit ?? "",
           value: item.value ?? 0,
-        })) ?? null,
+        })) ?? [],
     },
   };
 

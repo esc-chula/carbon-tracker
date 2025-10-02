@@ -18,7 +18,7 @@ const variantStyles: Record<
   { backgroundColor: string; color: string }
 > = {
   fixing: { backgroundColor: "#F5EDFF", color: "#53278C" },
-  pending: { backgroundColor: "#F9F0D5", color: "#876607" },
+  pending: { backgroundColor: "#D7EEFC", color: "#13608C" },
   approved: { backgroundColor: "#D8FBDE", color: "#0A5554" },
   rejected: { backgroundColor: "#FFEBEB", color: "#7A092E" },
   draft: { backgroundColor: "#E9EAEB", color: "#212B36" },

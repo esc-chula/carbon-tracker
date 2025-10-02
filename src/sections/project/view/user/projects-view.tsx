@@ -25,7 +25,7 @@ import type { SelectChangeEvent } from "@mui/material/Select";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import ProjectTable from "../project-table";
+import ProjectTable from "../../project-table";
 
 // ---------------------------------------------------------------------------------
 

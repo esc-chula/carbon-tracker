@@ -3,29 +3,64 @@
 import { Form } from "@/components/hook-form/form-provider";
 import type { ProjectFormValues } from "@/sections/project/form/type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Stack, useTheme } from "@mui/material";
+import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import { type Dispatch, type SetStateAction, useEffect } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import {
+  useFieldArray,
+  useForm,
+  type UseFormHandleSubmit,
+} from "react-hook-form";
 import { ProjectFormSchema, ProjectFormStepOneSchema } from "./form/schema";
 
-import { useCreateProjectMutation } from "@/services/project/mutation";
-import CreateProjectFormatter from "./helper/create-project-formatter";
 import { ProjectFormFirstStep } from "./project-form-first-step";
 import { ProjectFormSecondStep } from "./project-form-second-step";
-import { useRouter } from "next/navigation";
-import { showError } from "@/components/toast/toast";
+import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
+import { useBoolean } from "@/hooks/use-boolean";
 
 // ---------------------------------------------------------------------------------
+
+type ProjectFormSubmitStatus = "draft" | "pending";
+
+type ProjectFormSubmitHandler = (
+  data: ProjectFormValues,
+  status: ProjectFormSubmitStatus,
+) => Promise<void> | void;
+
+type ProjectFormConfirmHandlerArgs = {
+  handleSubmit: UseFormHandleSubmit<ProjectFormValues>;
+  submit: ProjectFormSubmitHandler;
+  closeDialog: () => void;
+};
+
+type ProjectFormConfirmHandler = (
+  args: ProjectFormConfirmHandlerArgs,
+) => Promise<void> | void;
 
 type TProjectFormProps = {
   step: number;
   setStep: Dispatch<SetStateAction<number>>;
   initialValues: ProjectFormValues;
+  onSubmit: ProjectFormSubmitHandler;
+  onConfirmClick: ProjectFormConfirmHandler;
+  confirmDisabled?: boolean;
+  isEdit?: boolean;
 };
 
-function ProjectForm({ step, setStep, initialValues }: TProjectFormProps) {
+function ProjectForm({
+  step,
+  setStep,
+  initialValues,
+  onSubmit,
+  onConfirmClick,
+  confirmDisabled = false,
+  isEdit = false,
+}: TProjectFormProps) {
   const theme = useTheme();
-  const router = useRouter();
+
+  // --------------------------- Hook ---------------------------
+
+  const openDialog = useBoolean();
+  const { onFalse: closeDialog } = openDialog;
 
   // --------------------------- Form ---------------------------
 
@@ -156,10 +191,6 @@ function ProjectForm({ step, setStep, initialValues }: TProjectFormProps) {
     clearErrors(["field", "clubName", "otherUnderProject"]);
   }, [org, clearErrors, setValue]);
 
-  // --------------------------- API ---------------------------
-
-  const createProject = useCreateProjectMutation();
-
   // --------------------------- Function ---------------------------
 
   const handleNext = async () => {
@@ -221,22 +252,14 @@ function ProjectForm({ step, setStep, initialValues }: TProjectFormProps) {
     setStep((prev) => prev - 1);
   };
 
-  const onSubmit = async (
-    data: ProjectFormValues,
-    status: "draft" | "pending",
-  ) => {
-    const formattedData = CreateProjectFormatter(data, status);
+  const handleConfirmClick = () => {
+    const result = onConfirmClick({
+      handleSubmit,
+      submit: onSubmit,
+      closeDialog,
+    });
 
-    try {
-      const response = await createProject.mutateAsync(formattedData);
-
-      if (status === "pending")
-        return router.push(`/project/create/${response.project_id}/success`);
-
-      if (status === "draft") return router.push("/");
-    } catch (error) {
-      showError("ส่งแบบฟอร์มไม่สำเร็จ");
-    }
+    void result;
   };
 
   // --------------------------- Render ---------------------------
@@ -289,11 +312,45 @@ function ProjectForm({ step, setStep, initialValues }: TProjectFormProps) {
           appendScope3Waste={appendScope3Waste}
           handleBack={handleBack}
           onSubmit={onSubmit}
+          openDialog={openDialog}
           handleSubmit={handleSubmit}
+          confirmDisabled={confirmDisabled}
         />
       </Stack>
+
+      <ConfirmDialog
+        open={openDialog.value}
+        title={<Box component="img" src="/assets/icons/ic-upload-form.svg" />}
+        content={
+          <Stack spacing={1}>
+            <Typography variant="h3">คุณต้องการส่งแบบฟอร์มหรือไม่</Typography>
+            <Typography variant="h5" fontWeight={500} color="#637381">
+              ข้อมูลของโครงการจะไม่สามารถแก้ไขได้
+              <br />
+              หลังจากส่งแบบฟอร์ม
+            </Typography>
+          </Stack>
+        }
+        action={
+          <Button
+            variant="contained"
+            onClick={handleConfirmClick}
+            disabled={confirmDisabled}
+          >
+            ส่งแบบฟอร์ม
+          </Button>
+        }
+        onClose={openDialog.onFalse}
+      />
     </Form>
   );
 }
 
 export default ProjectForm;
+
+export type {
+  ProjectFormSubmitStatus,
+  ProjectFormSubmitHandler,
+  ProjectFormConfirmHandlerArgs,
+  ProjectFormConfirmHandler,
+};

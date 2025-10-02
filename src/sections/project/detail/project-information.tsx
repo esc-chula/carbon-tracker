@@ -1,6 +1,7 @@
 import ContainerWithOutlined from "@/components/container/container-with-outlined";
 import type { TGetProjectResponse } from "@/types/project/get-project";
 import { Stack, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 
 // ---------------------------------------------------------------------------------
 
@@ -9,9 +10,10 @@ type TProjectInformationProps = {
     TGetProjectResponse["project"],
     "custom_id" | "title" | "org" | "org_detail"
   >;
+  children?: ReactNode;
 };
 
-function ProjectInformation({ data }: TProjectInformationProps) {
+function ProjectInformation({ data, children }: TProjectInformationProps) {
   return (
     <ContainerWithOutlined>
       <Typography variant="h5" fontSize={16}>
@@ -60,6 +62,8 @@ function ProjectInformation({ data }: TProjectInformationProps) {
           {data.org} ({data.org_detail})
         </Typography>
       </Stack>
+
+      {children}
     </ContainerWithOutlined>
   );
 }

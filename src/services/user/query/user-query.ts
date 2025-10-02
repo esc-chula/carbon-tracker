@@ -17,7 +17,6 @@ const ownersQueryKeys = {
   me: () => [...ownersQueryKeys.all(), "me"] as const,
 
   meOptions: () =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     queryOptions({
       queryKey: [...ownersQueryKeys.me()] as const,
       queryFn: () => fetchGetOwner(),

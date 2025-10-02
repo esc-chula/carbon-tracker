@@ -11,15 +11,8 @@ import type {
   Scope3SouvenirForm,
   Scope3WasteForm,
 } from "@/sections/project/form/type";
-import {
-  Box,
-  Button,
-  Grid,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { Fragment, useState } from "react";
+import { Button, Grid, IconButton, Stack, Typography } from "@mui/material";
+import { Fragment } from "react";
 import {
   useFormContext,
   type FieldErrors,
@@ -37,8 +30,7 @@ import {
   type TRoom,
 } from "./form/constant";
 import { StyledAddButton, StyledStack } from "./styles";
-import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
-import { useBoolean } from "@/hooks/use-boolean";
+import type { UseBooleanReturn } from "@/hooks/use-boolean";
 
 // ---------------------------------------------------------------------------------
 
@@ -74,7 +66,9 @@ type TProjectFormSecondStepProps = {
   appendScope3Waste: (value: Scope3WasteForm) => void;
   handleBack: () => void;
   onSubmit: (data: ProjectFormValues, status: "draft" | "pending") => void;
-  handleSubmit: UseFormHandleSubmit<ProjectFormValues, ProjectFormValues>;
+  openDialog: UseBooleanReturn;
+  confirmDisabled: boolean;
+  handleSubmit: UseFormHandleSubmit<ProjectFormValues>;
 };
 
 export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
@@ -109,6 +103,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     removeScope3Waste,
     appendScope3Waste,
     handleBack,
+    openDialog,
+    confirmDisabled,
     onSubmit,
     handleSubmit,
   } = props;
@@ -116,25 +112,11 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   // --------------------------- Hook ---------------------------
 
   const { control } = useFormContext();
-  const isOpenDialog = useBoolean();
-  const [disabled, setDisabled] = useState(false);
 
   const fieldErrorMessage = (error: unknown) =>
     typeof error === "object" && error != null && "message" in error
       ? (error as { message?: string }).message
       : undefined;
-
-  // --------------------------- Function ---------------------------
-
-  const handleClick = () => {
-    setDisabled(true);
-
-    void handleSubmit((data: ProjectFormValues) => onSubmit(data, "pending"))();
-
-    setTimeout(() => {
-      setDisabled(false);
-    }, 2000);
-  };
 
   // --------------------------- Value ---------------------------
 
@@ -708,57 +690,30 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
               spacing={2}
               sx={{ padding: "16px 24px", justifyContent: "end" }}
             >
-              <Button variant="outlined" onClick={handleBack}>
+              <Button variant="text" color="secondary" onClick={handleBack}>
                 ย้อนกลับ
               </Button>
-              {/* <Button
+              <Button
                 type="button"
                 variant="outlined"
+                color="secondary"
+                disabled={confirmDisabled}
                 onClick={() => {
                   void handleSubmit((data) => onSubmit(data, "draft"))();
                 }}
               >
                 บันทึกแบบร่าง
-              </Button> */}
+              </Button>
 
               <Button
                 type="button"
                 variant="contained"
-                onClick={isOpenDialog.onTrue}
+                onClick={openDialog.onTrue}
               >
                 ส่งแบบฟอร์ม
               </Button>
             </Stack>
           </Stack>
-
-          <ConfirmDialog
-            open={isOpenDialog.value}
-            title={
-              <Box component="img" src="/assets/icons/ic-upload-form.svg" />
-            }
-            content={
-              <Stack spacing={1}>
-                <Typography variant="h3">
-                  คุณต้องการส่งแบบฟอร์มหรือไม่
-                </Typography>
-                <Typography variant="h5" fontWeight={500} color="#637381">
-                  ข้อมูลของโครงการจะไม่สามารถแก้ไขได้
-                  <br />
-                  หลังจากส่งแบบฟอร์ม
-                </Typography>
-              </Stack>
-            }
-            action={
-              <Button
-                variant="contained"
-                onClick={handleClick}
-                disabled={disabled}
-              >
-                ส่งแบบฟอร์ม
-              </Button>
-            }
-            onClose={isOpenDialog.onFalse}
-          />
         </>
       )}
     </>
