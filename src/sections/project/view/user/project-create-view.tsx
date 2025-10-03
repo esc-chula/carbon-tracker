@@ -13,6 +13,7 @@ import type { ProjectFormValues } from "../../form/type";
 import { useCreateProjectMutation } from "@/services/project/mutation";
 import CreateProjectFormatter from "../../helper/create-project-formatter";
 import { showError, showSuccess } from "@/components/toast/toast";
+import type { TProjectStatus } from "@/types/project/list-project";
 
 // ---------------------------------------------------------------------------------
 
@@ -50,7 +51,7 @@ function ProjectCreateView() {
 
   const handleSubmit = async (
     data: ProjectFormValues,
-    status: "draft" | "pending",
+    status: TProjectStatus,
   ) => {
     const formattedData = CreateProjectFormatter(data, status);
 

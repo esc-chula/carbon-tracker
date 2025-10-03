@@ -286,6 +286,7 @@ const defaultValues: ProjectFormValues = {
   title: "",
   org: "",
   org_detail: "",
+
   owner_fullname: "",
   owner_nickname: "",
   owner_student_id: "",

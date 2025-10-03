@@ -39,7 +39,12 @@ export function ConfirmDialog({
         <DialogContent sx={{ typography: "body2" }}> {content} </DialogContent>
       )}
       <DialogActions sx={{ padding: 3 }}>
-        <Button id="dialog-cancel-button" variant="outlined" onClick={onClose}>
+        <Button
+          id="dialog-cancel-button"
+          variant="outlined"
+          color="secondary"
+          onClick={onClose}
+        >
           {cancelLabel}
         </Button>
 

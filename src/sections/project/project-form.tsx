@@ -16,14 +16,13 @@ import { ProjectFormFirstStep } from "./project-form-first-step";
 import { ProjectFormSecondStep } from "./project-form-second-step";
 import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
 import { useBoolean } from "@/hooks/use-boolean";
+import type { TProjectStatus } from "@/types/project/list-project";
 
 // ---------------------------------------------------------------------------------
 
-type ProjectFormSubmitStatus = "draft" | "pending";
-
 type ProjectFormSubmitHandler = (
   data: ProjectFormValues,
-  status: ProjectFormSubmitStatus,
+  status: TProjectStatus,
 ) => Promise<void> | void;
 
 type ProjectFormConfirmHandlerArgs = {
@@ -279,6 +278,7 @@ function ProjectForm({
           errors={errors}
           org={org}
           handleNext={handleNext}
+          isEdit={isEdit}
         />
         <ProjectFormSecondStep
           step={step}
@@ -315,6 +315,7 @@ function ProjectForm({
           openDialog={openDialog}
           handleSubmit={handleSubmit}
           confirmDisabled={confirmDisabled}
+          isEdit={isEdit}
         />
       </Stack>
 
@@ -349,7 +350,6 @@ function ProjectForm({
 export default ProjectForm;
 
 export type {
-  ProjectFormSubmitStatus,
   ProjectFormSubmitHandler,
   ProjectFormConfirmHandlerArgs,
   ProjectFormConfirmHandler,

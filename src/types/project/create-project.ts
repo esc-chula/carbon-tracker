@@ -1,3 +1,5 @@
+import type { TProjectStatus } from "./list-project";
+
 export type TCreateProjectRequest = {
   carbon_detail: string;
   custom_id: string;
@@ -8,7 +10,7 @@ export type TCreateProjectRequest = {
   owner_nickname: string;
   owner_phone_number: string;
   owner_student_id: string;
-  status: "draft" | "pending";
+  status: TProjectStatus;
   title: string;
   transportations_csv_file?: File;
 };

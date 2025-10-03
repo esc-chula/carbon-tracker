@@ -33,6 +33,7 @@ function projectToFormValues({
   values.title = project.title ?? values.title;
   values.org = project.org ?? values.org;
   values.org_detail = project.org_detail ?? values.org_detail;
+  values.status = (project.status ?? values.status) as typeof values.status;
   values.owner_fullname = owner?.fullname ?? values.owner_fullname;
   values.owner_nickname = owner?.nickname ?? values.owner_nickname;
   values.owner_major = owner?.major ?? values.owner_major;

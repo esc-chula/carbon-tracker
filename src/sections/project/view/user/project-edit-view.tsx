@@ -1,21 +1,24 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
+import StatusChips from "@/components/StatusChips";
+import { showError, showSuccess } from "@/components/toast/toast";
+import { useUpdateProjectMutation } from "@/services/project/mutation/use-update-project";
+import { useUpdateProjectStatusMutation } from "@/services/project/mutation/use-update-project-status";
+import { projectsQueryKeys } from "@/services/project/query/project-query";
+import { ownersQueryKeys } from "@/services/user/query/user-query";
+import type { TProjectStatus } from "@/types/project/list-project";
+import { CircularProgress, Stack, Typography } from "@mui/material";
+import type { ProjectFormValues } from "../../form/type";
+import { projectToFormValues } from "../../helper/project-to-form-values";
+import UpdateProjectFormatter from "../../helper/update-project-formatter";
 import ProjectForm, {
   type ProjectFormConfirmHandlerArgs,
 } from "../../project-form";
 import ProjectFormStepper from "../../project-form-stepper";
-import type { ProjectFormValues } from "../../form/type";
-import { ownersQueryKeys } from "@/services/user/query/user-query";
-import { projectsQueryKeys } from "@/services/project/query/project-query";
-import { useUpdateProjectMutation } from "@/services/project/mutation/use-update-project";
-import { useUpdateProjectStatusMutation } from "@/services/project/mutation/use-update-project-status";
-import UpdateProjectFormatter from "../../helper/update-project-formatter";
-import { projectToFormValues } from "../../helper/project-to-form-values";
-import { showError, showSuccess } from "@/components/toast/toast";
 
 // ---------------------------------------------------------------------------------
 
@@ -62,7 +65,7 @@ function ProjectEditView() {
 
   const handleSubmit = async (
     data: ProjectFormValues,
-    status: "draft" | "pending",
+    status: TProjectStatus,
   ) => {
     if (!projectId) return;
 
@@ -78,7 +81,6 @@ function ProjectEditView() {
       }
 
       showSuccess("บันทึกแบบร่างสำเร็จ");
-      router.push("/");
     } catch {
       showError("ส่งแบบฟอร์มไม่สำเร็จ");
     }
@@ -106,6 +108,42 @@ function ProjectEditView() {
   const isSubmitting = isUpdatingProject || isUpdatingStatus;
 
   // --------------------------- Render ---------------------------
+
+  if (project.isLoading || owner.isLoading || !project.isSuccess) {
+    return (
+      <Stack
+        sx={{
+          height: "calc(100vh - 100px)",
+          width: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress size={50} />
+      </Stack>
+    );
+  }
+
+  if (!["draft", "fixing"].includes(project.data.project.status)) {
+    return (
+      <Stack
+        sx={{
+          height: "calc(100vh - 100px)",
+          width: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        direction="row"
+        spacing={2}
+      >
+        <Typography>สามารถแก้ไขได้เฉพาะโครงการที่อยู่ในสถานะ</Typography>
+        <StatusChips variantType="draft" />
+        <Typography>หรือ</Typography>
+        <StatusChips variantType="fixing" />
+        <Typography>เท่านั้น</Typography>
+      </Stack>
+    );
+  }
 
   return (
     <>

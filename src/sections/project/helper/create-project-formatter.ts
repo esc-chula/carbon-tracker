@@ -1,12 +1,13 @@
 import type { CarbonDetail } from "@/types/project/project";
 import type { TCreateProjectRequest } from "@/types/project/create-project";
 import type { ProjectFormValues } from "../form/type";
+import type { TProjectStatus } from "@/types/project/list-project";
 
-const toArray = <T>(values: T[] | undefined) => values?.length ? values : [];
+const toArray = <T>(values: T[] | undefined) => (values?.length ? values : []);
 
 function CreateProjectFormatter(
   data: ProjectFormValues,
-  status: "draft" | "pending",
+  status: TProjectStatus,
 ): TCreateProjectRequest {
   const scope2Entries = data.scope2_entries ?? [];
 

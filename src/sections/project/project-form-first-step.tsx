@@ -1,4 +1,5 @@
 import { Field } from "@/components/hook-form/field";
+import StatusChips from "@/components/StatusChips";
 import {
   departmentOptions,
   fieldOptions,
@@ -8,7 +9,7 @@ import { StyledStack } from "@/sections/project/styles";
 import { Button, Grid, Stack, Typography } from "@mui/material";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useRouter } from "next/navigation";
-import type { FieldErrors } from "react-hook-form";
+import { useFormContext, type FieldErrors } from "react-hook-form";
 
 // ---------------------------------------------------------------------------------
 
@@ -17,6 +18,7 @@ type TProjectFormFirstStepProps = {
   errors: FieldErrors<ProjectFormValues>;
   org: string;
   handleNext: () => void;
+  isEdit?: boolean;
 };
 
 export function ProjectFormFirstStep({
@@ -24,15 +26,33 @@ export function ProjectFormFirstStep({
   errors,
   org,
   handleNext,
+  isEdit = false,
 }: TProjectFormFirstStepProps) {
+  // --------------------------- Hook ---------------------------
+
   const router = useRouter();
+  const { getValues } = useFormContext();
+
+  // --------------------------- Value ---------------------------
+
+  const status = getValues("status");
+
+  // --------------------------- Render ---------------------------
 
   return (
     <>
       {step === 1 && (
         <>
-          <Stack sx={{ padding: "16px 24px" }}>
-            <Typography variant="h4">เพิ่มข้อมูลโครงการใหม่</Typography>
+          <Stack
+            direction="row"
+            spacing={3}
+            sx={{ padding: "16px 24px", alignItems: "center" }}
+          >
+            <Typography variant="h4">
+              {!isEdit ? "เพิ่มข้อมูลโครงการใหม่" : "แก้ไขข้อมูลโครงการ"}
+            </Typography>
+
+            {isEdit && <StatusChips variantType={status} />}
           </Stack>
           <Stack sx={{ padding: 3, gap: 4 }}>
             <StyledStack>

@@ -1,3 +1,5 @@
+import type { TProjectStatus } from "@/types/project/list-project";
+
 type Scope1ActivityForm = {
   name?: string;
   value?: number;
@@ -45,6 +47,7 @@ type ProjectFormValues = {
   title: string;
   org: string;
   org_detail: string;
+  status?: TProjectStatus;
   owner_fullname: string;
   owner_nickname: string;
   owner_student_id: string;
@@ -58,7 +61,6 @@ type ProjectFormValues = {
   scope3_souvenir?: Array<Scope3SouvenirForm>;
   scope3_waste?: Array<Scope3WasteForm>;
 
-  // UI helper fields for org detail selection
   field?: string;
   clubName?: string;
   otherUnderProject?: string;

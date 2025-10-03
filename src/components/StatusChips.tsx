@@ -17,7 +17,7 @@ const variantStyles: Record<
   ChipVariant,
   { backgroundColor: string; color: string }
 > = {
-  fixing: { backgroundColor: "#F5EDFF", color: "#53278C" },
+  fixing: { backgroundColor: "#FFDBB2", color: "#8C4D03" },
   pending: { backgroundColor: "#D7EEFC", color: "#13608C" },
   approved: { backgroundColor: "#D8FBDE", color: "#0A5554" },
   rejected: { backgroundColor: "#FFEBEB", color: "#7A092E" },

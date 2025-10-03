@@ -31,6 +31,7 @@ import {
 } from "./form/constant";
 import { StyledAddButton, StyledStack } from "./styles";
 import type { UseBooleanReturn } from "@/hooks/use-boolean";
+import StatusChips from "@/components/StatusChips";
 
 // ---------------------------------------------------------------------------------
 
@@ -69,6 +70,7 @@ type TProjectFormSecondStepProps = {
   openDialog: UseBooleanReturn;
   confirmDisabled: boolean;
   handleSubmit: UseFormHandleSubmit<ProjectFormValues>;
+  isEdit?: boolean;
 };
 
 export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
@@ -107,6 +109,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     confirmDisabled,
     onSubmit,
     handleSubmit,
+    isEdit = false,
   } = props;
 
   // --------------------------- Hook ---------------------------
@@ -121,6 +124,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   // --------------------------- Value ---------------------------
 
   const file = watch("transportations_csv_file");
+  const status = watch("status");
 
   // --------------------------- Render ---------------------------F
 
@@ -671,7 +675,11 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
       {step === 2 && (
         <>
           <Stack sx={{ padding: "16px 24px" }}>
-            <Typography variant="h4">{`[${customId}] ${title}`}</Typography>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Typography variant="h4">{`[${customId}] ${title}`}</Typography>
+
+              {isEdit && <StatusChips variantType={status} />}
+            </Stack>
             <Typography
               variant="body2"
               color="text.secondary"

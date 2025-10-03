@@ -309,8 +309,6 @@ function ProjectReviewView() {
 
   const ownerData = project.data?.project.owner;
 
-  console.log(errors);
-
   // --------------------------- Render ---------------------------
 
   return (
