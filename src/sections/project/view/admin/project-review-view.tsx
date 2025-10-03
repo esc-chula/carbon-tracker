@@ -2,31 +2,43 @@
 
 import { projectsQueryKeys } from "@/services/project/query/project-query";
 import {
+  Box,
   Button,
   FormHelperText,
   IconButton,
   Stack,
+  Typography,
   useTheme,
 } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import ProjectFirstScopeInformation from "../../detail/project-first-scope-information";
 import ProjectHeader from "../../detail/project-header";
 import ProjectInformation from "../../detail/project-information";
 import ProjectOwnerInformation from "../../detail/project-owner-information";
-import ProjectFirstScopeInformation from "../../detail/project-first-scope-information";
 import ProjectSecondScopeInformation from "../../detail/project-second-scope-information";
 import ProjectThirdScopeInformation from "../../detail/project-third-scope-information";
 import { ReviewFormSchema } from "../../review-form/schema";
 
-import type { ReviewFormValues } from "../../review-form/type";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
-import type { FieldArrayWithId } from "react-hook-form";
-import { Form } from "@/components/hook-form/form-provider";
+import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
 import { Field } from "@/components/hook-form/field";
-import { StyledAddButton } from "../../styles";
+import { Form } from "@/components/hook-form/form-provider";
 import { SvgColor } from "@/components/svg/svg-color";
+import { useBoolean } from "@/hooks/use-boolean";
+import {
+  useReviewProjectMutation,
+  useUpdateProjectStatusMutation,
+} from "@/services/project/mutation";
+import type { TReviewProjectRequest } from "@/types/project/review-project";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import type { FieldArrayWithId } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { buildReviewProjectPayload } from "../../helper/review-formatter";
+import type { ReviewFormValues } from "../../review-form/type";
+import { StyledAddButton } from "../../styles";
+import type { TUpdateProjectStatusRequest } from "@/types/project/update-project-status";
+import { showSuccess } from "@/components/toast/toast";
 
 // ---------------------------------------------------------------------------------
 
@@ -76,7 +88,14 @@ function ProjectReviewView() {
   const { id } = params;
   const theme = useTheme();
 
+  const openDialog = useBoolean(false);
+  const [pendingValues, setPendingValues] = useState<ReviewFormValues | null>(
+    null,
+  );
+
   // --------------------------- API ---------------------------
+
+  const queryClient = useQueryClient();
 
   const project = useQuery({
     ...projectsQueryKeys.projectOptions({
@@ -85,6 +104,12 @@ function ProjectReviewView() {
     }),
     enabled: !!id,
   });
+
+  const { mutateAsync: updateProjectStatus, isPending: isUpdatingStatus } =
+    useUpdateProjectStatusMutation();
+
+  const { mutateAsync: reviewProject, isPending: isReviewingProject } =
+    useReviewProjectMutation();
 
   // --------------------------- Form ---------------------------
 
@@ -309,113 +334,221 @@ function ProjectReviewView() {
 
   const ownerData = project.data?.project.owner;
 
+  const isReject = passedValues.includes(false);
+
+  const handleCloseDialog = () => {
+    if (isReviewingProject || isUpdatingStatus) {
+      setPendingValues(null);
+      openDialog.onFalse();
+    }
+  };
+
+  const handleConfirm = async () => {
+    if (!pendingValues || !id) {
+      return;
+    }
+
+    const payload: TReviewProjectRequest = buildReviewProjectPayload({
+      id,
+      values: pendingValues,
+    });
+
+    const statusPayload: TUpdateProjectStatusRequest = {
+      id: id,
+      status: isReject ? "rejected" : "approved",
+    };
+
+    await reviewProject(payload);
+
+    await updateProjectStatus(statusPayload, {
+      onSuccess: () => {
+        setPendingValues(null);
+        openDialog.onFalse();
+        void queryClient.invalidateQueries({
+          queryKey: projectsQueryKeys.project({
+            id,
+            include_transportations: true,
+          }),
+        });
+
+        showSuccess("");
+      },
+    });
+  };
+
+  const handleFormSubmit = (values: ReviewFormValues) => {
+    setPendingValues(values);
+    openDialog.onTrue();
+  };
+
   // --------------------------- Render ---------------------------
 
   return (
-    <Form methods={methods} onSubmit={handleSubmit(() => console.log("hello"))}>
-      <Stack sx={{ marginTop: 5, backgroundColor: "#ffffff", borderRadius: 3 }}>
-        <ProjectHeader data={headerData} />
-
-        <Stack spacing={4} sx={{ padding: 3 }}>
-          <ProjectInformation data={informationData}>
-            {renderReviewSection(
-              "detail.project.passed",
-              errors.detail?.project?.passed?.message,
-              projectRejectionNotes,
-              appendProjectRejectionNote,
-              removeProjectRejectionNote,
-            )}
-          </ProjectInformation>
-
-          <ProjectOwnerInformation data={ownerData}>
-            {renderReviewSection(
-              "detail.owner.passed",
-              errors.detail?.owner?.passed?.message,
-              ownerRejectionNotes,
-              appendOwnerRejectionNote,
-              removeOwnerRejectionNote,
-            )}
-          </ProjectOwnerInformation>
-
-          <ProjectFirstScopeInformation
-            data={
-              project.data?.project?.carbon_detail?.scope1?.activities ?? []
-            }
-          >
-            {renderReviewSection(
-              "detail.scope1.passed",
-              errors.detail?.scope1?.passed?.message,
-              scope1RejectionNotes,
-              appendScope1RejectionNote,
-              removeScope1RejectionNote,
-            )}
-          </ProjectFirstScopeInformation>
-
-          <ProjectSecondScopeInformation
-            data={
-              project.data?.project.carbon_detail.scope2 ?? {
-                buildings: null,
-                generators: null,
-              }
-            }
-          >
-            {renderReviewSection(
-              "detail.scope2.passed",
-              errors.detail?.scope2?.passed?.message,
-              scope2RejectionNotes,
-              appendScope2RejectionNote,
-              removeScope2RejectionNote,
-            )}
-          </ProjectSecondScopeInformation>
-
-          <ProjectThirdScopeInformation
-            data={project.data?.project?.carbon_detail?.scope3}
-            attendeeChildren={renderReviewSection(
-              "detail.scope3.attendee.passed",
-              errors.detail?.scope3?.attendee?.passed?.message,
-              scope3AttendeeRejectionNotes,
-              appendScope3AttendeeRejectionNote,
-              removeScope3AttendeeRejectionNote,
-            )}
-            overnightChildren={renderReviewSection(
-              "detail.scope3.overnight.passed",
-              errors.detail?.scope3?.overnight?.passed?.message,
-              scope3OvernightRejectionNotes,
-              appendScope3OvernightRejectionNote,
-              removeScope3OvernightRejectionNote,
-            )}
-            souvenirChildren={renderReviewSection(
-              "detail.scope3.souvenir.passed",
-              errors.detail?.scope3?.souvenir?.passed?.message,
-              scope3SouvenirRejectionNotes,
-              appendScope3SouvenirRejectionNote,
-              removeScope3SouvenirRejectionNote,
-            )}
-            wasteChildren={renderReviewSection(
-              "detail.scope3.waste.passed",
-              errors.detail?.scope3?.waste?.passed?.message,
-              scope3WasteRejectionNotes,
-              appendScope3WasteRejectionNote,
-              removeScope3WasteRejectionNote,
-            )}
-          />
-        </Stack>
-
+    <>
+      <Form methods={methods} onSubmit={handleSubmit(handleFormSubmit)}>
         <Stack
-          direction="row"
-          spacing={2}
-          sx={{ padding: "16px 24px", justifyContent: "end" }}
+          sx={{ marginTop: 5, backgroundColor: "#ffffff", borderRadius: 3 }}
         >
-          <Button variant="outlined" color="secondary">
-            ย้อนกลับ
-          </Button>
+          <ProjectHeader data={headerData} />
 
-          <Button type="submit" variant="contained">
-            อนุมัติ
-          </Button>
+          <Stack spacing={4} sx={{ padding: 3 }}>
+            <ProjectInformation data={informationData}>
+              {renderReviewSection(
+                "detail.project.passed",
+                errors.detail?.project?.passed?.message,
+                projectRejectionNotes,
+                appendProjectRejectionNote,
+                removeProjectRejectionNote,
+              )}
+            </ProjectInformation>
+
+            <ProjectOwnerInformation data={ownerData}>
+              {renderReviewSection(
+                "detail.owner.passed",
+                errors.detail?.owner?.passed?.message,
+                ownerRejectionNotes,
+                appendOwnerRejectionNote,
+                removeOwnerRejectionNote,
+              )}
+            </ProjectOwnerInformation>
+
+            <ProjectFirstScopeInformation
+              data={
+                project.data?.project?.carbon_detail?.scope1?.activities ?? []
+              }
+            >
+              {renderReviewSection(
+                "detail.scope1.passed",
+                errors.detail?.scope1?.passed?.message,
+                scope1RejectionNotes,
+                appendScope1RejectionNote,
+                removeScope1RejectionNote,
+              )}
+            </ProjectFirstScopeInformation>
+
+            <ProjectSecondScopeInformation
+              data={
+                project.data?.project.carbon_detail.scope2 ?? {
+                  buildings: null,
+                  generators: null,
+                }
+              }
+            >
+              {renderReviewSection(
+                "detail.scope2.passed",
+                errors.detail?.scope2?.passed?.message,
+                scope2RejectionNotes,
+                appendScope2RejectionNote,
+                removeScope2RejectionNote,
+              )}
+            </ProjectSecondScopeInformation>
+
+            <ProjectThirdScopeInformation
+              data={project.data?.project?.carbon_detail?.scope3}
+              attendeeChildren={renderReviewSection(
+                "detail.scope3.attendee.passed",
+                errors.detail?.scope3?.attendee?.passed?.message,
+                scope3AttendeeRejectionNotes,
+                appendScope3AttendeeRejectionNote,
+                removeScope3AttendeeRejectionNote,
+              )}
+              overnightChildren={renderReviewSection(
+                "detail.scope3.overnight.passed",
+                errors.detail?.scope3?.overnight?.passed?.message,
+                scope3OvernightRejectionNotes,
+                appendScope3OvernightRejectionNote,
+                removeScope3OvernightRejectionNote,
+              )}
+              souvenirChildren={renderReviewSection(
+                "detail.scope3.souvenir.passed",
+                errors.detail?.scope3?.souvenir?.passed?.message,
+                scope3SouvenirRejectionNotes,
+                appendScope3SouvenirRejectionNote,
+                removeScope3SouvenirRejectionNote,
+              )}
+              wasteChildren={renderReviewSection(
+                "detail.scope3.waste.passed",
+                errors.detail?.scope3?.waste?.passed?.message,
+                scope3WasteRejectionNotes,
+                appendScope3WasteRejectionNote,
+                removeScope3WasteRejectionNote,
+              )}
+            />
+          </Stack>
+
+          <Stack sx={{ padding: "0px 24px" }}>
+            <Field.Text
+              type="text"
+              name="note"
+              label="รายละเอียดเพิ่มเติม"
+              slotProps={{ htmlInput: { min: 0 } }}
+              rows={3}
+              multiline
+            />
+          </Stack>
+
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ padding: "40px 24px 16px 24px", justifyContent: "end" }}
+          >
+            <Button variant="outlined" color="secondary">
+              ย้อนกลับ
+            </Button>
+
+            {!isReject ? (
+              <Button type="submit" variant="contained">
+                อนุมัติ
+              </Button>
+            ) : (
+              <Button type="submit" variant="contained" color="error">
+                ตีกลับ
+              </Button>
+            )}
+          </Stack>
         </Stack>
-      </Stack>
-    </Form>
+      </Form>
+
+      <ConfirmDialog
+        key={`${isReject}-${project.data?.project.id}-${openDialog.value}`}
+        open={openDialog.value}
+        title={
+          <Box
+            component="img"
+            src={
+              isReject
+                ? "/assets/icons/ic-reject-dialog.svg"
+                : "/assets/icons/ic-approve-dialog.svg"
+            }
+          />
+        }
+        content={
+          <Stack spacing={1}>
+            <Typography variant="h3">
+              {isReject
+                ? "คุณต้องการตีกลับแบบฟอร์มโครงการหรือไม่?"
+                : "คุณต้องการอนุมัติแบบฟอร์มโครงการหรือไม่?"}
+            </Typography>
+            <Typography variant="h5" fontWeight={500} color="#637381">
+              {isReject
+                ? "หลังจากตีกลับ ผู้กรอกแบบฟอร์มจะสามารถแก้ไขและส่งแบบฟอร์มใหม่อีกครั้ง"
+                : "หลังจากอนุมัติแบบฟอร์มโครงการแล้ว ผู้กรอกแบบฟอร์มจะสามารถพิมพ์ใบรับรองได้"}
+            </Typography>
+          </Stack>
+        }
+        action={
+          <Button
+            variant="contained"
+            color={isReject ? "error" : "primary"}
+            onClick={handleConfirm}
+            disabled={!pendingValues || isReviewingProject || isUpdatingStatus}
+          >
+            {isReject ? "ตีกลับ" : "อนุมัติ"}
+          </Button>
+        }
+        onClose={handleCloseDialog}
+      />
+    </>
   );
 }
 
