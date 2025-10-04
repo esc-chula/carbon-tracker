@@ -1,49 +1,31 @@
-function ActivityNameMapper(value: string) {
-  switch (value) {
-    case "gas":
-      return "ก๊าซหุงต้ม";
-    case "normal_food":
-      return "อาหารปกติ";
-    case "vegan":
-      return "อาหารมังสวิรัติ";
-    case "normal_food_with_drink":
-      return "อาหารว่างและเครื่องดื่ม";
-    case "vegan_with_drink":
-      return "อาหารว่างมังสวิรัติและเครื่องดื่ม";
+import {
+  activityOptions,
+  activityUnitOptions,
+  equipmentOptions,
+} from "../form/constant";
 
-    default:
-      return value;
-  }
+const activityMap: Record<string, string> = Object.fromEntries(
+  activityOptions.map((opt) => [opt.value, opt.label]),
+);
+
+function ActivityNameMapper(value: string) {
+  return activityMap[value] ?? value;
 }
+
+const activityUnitMap: Record<string, string> = Object.fromEntries(
+  activityUnitOptions.map((opt) => [opt.value, opt.label]),
+);
 
 function ActivityUnitMapper(value: string) {
-  switch (value) {
-    case "box":
-      return "กล่อง";
-    case "kg":
-      return "กิโลกรัม";
-    case "g":
-      return "กรัม";
-
-    default:
-      return value;
-  }
+  return activityUnitMap[value] ?? value;
 }
 
-function FacilityMapper(value: string) {
-  switch (value) {
-    case "tv":
-      return "ทีวี";
-    case "projector":
-      return "โปรเจกเตอร์";
-    case "computer":
-      return "คอมพิวเตอร์";
-    case "audio_equipment":
-      return "เครื่องเสียง";
+const facilityMap: Record<string, string> = Object.fromEntries(
+  equipmentOptions.map((opt) => [opt.value, opt.label]),
+);
 
-    default:
-      return value;
-  }
+function FacilityMapper(value: string) {
+  return facilityMap[value] ?? value;
 }
 
 export { ActivityNameMapper, ActivityUnitMapper, FacilityMapper };
