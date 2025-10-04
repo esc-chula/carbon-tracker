@@ -32,8 +32,13 @@ import {
 import { StyledAddButton, StyledStack } from "./styles";
 import type { UseBooleanReturn } from "@/hooks/use-boolean";
 import StatusChips from "@/components/StatusChips";
+import ProjectRejectDetailButton from "./project-reject-detail-button";
+import { useParams } from "next/navigation";
 
 // ---------------------------------------------------------------------------------
+type Params = {
+  id: string;
+};
 
 type TProjectFormSecondStepProps = {
   step: number;
@@ -115,6 +120,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   // --------------------------- Hook ---------------------------
 
   const { control } = useFormContext();
+  const params = useParams<Params>();
+  const projectId = params?.id ?? "";
 
   const fieldErrorMessage = (error: unknown) =>
     typeof error === "object" && error != null && "message" in error
@@ -685,6 +692,12 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
               color="text.secondary"
             >{`ผู้กรอก: ${ownerFullName} (${phoneNumberText})`}</Typography>
           </Stack>
+
+          {status === "fixing" && (
+            <Stack padding="24px 0px  0px 24px">
+              <ProjectRejectDetailButton id={projectId} />
+            </Stack>
+          )}
 
           <Stack sx={{ padding: 3, gap: 4, marginBottom: 10 }}>
             {renderFirstScope}

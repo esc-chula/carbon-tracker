@@ -6,7 +6,10 @@ import {
   projectsQueryKeys,
 } from "@/services/project/query/project-query";
 import theme from "@/styles/theme/theme";
-import type { TListProjectsItem } from "@/types/project/list-project";
+import type {
+  TListProjectsItem,
+  TProjectStatus,
+} from "@/types/project/list-project";
 import {
   Box,
   Button,
@@ -22,7 +25,7 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import {
@@ -35,8 +38,10 @@ import ProjectPopoverMenu from "./project-popover-menu";
 import { showError, showSuccess } from "@/components/toast/toast";
 import { useRouter } from "next/navigation";
 import { useDeleteProjectMutation } from "@/services/project/mutation";
+import { ownersQueryKeys } from "@/services/user/query/user-query";
 import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
 import { useBoolean } from "@/hooks/use-boolean";
+import { canModifyProject } from "@/helper/project-permissions";
 
 dayjs.extend(buddhistEra);
 
@@ -81,6 +86,9 @@ export default function ProjectTable({
 
   // --------------------------- API ---------------------------
 
+  const owner = useQuery({ ...ownersQueryKeys.meOptions() });
+  const currentOwner = owner.data?.owner ?? null;
+
   const generateCertificate = useMutation({
     mutationFn: fetchGetCertificate,
     onSuccess: (data) => {
@@ -119,6 +127,14 @@ export default function ProjectTable({
   };
 
   const handleDelete = (targetProjectId: string) => {
+    const projectOwnerId = rows.find(
+      (row) => row.id === targetProjectId,
+    )?.owner_id;
+    if (!canModifyProject(currentOwner, projectOwnerId)) {
+      showError("คุณไม่มีสิทธิ์ลบโครงการนี้");
+      return;
+    }
+
     setProjectId(targetProjectId);
     openDialog.onTrue();
   };
@@ -130,6 +146,15 @@ export default function ProjectTable({
 
   const handleConfirmDelete = () => {
     if (!projectId) return;
+
+    const projectOwnerId = rows.find((row) => row.id === projectId)?.owner_id;
+    const canDelete = canModifyProject(currentOwner, projectOwnerId);
+
+    if (!canDelete) {
+      showError("คุณไม่มีสิทธิ์ลบโครงการนี้");
+      handleCloseDialog();
+      return;
+    }
 
     mutate(
       { id: projectId },
@@ -188,74 +213,119 @@ export default function ProjectTable({
               </TableRow>
             </TableHead>
             <TableBody sx={{ overflow: "scroll" }}>
-              {rows.map((row) => (
-                <TableRow key={row.id}>
-                  <StyledTableCell>{row.custom_id}</StyledTableCell>
-                  <StyledTableCell>{row.title}</StyledTableCell>
-                  <StyledTableCell>
-                    <StatusChips variantType={row.status} />
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    {dayjs(row.updated_at).format("DD/MM/BBBB")}
-                  </StyledTableCell>
-                  <StyledTableCell>{row.updated_by}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    <ProjectPopoverMenu>
-                      <MenuItem
-                        onClick={() => handleExport(row.id)}
-                        disabled={row.status !== "approved"}
+              {rows.map((row) => {
+                const canManage = canModifyProject(currentOwner, row.owner_id);
+
+                const userNavigate: Record<TProjectStatus, string> = {
+                  draft: canManage
+                    ? `/project/${row.id}/edit`
+                    : `/project/${row.id}`,
+                  fixing: canManage
+                    ? `/project/${row.id}/edit`
+                    : `/project/${row.id}`,
+                  approved: `/project/${row.id}`,
+                  pending: `/project/${row.id}`,
+                  rejected: `/project/${row.id}/result`,
+                };
+
+                const adminNavigate: Record<TProjectStatus, string> = {
+                  draft: `/project/${row.id}`,
+                  fixing: `/project/${row.id}`,
+                  approved: `/project/${row.id}`,
+                  pending: `/admin/project/${row.id}/review`,
+                  rejected: `/project/${row.id}`,
+                };
+
+                return (
+                  <TableRow key={row.id}>
+                    <StyledTableCell>{row.custom_id}</StyledTableCell>
+                    <StyledTableCell>
+                      <Typography
+                        component="button"
+                        sx={{ textDecoration: "underline", cursor: "pointer" }}
+                        onClick={() =>
+                          router.push(
+                            currentOwner?.is_admin
+                              ? adminNavigate[row.status]
+                              : userNavigate[row.status],
+                          )
+                        }
                       >
-                        <Stack
-                          spacing={1.5}
-                          direction="row"
-                          alignItems="center"
-                        >
-                          <SvgColor src="/assets/icons/ic-document.svg" />
-
-                          <Typography variant="subtitle2" fontWeight={500}>
-                            พิมพ์ใบรับรอง
-                          </Typography>
-                        </Stack>
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => router.push(`/project/${row.id}`)}
-                      >
-                        <Stack
-                          spacing={1.5}
-                          direction="row"
-                          alignItems="center"
-                        >
-                          <SvgColor src="/assets/icons/ic-eye.svg" />
-
-                          <Typography variant="subtitle2" fontWeight={500}>
-                            ดูข้อมูลคาร์บอน
-                          </Typography>
-                        </Stack>
-                      </MenuItem>
-                      <MenuItem onClick={() => handleDelete(row.id)}>
-                        <Stack
-                          spacing={1.5}
-                          direction="row"
-                          alignItems="center"
-                        >
-                          <SvgColor
-                            src="/assets/icons/ic-trash.svg"
-                            color="#B71931"
-                          />
-
-                          <Typography
-                            variant="subtitle2"
-                            fontWeight={500}
-                            color="#B71931"
+                        {row.title}
+                      </Typography>
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      <StatusChips variantType={row.status} />
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      {dayjs(row.updated_at).format("DD/MM/BBBB")}
+                    </StyledTableCell>
+                    <StyledTableCell>{row.updated_by}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      <ProjectPopoverMenu>
+                        {canManage && (
+                          <MenuItem
+                            onClick={() => handleExport(row.id)}
+                            disabled={row.status !== "approved"}
                           >
-                            ลบ
-                          </Typography>
-                        </Stack>
-                      </MenuItem>
-                    </ProjectPopoverMenu>
-                  </StyledTableCell>
-                </TableRow>
-              ))}
+                            <Stack
+                              spacing={1.5}
+                              direction="row"
+                              alignItems="center"
+                            >
+                              <SvgColor src="/assets/icons/ic-document.svg" />
+
+                              <Typography variant="subtitle2" fontWeight={500}>
+                                พิมพ์ใบรับรอง
+                              </Typography>
+                            </Stack>
+                          </MenuItem>
+                        )}
+                        <MenuItem
+                          onClick={() => router.push(`/project/${row.id}`)}
+                        >
+                          <Stack
+                            spacing={1.5}
+                            direction="row"
+                            alignItems="center"
+                          >
+                            <SvgColor src="/assets/icons/ic-eye.svg" />
+
+                            <Typography variant="subtitle2" fontWeight={500}>
+                              ดูข้อมูลคาร์บอน
+                            </Typography>
+                          </Stack>
+                        </MenuItem>
+                        {canManage && (
+                          <MenuItem
+                            onClick={() => handleDelete(row.id)}
+                            disabled={!canManage}
+                          >
+                            <Stack
+                              spacing={1.5}
+                              direction="row"
+                              alignItems="center"
+                            >
+                              <SvgColor
+                                src="/assets/icons/ic-trash.svg"
+                                color="#B71931"
+                              />
+
+                              <Typography
+                                variant="subtitle2"
+                                fontWeight={500}
+                                color="#B71931"
+                              >
+                                ลบ
+                              </Typography>
+                            </Stack>
+                          </MenuItem>
+                        )}
+                      </ProjectPopoverMenu>
+                    </StyledTableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

@@ -53,12 +53,28 @@ async function fetchGetCarbonEmission(
 async function fetchGetProject(
   payload: TGetProjectRequest,
 ): Promise<TGetProjectResponse> {
+  const hasQueryParams =
+    payload.include_transportations !== undefined ||
+    payload.include_review !== undefined;
+
+  const searchParams = hasQueryParams ? new URLSearchParams() : undefined;
+
+  if (searchParams) {
+    if (payload.include_transportations !== undefined) {
+      searchParams.set(
+        "include_transportations",
+        String(payload.include_transportations),
+      );
+    }
+
+    if (payload.include_review !== undefined) {
+      searchParams.set("include_review", String(payload.include_review));
+    }
+  }
+
   const res = await ky
     .get(`projects/${payload.id}`, {
-      searchParams:
-        payload.include_transportations !== undefined
-          ? { include_transportations: payload.include_transportations }
-          : undefined,
+      searchParams,
     })
     .json<TGetProjectResponse>();
   return res;

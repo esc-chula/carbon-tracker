@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Carbon Calc WASM</title>
+  <script src="wasm_exec.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const runBtn = document.getElementById('runBtn');
+
+      const mockCarbonDetail = {
+        scope1: {
+          activities: [
+            { name: "food", value: 100.5, unit: "kWh" },
+            { name: "Water", value: 50.0, unit: "m3" }
+          ]
+        },
+        scope2: {
+          buildings: [
+            { 
+              name: "Main Office", 
+              room: "101", 
+              facilities: ["AC", "Lights"], 
+              start_time: new Date("2025-09-01T08:00:00Z"), 
+              end_time: new Date("2025-09-01T18:00:00Z")
+            }
+          ],
+        },
+        scope3: {
+          overnight: [
+            { date: new Date("2025-09-01"), value: 120 },
+            { date: new Date("2025-09-02"), value: 80 }
+          ],
+          transportations: [
+            { type: "รถโดยสารประจำทาง", origin: { province: "นครนายก", district: "" }}
+          ],
+          waste: [
+            { type: "ขวดพลาสติก (PET)", value: 30.5, unit: "kg" }
+          ],
+        }
+      };
+      const mockEmissionFactors = {
+        "รถโดยสารประจำทาง" : 2.7403,
+        "ขวดพลาสติก (PET)" : 13.796,
+        "overnight" : 7.9700,
+        "food" : 7.9700,
+      };
+
+
+      //-------------------------------------------------HERE---------------------------------------------//
+      //--------------------------------------------------------------------------------------------------//
+      async function loadWasm() {
+        const go = new Go();
+        const result = await WebAssembly.instantiateStreaming(
+          fetch("carboncalc.wasm"),
+          go.importObject
+        );
+        wasmInstance = result.instance;
+        go.run(wasmInstance);
+      }
+
+      function runCalc() {
+        const result = calcCarbonWASM(mockCarbonDetail, mockEmissionFactors);
+        console.log(result);
+        document.getElementById("output").innerText = JSON.stringify(result, null, 2);
+      }
+
+      runBtn.addEventListener('click', runCalc);
+      loadWasm();
+        //--------------------------------------------------------------------------------------------------//
+      //--------------------------------------------------------------------------------------------------//
+    });
+  </script>
+</head>
+<body>
+  <h1>Carbon Calculation Test</h1>
+  <button id="runBtn">Run CalcCarbon</button>
+  <pre id="output"></pre>
+</body>
+</html>

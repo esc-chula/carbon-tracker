@@ -17,6 +17,7 @@ import {
   type ChangeEvent,
   type DragEvent,
   type JSX,
+  type MouseEvent,
 } from "react";
 import {
   Controller,
@@ -190,8 +191,11 @@ export default function CSVUploadField<TFieldValues extends FieldValues>({
           }
         };
 
-        const handleDeleteFile = () => {
+        const handleDeleteFile = (e: MouseEvent<HTMLButtonElement>) => {
           if (disabled) return;
+
+          e.preventDefault();
+          e.stopPropagation();
 
           field.onChange(null);
           setUploadStatus("idle");

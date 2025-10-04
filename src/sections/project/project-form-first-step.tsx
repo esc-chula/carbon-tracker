@@ -8,10 +8,15 @@ import type { ProjectFormValues } from "@/sections/project/form/type";
 import { StyledStack } from "@/sections/project/styles";
 import { Button, Grid, Stack, Typography } from "@mui/material";
 import FormHelperText from "@mui/material/FormHelperText";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useFormContext, type FieldErrors } from "react-hook-form";
+import ProjectRejectDetailButton from "./project-reject-detail-button";
 
 // ---------------------------------------------------------------------------------
+
+type Params = {
+  id: string;
+};
 
 type TProjectFormFirstStepProps = {
   step: number;
@@ -32,9 +37,11 @@ export function ProjectFormFirstStep({
 
   const router = useRouter();
   const { getValues } = useFormContext();
+  const params = useParams<Params>();
 
   // --------------------------- Value ---------------------------
 
+  const projectId = params?.id ?? "";
   const status = getValues("status");
 
   // --------------------------- Render ---------------------------
@@ -54,6 +61,13 @@ export function ProjectFormFirstStep({
 
             {isEdit && <StatusChips variantType={status} />}
           </Stack>
+
+          {status === "fixing" && (
+            <Stack padding="24px 0px  0px 24px">
+              <ProjectRejectDetailButton id={projectId} />
+            </Stack>
+          )}
+
           <Stack sx={{ padding: 3, gap: 4 }}>
             <StyledStack>
               <Typography variant="subtitle1" fontWeight={700}>

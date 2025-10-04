@@ -21,10 +21,13 @@ import { useCallback, useMemo, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { HTTPError } from "ky";
 import { useForm } from "react-hook-form";
+import { canModifyProject } from "@/helper/project-permissions";
+import { ownersQueryKeys } from "@/services/user/query/user-query";
 
 type TProjectThirdScopeInformationProps = {
   data: TGetProjectResponse["project"]["carbon_detail"]["scope3"] | undefined;
   projectId?: string;
+  ownerId: string;
   attendeeChildren?: ReactNode;
   overnightChildren?: ReactNode;
   souvenirChildren?: ReactNode;
@@ -39,6 +42,7 @@ type Scope3CsvFormValues = {
 function ProjectThirdScopeInformation({
   data,
   projectId,
+  ownerId,
   attendeeChildren,
   overnightChildren,
   souvenirChildren,
@@ -51,7 +55,12 @@ function ProjectThirdScopeInformation({
     return (data?.transportations?.length ?? 0) > 0;
   }, [data?.transportations?.length]);
 
-  const shouldFetchCsv = hasTransportationData && Boolean(projectId);
+  const owner = useQuery({ ...ownersQueryKeys.meOptions() });
+  const currentOwner = owner.data?.owner ?? null;
+  const canManage = canModifyProject(currentOwner, ownerId);
+
+  const shouldFetchCsv =
+    hasTransportationData && Boolean(projectId) && canManage;
 
   const transportationsCsvQuery = useQuery<File | null>({
     queryKey: ["project-transportations-csv", projectId ?? ""],
@@ -75,7 +84,6 @@ function ProjectThirdScopeInformation({
         }
 
         console.error(error);
-        showError("ไม่สามารถดาวน์โหลดไฟล์ CSV ได้");
         return null;
       }
     },
@@ -99,8 +107,10 @@ function ProjectThirdScopeInformation({
     values: csvFieldValues,
   });
 
-  const canDownloadCsv = hasTransportationData && Boolean(projectId);
+  const canDownloadCsv =
+    hasTransportationData && Boolean(projectId) && canManage;
 
+  console.log(currentOwner, ownerId);
   // --------------------------- Function ---------------------------
 
   const handleDownloadCsv = useCallback(async () => {

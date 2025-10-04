@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import StatusChips from "@/components/StatusChips";
 import { showError, showSuccess } from "@/components/toast/toast";
@@ -18,6 +18,7 @@ import { CircularProgress, Stack, Typography } from "@mui/material";
 import type { ProjectFormValues } from "../../form/type";
 import { projectToFormValues } from "../../helper/project-to-form-values";
 import UpdateProjectFormatter from "../../helper/update-project-formatter";
+import { canModifyProject } from "@/helper/project-permissions";
 import ProjectForm, {
   type ProjectFormConfirmHandlerArgs,
 } from "../../project-form";
@@ -56,6 +57,20 @@ function ProjectEditView() {
 
   // --------------------------- Form ---------------------------
 
+  const currentOwner = owner.data?.owner ?? null;
+  const canEditProject = canModifyProject(
+    currentOwner,
+    project.data?.project?.owner_id ?? null,
+  );
+
+  useEffect(() => {
+    if (!projectId) return;
+    if (!owner.isSuccess || !project.isSuccess) return;
+    if (canEditProject) return;
+
+    void router.replace(`/project/${projectId}`);
+  }, [canEditProject, owner.isSuccess, project.isSuccess, projectId, router]);
+
   const fallbackOwner = owner.data?.owner ?? null;
 
   const transportationsCsvQuery = useQuery<File | null>({
@@ -80,6 +95,7 @@ function ProjectEditView() {
         throw error;
       }
     },
+    enabled: canEditProject && projectId.length > 0,
   });
 
   const transportationsCsvFile = transportationsCsvQuery.data ?? null;
@@ -102,6 +118,10 @@ function ProjectEditView() {
     status: TProjectStatus,
   ) => {
     if (!projectId) return;
+    if (!canEditProject) {
+      showError("คุณไม่มีสิทธิ์แก้ไขโครงการนี้");
+      return;
+    }
 
     const formattedData = UpdateProjectFormatter(projectId, data, status);
 
@@ -171,6 +191,10 @@ function ProjectEditView() {
         <CircularProgress size={50} />
       </Stack>
     );
+  }
+
+  if (project.isSuccess && owner.isSuccess && !canEditProject) {
+    return null;
   }
 
   if (!["draft", "fixing"].includes(project.data.project.status)) {

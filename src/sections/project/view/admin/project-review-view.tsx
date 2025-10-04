@@ -13,29 +13,29 @@ import {
 } from "@mui/material";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
+import ProjectFirstScopeInformation from "../../detail/project-first-scope-information";
 import ProjectHeader from "../../detail/project-header";
 import ProjectInformation from "../../detail/project-information";
 import ProjectOwnerInformation from "../../detail/project-owner-information";
-import ProjectFirstScopeInformation from "../../detail/project-first-scope-information";
 import ProjectSecondScopeInformation from "../../detail/project-second-scope-information";
 import ProjectThirdScopeInformation from "../../detail/project-third-scope-information";
 import { ReviewFormSchema } from "../../review-form/schema";
 
-import type { ReviewFormValues } from "../../review-form/type";
+import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
+import { Field } from "@/components/hook-form/field";
+import { Form } from "@/components/hook-form/form-provider";
+import { SvgColor } from "@/components/svg/svg-color";
+import { showError, showSuccess } from "@/components/toast/toast";
+import { useBoolean } from "@/hooks/use-boolean";
+import { useReviewProjectMutation } from "@/services/project/mutation";
+import type { TReviewProjectRequest } from "@/types/project/review-project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import type { FieldArrayWithId } from "react-hook-form";
-import { Form } from "@/components/hook-form/form-provider";
-import { Field } from "@/components/hook-form/field";
-import { StyledAddButton } from "../../styles";
-import { SvgColor } from "@/components/svg/svg-color";
-import { useReviewProjectMutation } from "@/services/project/mutation";
-import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
-import { useBoolean } from "@/hooks/use-boolean";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { buildReviewProjectPayload } from "../../helper/review-formatter";
-import type { TReviewProjectRequest } from "@/types/project/review-project";
-import { showError, showSuccess } from "@/components/toast/toast";
+import type { ReviewFormValues } from "../../review-form/type";
+import { StyledAddButton } from "../../styles";
 
 // ---------------------------------------------------------------------------------
 
@@ -99,6 +99,7 @@ function ProjectReviewView() {
     ...projectsQueryKeys.projectOptions({
       id: id,
       include_transportations: true,
+      include_review: true,
     }),
     enabled: !!id,
   });
@@ -363,6 +364,7 @@ function ProjectReviewView() {
           queryKey: projectsQueryKeys.project({
             id,
             include_transportations: true,
+            include_review: true,
           }),
         });
 
@@ -464,6 +466,7 @@ function ProjectReviewView() {
             <ProjectThirdScopeInformation
               data={project.data?.project?.carbon_detail?.scope3}
               projectId={project.data?.project.id}
+              ownerId={project.data?.project.owner_id}
               attendeeChildren={renderReviewSection(
                 "detail.scope3.attendee.passed",
                 errors.detail?.scope3?.attendee?.passed?.message,
