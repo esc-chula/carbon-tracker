@@ -10,7 +10,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Park } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { PIE_CHART_COLOR_SCHEMA } from "../constants";
 import DashboardCalendarHeatmap from "../dashboard-calendar";
@@ -31,7 +30,7 @@ function DashboardView() {
 
   const totalTree = Math.round(
     (dashboard.data?.dashboard.carbon_emission_per_person.total ?? 0) /
-    TREE_CONSTANT,
+      TREE_CONSTANT,
   );
 
   // --------------------------- Render ---------------------------
@@ -279,20 +278,25 @@ function DashboardView() {
 
         <Grid size={{ xs: 12 }}>
           <StyledPaper elevation={2}>
+            <Typography variant="h2" fontWeight={700}>
+              เพื่อชดเชยการปล่อยคาร์บอน เราต้องปลูกต้นไม้
+            </Typography>
             <Stack
-              direction={{ xs: "column", lg: "row" }}
+              direction={{ xs: "column", md: "row" }}
               height={1}
               spacing={4}
             >
               <Stack>
-                <Typography variant="h2" fontWeight={700}>
-                  ถ้านิสิตจะชดเชย ต้องปลูกต้นไม้กี่ต้น?
+                <Typography
+                  variant="body1"
+                  fontSize={64}
+                  fontWeight={700}
+                  color={color.PRIMARY_MAIN}
+                >
+                  {totalTree.toLocaleString("en-US")} ต้น/คน/ปี
                 </Typography>
-                <Typography variant="subtitle1" fontSize={40} fontWeight={700}>
-                  ~ {totalTree} ต้น/คน
-                </Typography>
-                <Typography variant="body1" color="textSecondary">
-                  *ต้นไม้เฉลี่ยดูดซับ ~{TREE_CONSTANT} kgCO₂/ปี
+                <Typography variant="body1">
+                  ต้นไม้เฉลี่ยดูดซับ ~20 kgCO₂
                 </Typography>
               </Stack>
 
@@ -302,18 +306,21 @@ function DashboardView() {
                   flex: 1,
                   flexWrap: "wrap",
                   gap: 2,
+                  paddingTop: 1,
+                  maxHeight: (35 + 16) * 2, // item height (35) + gap (8px*2) × 2 rows
+                  overflow: "hidden",
                 }}
               >
                 {[...Array(totalTree)].map((_, index) => (
-                  <Park
+                  <Box
                     key={index}
+                    component="img"
                     sx={{
                       width: 1,
-                      maxWidth: 50,
-                      height: 50,
-                      alignSelf: "center",
+                      maxWidth: 35,
+                      height: 35,
                     }}
-                    htmlColor={color.PRIMARY_700}
+                    src="/assets/icons/ic-tree.svg"
                   />
                 ))}
               </Stack>
