@@ -41,7 +41,7 @@ export default function ProjectSuccessView() {
 
   // --------------------------- Value ---------------------------
 
-  const drives = Math.floor((carbon.data?.carbon_emission ?? 0) / 3.71);
+  const drives = Math.floor((carbon.data?.carbon_emission ?? 0) / 3710);
 
   return (
     <Container
@@ -127,7 +127,7 @@ export default function ProjectSuccessView() {
             }}
           >
             <CountingAnimation
-              to={carbon.data?.carbon_emission ?? 0}
+              to={(carbon.data?.carbon_emission ?? 0) / 1000}
               suffix=" tonsCO₂"
               duration={2000}
               decimals={0}
