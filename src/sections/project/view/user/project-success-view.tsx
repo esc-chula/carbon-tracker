@@ -41,7 +41,7 @@ export default function ProjectSuccessView() {
 
   // --------------------------- Value ---------------------------
 
-  const drives = Math.floor((carbon.data?.carbon_emission ?? 0) / 6.5);
+  const drives = Math.floor((carbon.data?.carbon_emission ?? 0) / 3.71);
 
   return (
     <Container

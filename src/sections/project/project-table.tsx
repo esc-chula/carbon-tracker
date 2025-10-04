@@ -41,6 +41,7 @@ import { useDeleteProjectMutation } from "@/services/project/mutation";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
 import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
 import { useBoolean } from "@/hooks/use-boolean";
+import { totalCarbonResult } from "@/types/project/get-project";
 import { canModifyProject } from "@/helper/project-permissions";
 
 dayjs.extend(buddhistEra);
@@ -209,6 +210,9 @@ export default function ProjectTable({
                 <StyledTableCell sx={{ minWidth: 220 }}>
                   อัปเดตโดย
                 </StyledTableCell>
+                <StyledTableCell sx={{ minWidth: 160 }}>
+                  ปล่อยคาร์บอน
+                </StyledTableCell>
                 <StyledTableCell sx={{ minWidth: 80 }} />
               </TableRow>
             </TableHead>
@@ -261,6 +265,9 @@ export default function ProjectTable({
                       {dayjs(row.updated_at).format("DD/MM/BBBB")}
                     </StyledTableCell>
                     <StyledTableCell>{row.updated_by}</StyledTableCell>
+                     <StyledTableCell>
+                    {totalCarbonResult(row.carbon_result).toFixed(2)} kgCO₂
+                  </StyledTableCell>
                     <StyledTableCell align="center">
                       <ProjectPopoverMenu>
                         {canManage && (

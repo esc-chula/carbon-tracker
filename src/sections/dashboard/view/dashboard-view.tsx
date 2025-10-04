@@ -10,11 +10,13 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { Park } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { PIE_CHART_COLOR_SCHEMA } from "../constants";
 import DashboardCalendarHeatmap from "../dashboard-calendar";
 import DashboardPieChart from "../dashboard-pie-chart";
 import { StyledBox, StyledPaper } from "../styles";
+import { color } from "@/styles/colors";
 
 // ---------------------------------------------------------------------------------
 
@@ -22,6 +24,15 @@ function DashboardView() {
   // --------------------------- API ---------------------------
 
   const dashboard = useQuery({ ...dashboardKeys.overviewOptions({}) });
+
+  // --------------------------- Value ---------------------------
+
+  const TREE_CONSTANT = 21;
+
+  const totalTree = Math.round(
+    (dashboard.data?.dashboard.carbon_emission_per_person.total ?? 0) /
+    TREE_CONSTANT,
+  );
 
   // --------------------------- Render ---------------------------
 
@@ -263,6 +274,50 @@ function DashboardView() {
               )}
               data={dashboard.data.dashboard.heatmap.electricity_usages}
             />
+          </StyledPaper>
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <StyledPaper elevation={2}>
+            <Stack
+              direction={{ xs: "column", lg: "row" }}
+              height={1}
+              spacing={4}
+            >
+              <Stack>
+                <Typography variant="h2" fontWeight={700}>
+                  ถ้านิสิตจะชดเชย ต้องปลูกต้นไม้กี่ต้น?
+                </Typography>
+                <Typography variant="subtitle1" fontSize={40} fontWeight={700}>
+                  ~ {totalTree} ต้น/คน
+                </Typography>
+                <Typography variant="body1" color="textSecondary">
+                  *ต้นไม้เฉลี่ยดูดซับ ~{TREE_CONSTANT} kgCO₂/ปี
+                </Typography>
+              </Stack>
+
+              <Stack
+                direction="row"
+                sx={{
+                  flex: 1,
+                  flexWrap: "wrap",
+                  gap: 2,
+                }}
+              >
+                {[...Array(totalTree)].map((_, index) => (
+                  <Park
+                    key={index}
+                    sx={{
+                      width: 1,
+                      maxWidth: 50,
+                      height: 50,
+                      alignSelf: "center",
+                    }}
+                    htmlColor={color.PRIMARY_700}
+                  />
+                ))}
+              </Stack>
+            </Stack>
           </StyledPaper>
         </Grid>
       </Grid>

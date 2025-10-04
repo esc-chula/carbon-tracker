@@ -1,43 +1,31 @@
-function ActivityNameMapper(value: string) {
-  switch (value) {
-    case "gas":
-      return "ก๊าซหุงต้ม";
-    case "normal_food":
-      return "อาหารปกติ";
-    case "vegan":
-      return "อาหารมังสวิรัติ";
+import {
+  activityOptions,
+  activityUnitOptions,
+  equipmentOptions,
+} from "../form/constant";
 
-    default:
-      return value;
-  }
+const activityMap: Record<string, string> = Object.fromEntries(
+  activityOptions.map((opt) => [opt.value, opt.label]),
+);
+
+function ActivityNameMapper(value: string) {
+  return activityMap[value] ?? value;
 }
+
+const activityUnitMap: Record<string, string> = Object.fromEntries(
+  activityUnitOptions.map((opt) => [opt.value, opt.label]),
+);
 
 function ActivityUnitMapper(value: string) {
-  switch (value) {
-    case "box":
-      return "กล่อง";
-    case "kg":
-      return "กิโลกรัม";
-    case "g":
-      return "กรัม";
-
-    default:
-      return value;
-  }
+  return activityUnitMap[value] ?? value;
 }
 
-function FacilityMapper(value: string) {
-  switch (value) {
-    case "tv":
-      return "ทีวี";
-    case "microphone":
-      return "ไมโครโฟน";
-    case "projector":
-      return "Projector";
+const facilityMap: Record<string, string> = Object.fromEntries(
+  equipmentOptions.map((opt) => [opt.value, opt.label]),
+);
 
-    default:
-      return value;
-  }
+function FacilityMapper(value: string) {
+  return facilityMap[value] ?? value;
 }
 
 export { ActivityNameMapper, ActivityUnitMapper, FacilityMapper };
