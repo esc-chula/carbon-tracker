@@ -1,3 +1,5 @@
+import type { CarbonResult } from "./get-project";
+
 export type TProjectStatus =
   | "fixing"
   | "draft"
@@ -25,6 +27,7 @@ export type TListProjectsItem = {
   updated_by: string;
   updated_at: string;
   deleted_at: string | null;
+  carbon_result: CarbonResult;
 };
 
 export type TListProjectsResponse = {

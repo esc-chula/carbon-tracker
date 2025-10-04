@@ -21,6 +21,19 @@ export type CarbonResult = {
   };
 };
 
+export function totalCarbonResult(carbon_result: CarbonResult): number {
+  return (
+    carbon_result.scope1.activity +
+    carbon_result.scope2.building +
+    carbon_result.scope2.generator +
+    carbon_result.scope3.attendee +
+    carbon_result.scope3.overnight +
+    carbon_result.scope3.souvenir +
+    carbon_result.scope3.transportation +
+    carbon_result.scope3.waste
+  );
+}
+
 type ProjectCarbonDetail = CarbonDetail & {
   scope3: CarbonDetail["scope3"] & {
     transportations?: Scope3Transportation[] | null;
