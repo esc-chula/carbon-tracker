@@ -191,6 +191,26 @@ const departmentOptions = [
   },
 ];
 
+const activityOptions = [
+  { value: "gas", label: "ก๊าซหุงต้ม" },
+  { value: "normal_food", label: "อาหารปกติ" },
+  { value: "vegan", label: "อาหารมังสวิรัติ" },
+  {
+    value: "normal_food_with_drink",
+    label: "อาหารว่างและเครื่องดื่ม",
+  },
+  {
+    value: "vegan_with_drink",
+    label: "อาหารว่างมังสวิรัติและเครื่องดื่ม",
+  },
+];
+
+const activityUnitOptions = [
+  { value: "box", label: "กล่อง" },
+  { value: "kg", label: "กิโลกรัม" },
+  { value: "g", label: "กรัม" },
+];
+
 const buildingOptions = [
   { value: "อาคาร 3", label: "อาคาร 3" },
   { value: "อาคารวิศวฯ 100 ปี", label: "อาคารวิศวฯ 100 ปี" },
@@ -202,8 +222,9 @@ const buildingOptions = [
 
 const equipmentOptions = [
   { label: "ทีวี", value: "tv" },
-  { label: "Projector", value: "projector" },
-  { label: "ไมโครโฟน", value: "microphone" },
+  { label: "โปรเจกเตอร์", value: "projector" },
+  { label: "คอมพิวเตอร์", value: "computer" },
+  { label: "เครื่องเสียง", value: "audio_equipment" },
 ];
 
 const energyUnitOptions = [
@@ -214,11 +235,15 @@ const energyUnitOptions = [
 const giftUnitOptions = [
   { value: "กระดาษ", label: "กระดาษ" },
   { value: "พลาสติก", label: "พลาสติก" },
+  { value: "โลหะ", label: "โลหะ" },
+  { value: "ผ้า", label: "ผ้า" },
+  { value: "ไม้", label: "ไม้" },
+  { value: "อื่นๆ", label: "อื่นๆ" },
 ];
 
 const wasteOptions = [
   { value: "ขวดพลาสติก (PET)", label: "ขวดพลาสติก (PET)" },
-  { value: "ขวดพลาสติก (HTPE)", label: "ขวดพลาสติก (HTPE) [ขวดขุ่น]" },
+  { value: "ขวดพลาสติก (HDPE)", label: "ขวดพลาสติก (HDPE) [ขวดขุ่น]" },
   { value: "อะลูมิเนียม (กระป๋อง)", label: "อะลูมิเนียม (กระป๋อง)" },
   { value: "เศษอาหาร", label: "เศษอาหาร" },
   { value: "ขยะรีไซเคิลพลัส", label: "ขยะรีไซเคิลพลัส" },
@@ -227,6 +252,8 @@ const wasteOptions = [
 
 export type { TRoom };
 export {
+  activityOptions,
+  activityUnitOptions,
   buildingOptions,
   departmentOptions,
   energyUnitOptions,

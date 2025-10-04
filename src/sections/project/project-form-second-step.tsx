@@ -21,6 +21,8 @@ import {
   type UseFormWatch,
 } from "react-hook-form";
 import {
+  activityOptions,
+  activityUnitOptions,
   buildingOptions,
   energyUnitOptions,
   equipmentOptions,
@@ -147,11 +149,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <Field.CustomAutoComplete
                   name={`scope1_activities.${index}.name`}
                   label="ประเภทกิจกรรม"
-                  options={[
-                    { value: "gas", label: "ก๊าซหุงต้ม" },
-                    { value: "normal_food", label: "อาหารปกติ" },
-                    { value: "vegan", label: "อาหารมังสวิรัติ" },
-                  ]}
+                  options={activityOptions}
                   helperText={errors.scope1_activities?.[index]?.name?.message}
                   onInputChange={(_, value) => {
                     if (!value)
@@ -178,11 +176,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <Field.CustomAutoComplete
                   name={`scope1_activities.${index}.unit`}
                   label="หน่วย"
-                  options={[
-                    { value: "box", label: "กล่อง" },
-                    { value: "kg", label: "กิโลกรัม" },
-                    { value: "g", label: "กรัม" },
-                  ]}
+                  options={activityUnitOptions}
                   helperText={errors.scope1_activities?.[index]?.unit?.message}
                   disabled={!activityValue}
                   creatable
