@@ -85,6 +85,11 @@ function CreateProjectFormatter(
     },
   };
 
+  const transportationsFile =
+    data.transportations_csv_file && data.transportations_csv_file.size === 0
+      ? undefined
+      : data.transportations_csv_file;
+
   const formattedData: TCreateProjectRequest = {
     custom_id: data.custom_id,
     org: data.org,
@@ -96,7 +101,7 @@ function CreateProjectFormatter(
     owner_student_id: data.owner_student_id,
     status,
     title: data.title,
-    transportations_csv_file: data.transportations_csv_file,
+    transportations_csv_file: transportationsFile,
     carbon_detail: JSON.stringify(carbonDetails),
   };
 

@@ -84,7 +84,7 @@ function ProjectFormStepper({
         variant="button"
         sx={{ color: projectDetailColor, transition: "color 0.3s" }}
       >
-        {!isEdit ? "แก้ไขรายละเอียดโครงการ" : "กรอกรายละเอียดโครงการ"}
+        {!isEdit ? "กรอกรายละเอียดโครงการ" : "แก้ไขรายละเอียดโครงการ"}
       </Typography>
     </Stack>
   );

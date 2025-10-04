@@ -53,12 +53,28 @@ async function fetchGetCarbonEmission(
 async function fetchGetProject(
   payload: TGetProjectRequest,
 ): Promise<TGetProjectResponse> {
+  const hasQueryParams =
+    payload.include_transportations !== undefined ||
+    payload.include_review !== undefined;
+
+  const searchParams = hasQueryParams ? new URLSearchParams() : undefined;
+
+  if (searchParams) {
+    if (payload.include_transportations !== undefined) {
+      searchParams.set(
+        "include_transportations",
+        String(payload.include_transportations),
+      );
+    }
+
+    if (payload.include_review !== undefined) {
+      searchParams.set("include_review", String(payload.include_review));
+    }
+  }
+
   const res = await ky
     .get(`projects/${payload.id}`, {
-      searchParams:
-        payload.include_transportations !== undefined
-          ? { include_transportations: payload.include_transportations }
-          : undefined,
+      searchParams,
     })
     .json<TGetProjectResponse>();
   return res;
@@ -85,6 +101,34 @@ async function fetchGetCertificate(
     } catch {
       filename = match[1];
     }
+  }
+
+  return { blob, filename, contentType };
+}
+
+async function fetchGetProjectTransportationsCsv(payload: {
+  id: string;
+}): Promise<{ blob: Blob; filename: string; contentType: string }> {
+  const res = await ky.get(`projects/${payload.id}/transportations`, {
+    headers: { Accept: "text/csv" },
+  });
+
+  const blob = await res.blob();
+  const contentType = res.headers.get("content-type") ?? "text/csv";
+
+  const disposition = res.headers.get("content-disposition") ?? "";
+  let filename = "transportations.csv";
+  const match = /filename\*?=(?:UTF-8'')?["']?([^"';]+)["']?/i.exec(
+    disposition,
+  );
+  if (match?.[1]) {
+    try {
+      filename = decodeURIComponent(match[1]);
+    } catch {
+      filename = match[1];
+    }
+  } else if (payload.id) {
+    filename = `transportations-${payload.id}.csv`;
   }
 
   return { blob, filename, contentType };
@@ -138,4 +182,5 @@ export {
   fetchGetCarbonEmission,
   fetchGetProject,
   fetchGetCertificate,
+  fetchGetProjectTransportationsCsv,
 };

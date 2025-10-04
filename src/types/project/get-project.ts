@@ -1,9 +1,11 @@
 import type { TOwner } from "../user/get-owner";
 import type { CarbonDetail, Scope3Transportation } from "./project";
+import type { TReviewProjectDetail } from "./review-project";
 
 export type TGetProjectRequest = {
   id: string;
   include_transportations?: boolean;
+  include_review?: boolean;
 };
 
 export type CarbonResult = {
@@ -40,7 +42,15 @@ type ProjectCarbonDetail = CarbonDetail & {
   };
 };
 
+export type TProjectReview = {
+  id?: string;
+  project_id: string;
+  note: string;
+  detail: TReviewProjectDetail;
+};
+
 export type TGetProjectResponse = {
+  $schema?: string;
   project: {
     id: string;
     org: string;
@@ -58,4 +68,5 @@ export type TGetProjectResponse = {
     carbon_detail: ProjectCarbonDetail;
     carbon_result: CarbonResult;
   };
+  review?: TProjectReview | null;
 };
