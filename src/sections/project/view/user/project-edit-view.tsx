@@ -8,7 +8,10 @@ import StatusChips from "@/components/StatusChips";
 import { showError, showSuccess } from "@/components/toast/toast";
 import { useUpdateProjectMutation } from "@/services/project/mutation/use-update-project";
 import { useUpdateProjectStatusMutation } from "@/services/project/mutation/use-update-project-status";
-import { projectsQueryKeys } from "@/services/project/query/project-query";
+import {
+  fetchGetProjectTransportationsCsv,
+  projectsQueryKeys,
+} from "@/services/project/query/project-query";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
 import type { TProjectStatus } from "@/types/project/list-project";
 import { CircularProgress, Stack, Typography } from "@mui/material";
@@ -19,6 +22,7 @@ import ProjectForm, {
   type ProjectFormConfirmHandlerArgs,
 } from "../../project-form";
 import ProjectFormStepper from "../../project-form-stepper";
+import { HTTPError } from "ky";
 
 // ---------------------------------------------------------------------------------
 
@@ -54,14 +58,44 @@ function ProjectEditView() {
 
   const fallbackOwner = owner.data?.owner ?? null;
 
-  const initialValues: ProjectFormValues = useMemo(
-    () =>
-      projectToFormValues({
-        project: project.data?.project,
-        fallbackOwner,
-      }),
-    [fallbackOwner, project.data?.project],
-  );
+  const transportationsCsvQuery = useQuery<File | null>({
+    queryKey: ["project-transportations-csv", projectId],
+    retry: false,
+    refetchOnWindowFocus: false,
+    queryFn: async () => {
+      try {
+        const { blob, filename, contentType } =
+          await fetchGetProjectTransportationsCsv({ id: projectId });
+
+        return new File([blob], filename, {
+          type: contentType || blob.type || "text/csv",
+          lastModified: Date.now(),
+        });
+      } catch (error) {
+        if (error instanceof HTTPError && error.response.status === 404) {
+          return null;
+        }
+        console.error(error);
+        showError("ไม่สามารถโหลดไฟล์ CSV การเดินทางได้");
+        throw error;
+      }
+    },
+  });
+
+  const transportationsCsvFile = transportationsCsvQuery.data ?? null;
+
+  const initialValues: ProjectFormValues = useMemo(() => {
+    const base = projectToFormValues({
+      project: project.data?.project,
+      fallbackOwner,
+    });
+
+    if (transportationsCsvFile) {
+      base.transportations_csv_file = transportationsCsvFile;
+    }
+
+    return base;
+  }, [fallbackOwner, project.data?.project, transportationsCsvFile]);
 
   const handleSubmit = async (
     data: ProjectFormValues,
@@ -110,6 +144,21 @@ function ProjectEditView() {
   // --------------------------- Render ---------------------------
 
   if (project.isLoading || owner.isLoading || !project.isSuccess) {
+    return (
+      <Stack
+        sx={{
+          height: "calc(100vh - 100px)",
+          width: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress size={50} />
+      </Stack>
+    );
+  }
+
+  if (transportationsCsvQuery.isLoading) {
     return (
       <Stack
         sx={{

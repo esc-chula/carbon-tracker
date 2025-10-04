@@ -1,9 +1,14 @@
+"use client";
+
 import ContainerWithOutlined from "@/components/container/container-with-outlined";
 import {
   TableCustom,
   type DisplayColumn,
 } from "@/components/table/table-custom";
+import CSVUploadField from "@/components/hook-form/rhf-upload";
+import { showError } from "@/components/toast/toast";
 import { transFormDate } from "@/helper/formatter/date-formatter";
+import { fetchGetProjectTransportationsCsv } from "@/services/project/query/project-query";
 import type { TGetProjectResponse } from "@/types/project/get-project";
 import type {
   Scope3Attendee,
@@ -12,10 +17,14 @@ import type {
   Scope3Waste,
 } from "@/types/project/project";
 import { Stack, Typography } from "@mui/material";
-import type { ReactNode } from "react";
+import { useCallback, useMemo, type ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { HTTPError } from "ky";
+import { useForm } from "react-hook-form";
 
 type TProjectThirdScopeInformationProps = {
   data: TGetProjectResponse["project"]["carbon_detail"]["scope3"] | undefined;
+  projectId?: string;
   attendeeChildren?: ReactNode;
   overnightChildren?: ReactNode;
   souvenirChildren?: ReactNode;
@@ -23,14 +32,99 @@ type TProjectThirdScopeInformationProps = {
   children?: ReactNode;
 };
 
+type Scope3CsvFormValues = {
+  transportations_csv_file: File | null;
+};
+
 function ProjectThirdScopeInformation({
   data,
+  projectId,
   attendeeChildren,
   overnightChildren,
   souvenirChildren,
   wasteChildren,
   children,
 }: TProjectThirdScopeInformationProps) {
+  // --------------------------- API ---------------------------
+
+  const hasTransportationData = useMemo(() => {
+    return (data?.transportations?.length ?? 0) > 0;
+  }, [data?.transportations?.length]);
+
+  const shouldFetchCsv = hasTransportationData && Boolean(projectId);
+
+  const transportationsCsvQuery = useQuery<File | null>({
+    queryKey: ["project-transportations-csv", projectId ?? ""],
+    enabled: shouldFetchCsv,
+    retry: false,
+    refetchOnWindowFocus: false,
+    queryFn: async () => {
+      if (!projectId) return null;
+
+      try {
+        const { blob, filename, contentType } =
+          await fetchGetProjectTransportationsCsv({ id: projectId });
+
+        return new File([blob], filename, {
+          type: contentType || blob.type || "text/csv",
+          lastModified: Date.now(),
+        });
+      } catch (error) {
+        if (error instanceof HTTPError && error.response.status === 404) {
+          return null;
+        }
+
+        console.error(error);
+        showError("ไม่สามารถดาวน์โหลดไฟล์ CSV ได้");
+        return null;
+      }
+    },
+  });
+
+  // --------------------------- Form ---------------------------
+
+  const csvFieldValues = useMemo(() => {
+    if (shouldFetchCsv) {
+      if (transportationsCsvQuery.data !== undefined) {
+        return { transportations_csv_file: transportationsCsvQuery.data };
+      }
+      return undefined;
+    }
+
+    return { transportations_csv_file: null };
+  }, [shouldFetchCsv, transportationsCsvQuery.data]);
+
+  const { control } = useForm<Scope3CsvFormValues>({
+    defaultValues: { transportations_csv_file: null },
+    values: csvFieldValues,
+  });
+
+  const canDownloadCsv = hasTransportationData && Boolean(projectId);
+
+  // --------------------------- Function ---------------------------
+
+  const handleDownloadCsv = useCallback(async () => {
+    if (!projectId) return;
+
+    try {
+      const { blob, filename } = await fetchGetProjectTransportationsCsv({
+        id: projectId,
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      showError("ไม่สามารถดาวน์โหลดไฟล์ CSV ได้");
+    }
+  }, [projectId]);
+
   // --------------------------- Values ---------------------------
 
   const attendeeColumns: DisplayColumn<Scope3Attendee>[] = [
@@ -91,6 +185,15 @@ function ProjectThirdScopeInformation({
           การเดินทางของผู้เข้าร่วมและ staff
         </Typography>
       </Stack>
+
+      {canDownloadCsv && (
+        <CSVUploadField
+          name="transportations_csv_file"
+          control={control}
+          disabled
+          onDownload={handleDownloadCsv}
+        />
+      )}
 
       <ContainerWithOutlined borderRadius={2}>
         <Typography variant="h5" fontSize={14}>

@@ -90,6 +90,34 @@ async function fetchGetCertificate(
   return { blob, filename, contentType };
 }
 
+async function fetchGetProjectTransportationsCsv(payload: {
+  id: string;
+}): Promise<{ blob: Blob; filename: string; contentType: string }> {
+  const res = await ky.get(`projects/${payload.id}/transportations`, {
+    headers: { Accept: "text/csv" },
+  });
+
+  const blob = await res.blob();
+  const contentType = res.headers.get("content-type") ?? "text/csv";
+
+  const disposition = res.headers.get("content-disposition") ?? "";
+  let filename = "transportations.csv";
+  const match = /filename\*?=(?:UTF-8'')?["']?([^"';]+)["']?/i.exec(
+    disposition,
+  );
+  if (match?.[1]) {
+    try {
+      filename = decodeURIComponent(match[1]);
+    } catch {
+      filename = match[1];
+    }
+  } else if (payload.id) {
+    filename = `transportations-${payload.id}.csv`;
+  }
+
+  return { blob, filename, contentType };
+}
+
 // ---------------------------------------------------------------------------------
 
 const projectsQueryKeys = {
@@ -138,4 +166,5 @@ export {
   fetchGetCarbonEmission,
   fetchGetProject,
   fetchGetCertificate,
+  fetchGetProjectTransportationsCsv,
 };

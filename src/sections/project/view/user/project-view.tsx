@@ -1,7 +1,7 @@
 "use client";
 
 import { projectsQueryKeys } from "@/services/project/query/project-query";
-import { Stack } from "@mui/material";
+import { CircularProgress, Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import ProjectHeader from "../../detail/project-header";
@@ -51,6 +51,21 @@ function ProjectView() {
 
   // --------------------------- Render ---------------------------
 
+  if (project.isLoading || !project.isSuccess) {
+    return (
+      <Stack
+        sx={{
+          height: "calc(100vh - 100px)",
+          width: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress size={50} />
+      </Stack>
+    );
+  }
+
   return (
     <Stack sx={{ marginTop: 5, backgroundColor: "#ffffff", borderRadius: 3 }}>
       <ProjectHeader data={headerData} />
@@ -75,6 +90,7 @@ function ProjectView() {
 
         <ProjectThirdScopeInformation
           data={project.data?.project?.carbon_detail?.scope3}
+          projectId={project.data?.project.id}
         />
       </Stack>
     </Stack>

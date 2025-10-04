@@ -4,6 +4,7 @@ import { projectsQueryKeys } from "@/services/project/query/project-query";
 import {
   Box,
   Button,
+  CircularProgress,
   FormHelperText,
   IconButton,
   Stack,
@@ -11,34 +12,30 @@ import {
   useTheme,
 } from "@mui/material";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import ProjectFirstScopeInformation from "../../detail/project-first-scope-information";
+import { useParams, useRouter } from "next/navigation";
 import ProjectHeader from "../../detail/project-header";
 import ProjectInformation from "../../detail/project-information";
 import ProjectOwnerInformation from "../../detail/project-owner-information";
+import ProjectFirstScopeInformation from "../../detail/project-first-scope-information";
 import ProjectSecondScopeInformation from "../../detail/project-second-scope-information";
 import ProjectThirdScopeInformation from "../../detail/project-third-scope-information";
 import { ReviewFormSchema } from "../../review-form/schema";
 
-import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
-import { Field } from "@/components/hook-form/field";
-import { Form } from "@/components/hook-form/form-provider";
-import { SvgColor } from "@/components/svg/svg-color";
-import { useBoolean } from "@/hooks/use-boolean";
-import {
-  useReviewProjectMutation,
-  useUpdateProjectStatusMutation,
-} from "@/services/project/mutation";
-import type { TReviewProjectRequest } from "@/types/project/review-project";
+import type { ReviewFormValues } from "../../review-form/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import type { FieldArrayWithId } from "react-hook-form";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
-import { buildReviewProjectPayload } from "../../helper/review-formatter";
-import type { ReviewFormValues } from "../../review-form/type";
+import type { FieldArrayWithId } from "react-hook-form";
+import { Form } from "@/components/hook-form/form-provider";
+import { Field } from "@/components/hook-form/field";
 import { StyledAddButton } from "../../styles";
-import type { TUpdateProjectStatusRequest } from "@/types/project/update-project-status";
-import { showSuccess } from "@/components/toast/toast";
+import { SvgColor } from "@/components/svg/svg-color";
+import { useReviewProjectMutation } from "@/services/project/mutation";
+import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
+import { useBoolean } from "@/hooks/use-boolean";
+import { buildReviewProjectPayload } from "../../helper/review-formatter";
+import type { TReviewProjectRequest } from "@/types/project/review-project";
+import { showError, showSuccess } from "@/components/toast/toast";
 
 // ---------------------------------------------------------------------------------
 
@@ -87,6 +84,7 @@ function ProjectReviewView() {
   const params = useParams<Params>();
   const { id } = params;
   const theme = useTheme();
+  const router = useRouter();
 
   const openDialog = useBoolean(false);
   const [pendingValues, setPendingValues] = useState<ReviewFormValues | null>(
@@ -105,11 +103,7 @@ function ProjectReviewView() {
     enabled: !!id,
   });
 
-  const { mutateAsync: updateProjectStatus, isPending: isUpdatingStatus } =
-    useUpdateProjectStatusMutation();
-
-  const { mutateAsync: reviewProject, isPending: isReviewingProject } =
-    useReviewProjectMutation();
+  const reviewProject = useReviewProjectMutation();
 
   // --------------------------- Form ---------------------------
 
@@ -337,30 +331,31 @@ function ProjectReviewView() {
   const isReject = passedValues.includes(false);
 
   const handleCloseDialog = () => {
-    if (isReviewingProject || isUpdatingStatus) {
+    if (!reviewProject.isPending) {
       setPendingValues(null);
       openDialog.onFalse();
     }
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!pendingValues || !id) {
       return;
     }
+
+    const toastSuccessMessage = !isReject
+      ? "อนุมัติแบบฟอร์มสำเร็จ"
+      : "ตีกลับแบบฟอร์มสำเร็จ";
+
+    const toastErrorMessage = !isReject
+      ? "อนุมัติแบบฟอร์มไม่สำเร็จ"
+      : "ตีกลับแบบฟอร์มไม่สำเร็จ";
 
     const payload: TReviewProjectRequest = buildReviewProjectPayload({
       id,
       values: pendingValues,
     });
 
-    const statusPayload: TUpdateProjectStatusRequest = {
-      id: id,
-      status: isReject ? "rejected" : "approved",
-    };
-
-    await reviewProject(payload);
-
-    await updateProjectStatus(statusPayload, {
+    reviewProject.mutate(payload, {
       onSuccess: () => {
         setPendingValues(null);
         openDialog.onFalse();
@@ -371,7 +366,15 @@ function ProjectReviewView() {
           }),
         });
 
-        showSuccess("");
+        showSuccess(toastSuccessMessage);
+
+        router.push("/");
+      },
+      onError: () => {
+        setPendingValues(null);
+        openDialog.onFalse();
+
+        showError(toastErrorMessage);
       },
     });
   };
@@ -382,6 +385,21 @@ function ProjectReviewView() {
   };
 
   // --------------------------- Render ---------------------------
+
+  if (project.isLoading || !project.isSuccess) {
+    return (
+      <Stack
+        sx={{
+          height: "calc(100vh - 100px)",
+          width: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress size={50} />
+      </Stack>
+    );
+  }
 
   return (
     <>
@@ -445,6 +463,7 @@ function ProjectReviewView() {
 
             <ProjectThirdScopeInformation
               data={project.data?.project?.carbon_detail?.scope3}
+              projectId={project.data?.project.id}
               attendeeChildren={renderReviewSection(
                 "detail.scope3.attendee.passed",
                 errors.detail?.scope3?.attendee?.passed?.message,
@@ -492,7 +511,11 @@ function ProjectReviewView() {
             spacing={2}
             sx={{ padding: "40px 24px 16px 24px", justifyContent: "end" }}
           >
-            <Button variant="outlined" color="secondary">
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => router.push("/")}
+            >
               ย้อนกลับ
             </Button>
 
@@ -541,7 +564,7 @@ function ProjectReviewView() {
             variant="contained"
             color={isReject ? "error" : "primary"}
             onClick={handleConfirm}
-            disabled={!pendingValues || isReviewingProject || isUpdatingStatus}
+            disabled={!pendingValues || reviewProject.isPending}
           >
             {isReject ? "ตีกลับ" : "อนุมัติ"}
           </Button>

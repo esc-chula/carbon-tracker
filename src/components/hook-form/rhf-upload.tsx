@@ -67,6 +67,7 @@ export type CSVUploadFieldProps<TFieldValues extends FieldValues> = {
   label?: string;
   helperText?: string;
   disabled?: boolean;
+  onDownload?: () => Promise<void> | void;
 };
 
 export default function CSVUploadField<TFieldValues extends FieldValues>({
@@ -78,6 +79,7 @@ export default function CSVUploadField<TFieldValues extends FieldValues>({
   label = "เลือกไฟล์ที่คุณต้องการ",
   helperText = "กรุณาอัปโหลดไฟล์ .csv จากข้อมูลลงทะเบียน",
   disabled,
+  onDownload,
 }: CSVUploadFieldProps<TFieldValues>): JSX.Element {
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>("idle");
@@ -113,6 +115,7 @@ export default function CSVUploadField<TFieldValues extends FieldValues>({
       }}
       render={({ field, fieldState }) => {
         const file: File | null = field.value ?? null;
+        const canDownload = Boolean(file);
 
         const startUpload = (f: File | null) => {
           if (!f) {
@@ -138,6 +141,24 @@ export default function CSVUploadField<TFieldValues extends FieldValues>({
         const handleFileUpload = (uploadedFile: File) => {
           if (disabled) return;
           startUpload(uploadedFile);
+        };
+
+        const handleDownload = async () => {
+          if (!file) return;
+
+          if (onDownload) {
+            await onDownload();
+            return;
+          }
+
+          const url = window.URL.createObjectURL(file);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = file.name || "file.csv";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(url);
         };
 
         const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -249,12 +270,36 @@ export default function CSVUploadField<TFieldValues extends FieldValues>({
                   />
                 </UploadArea>
               ) : (
-                <Stack justifyContent="start">
+                <Stack justifyContent="start" width="max-content">
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
                       gap: 5,
+                      cursor: canDownload ? "pointer" : "default",
+                      transition: "background-color 0.2s ease",
+                      borderRadius: 1,
+                      px: 1,
+                      py: 0.5,
+                      "&:hover": canDownload
+                        ? {
+                            backgroundColor: (theme) =>
+                              theme.palette.action.hover,
+                          }
+                        : undefined,
+                    }}
+                    onClick={() => {
+                      if (!canDownload) return;
+                      void handleDownload();
+                    }}
+                    role={canDownload ? "button" : undefined}
+                    tabIndex={canDownload ? 0 : undefined}
+                    onKeyDown={(event) => {
+                      if (!canDownload) return;
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        void handleDownload();
+                      }
                     }}
                   >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -287,16 +332,18 @@ export default function CSVUploadField<TFieldValues extends FieldValues>({
                     </Box>
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <IconButton
-                        onClick={handleDeleteFile}
-                        size="small"
-                        disabled={disabled}
-                      >
-                        <SvgColor
-                          src="/assets/icons/ic-trash.svg"
-                          color="#B71931"
-                        />
-                      </IconButton>
+                      {!disabled && (
+                        <IconButton
+                          onClick={handleDeleteFile}
+                          size="small"
+                          disabled={disabled}
+                        >
+                          <SvgColor
+                            src="/assets/icons/ic-trash.svg"
+                            color="#B71931"
+                          />
+                        </IconButton>
+                      )}
                       {uploadStatus === "uploading" ? (
                         <Box
                           sx={{
@@ -326,14 +373,12 @@ export default function CSVUploadField<TFieldValues extends FieldValues>({
                 </Stack>
               )}
 
-              {/* Error จาก validator ของ RHF */}
               {fieldState.error?.message && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                   {fieldState.error.message}
                 </Alert>
               )}
 
-              {/* helper text เมื่อยังไม่มีไฟล์ */}
               {!file && !fieldState.error?.message && (
                 <Typography variant="body2" color="#919EAB" sx={{ mt: 1 }}>
                   {helperText}
