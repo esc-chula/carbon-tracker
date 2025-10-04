@@ -36,6 +36,7 @@ import type { UseBooleanReturn } from "@/hooks/use-boolean";
 import StatusChips from "@/components/StatusChips";
 import ProjectRejectDetailButton from "./project-reject-detail-button";
 import { useParams } from "next/navigation";
+import ProjectCarbonDetail from "./project-carbon-detail";
 
 // ---------------------------------------------------------------------------------
 type Params = {
@@ -139,12 +140,20 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
   const renderFirstScope = (
     <StyledStack>
-      <Typography variant="subtitle1" fontWeight={700}>
-        Scope 1 : ข้อมูลการปลดปล่อยก๊าซเรือนกระจกทางตรง
-      </Typography>
-      <Typography variant="caption" color={greyColor}>
-        สามารถประมาณได้จากบิลงบประมาณจบโครงการ
-      </Typography>
+      <Stack direction="row" spacing={1.5}>
+        <ProjectCarbonDetail carbon={12} />
+
+        <Stack spacing={1.5}>
+          <Typography variant="subtitle1" fontWeight={700}>
+            Scope 1 : <br />
+            ปริมาณการปล่อยก๊าซเรือนกระจกทางตรง
+          </Typography>
+          <Typography variant="caption" color={greyColor}>
+            สามารถประมาณได้จากบิลงบประมาณจบโครงการ
+          </Typography>
+        </Stack>
+      </Stack>
+
       <Grid container spacing={2} alignItems="start">
         {scope1Activities.map((field, index) => {
           const activityName = watch(`scope1_activities.${index}.name`);
@@ -213,20 +222,23 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
   const renderSecondScope = (
     <StyledStack>
-      <Stack spacing={0.5}>
-        <Typography variant="subtitle1" fontWeight={700}>
-          Scope 2 : ข้อมูลการปลดปล่อยก๊าซเรือนกระจกทางอ้อมจากการใช้พลังงาน
-        </Typography>
-        <Typography variant="caption" color={greyColor}>
-          สามารถประมาณได้จากบิลงบประมาณจบโครงการ
-        </Typography>
+      <Stack direction="row" spacing={1.5}>
+        <ProjectCarbonDetail carbon={12} />
+
+        <Stack spacing={1.5}>
+          <Typography variant="subtitle1" fontWeight={700}>
+            Scope 2 : <br />
+            ปริมาณการปล่อยก๊าซเรือนกระจกทางอ้อมจากการใช้พลังงาน
+          </Typography>
+          <Typography variant="caption" color={greyColor}>
+            สามารถประมาณได้จากบิลงบประมาณจบโครงการ
+          </Typography>
+        </Stack>
       </Stack>
+
       {scope2Entries.map((field, index) => {
         const kind = watch(`scope2_entries.${index}.kind`);
         const building = watch(`scope2_entries.${index}.name`);
-        // const buildingFacilities = watch(
-        //   `scope2_entries.${index}.building_facilities`,
-        // );
         const generatorFacilities = watch(
           `scope2_entries.${index}.generator_facilities`,
         );
@@ -383,13 +395,17 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
   const renderThirdScope = (
     <StyledStack>
-      <Stack spacing={0.5}>
-        <Typography variant="subtitle1" fontWeight={700}>
-          Scope 3 : ข้อมูลการปลดปล่อยก๊าซเรือนกระจกทางอ้อม
-        </Typography>
-        <Typography variant="caption" color={greyColor}>
-          การเดินทางของผู้เข้าร่วมและ staff
-        </Typography>
+      <Stack direction="row" spacing={1.5} alignItems="center">
+        <ProjectCarbonDetail carbon={12} />
+
+        <Stack spacing={1.5}>
+          <Typography variant="subtitle1" fontWeight={700}>
+            Scope 3 : อื่นๆ
+          </Typography>
+          <Typography variant="caption" color={greyColor}>
+            การเดินทางของผู้เข้าร่วมและ staff
+          </Typography>
+        </Stack>
       </Stack>
 
       <Field.CSVUploadField control={control} name="transportations_csv_file" />
@@ -699,6 +715,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             {renderSecondScope}
 
             {renderThirdScope}
+
+            <ProjectCarbonDetail carbon={1} all />
 
             <Stack
               direction="row"

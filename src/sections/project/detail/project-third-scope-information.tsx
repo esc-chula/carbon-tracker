@@ -23,9 +23,11 @@ import { HTTPError } from "ky";
 import { useForm } from "react-hook-form";
 import { canModifyProject } from "@/helper/project-permissions";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
+import ProjectCarbonDetail from "../project-carbon-detail";
 
 type TProjectThirdScopeInformationProps = {
   data: TGetProjectResponse["project"]["carbon_detail"]["scope3"] | undefined;
+  carbon: TGetProjectResponse["project"]["carbon_result"]["scope3"];
   projectId?: string;
   ownerId: string;
   attendeeChildren?: ReactNode;
@@ -42,6 +44,7 @@ type Scope3CsvFormValues = {
 function ProjectThirdScopeInformation({
   data,
   projectId,
+  carbon,
   ownerId,
   attendeeChildren,
   overnightChildren,
@@ -110,7 +113,6 @@ function ProjectThirdScopeInformation({
   const canDownloadCsv =
     hasTransportationData && Boolean(projectId) && canManage;
 
-  console.log(currentOwner, ownerId);
   // --------------------------- Function ---------------------------
 
   const handleDownloadCsv = useCallback(async () => {
@@ -185,15 +187,26 @@ function ProjectThirdScopeInformation({
       value: waste.value,
     })) ?? [];
 
+  const carbonUsage =
+    carbon.attendee +
+    carbon.overnight +
+    carbon.souvenir +
+    carbon.transportation +
+    carbon.waste;
+
   return (
     <ContainerWithOutlined>
-      <Stack>
-        <Typography variant="h5" fontSize={16}>
-          Scope 3 : อื่นๆ
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          การเดินทางของผู้เข้าร่วมและ staff
-        </Typography>
+      <Stack direction="row" spacing={1.5} alignItems="center">
+        <ProjectCarbonDetail carbon={carbonUsage} />
+
+        <Stack spacing={1.5}>
+          <Typography variant="h5" fontSize={16}>
+            Scope 3 : อื่นๆ
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            การเดินทางของผู้เข้าร่วมและ staff
+          </Typography>
+        </Stack>
       </Stack>
 
       {canDownloadCsv && (

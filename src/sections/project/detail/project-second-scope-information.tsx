@@ -8,6 +8,7 @@ import type { TGetProjectResponse } from "@/types/project/get-project";
 import { Box, Stack, Typography } from "@mui/material";
 import type { ReactNode } from "react";
 import { FacilityMapper } from "../helper/value-mapper";
+import ProjectCarbonDetail from "../project-carbon-detail";
 
 // ---------------------------------------------------------------------------------
 
@@ -21,11 +22,13 @@ type Scope2Building = {
 
 type TProjectSecondScopeInformationProps = {
   data: TGetProjectResponse["project"]["carbon_detail"]["scope2"];
+  carbon: TGetProjectResponse["project"]["carbon_result"]["scope2"];
   children?: ReactNode;
 };
 
 function ProjectSecondScopeInformation({
   data,
+  carbon,
   children,
 }: TProjectSecondScopeInformationProps) {
   // --------------------------- Values ---------------------------
@@ -52,15 +55,21 @@ function ProjectSecondScopeInformation({
 
   const generatorUsage = data.generators?.reduce((sum, c) => sum + c.value, 0);
 
+  const carbonUsage = carbon.building + carbon.generator;
+
   return (
     <ContainerWithOutlined>
-      <Stack spacing={0.5}>
-        <Typography variant="h5" fontSize={16}>
-          Scope 2 : ปริมาณการปล่อยก๊าซเรือนกระจกทางอ้อมจากการใช้พลังงาน
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          สามารถประมาณได้จากบิลงบประมาณจบโครงการ
-        </Typography>
+      <Stack direction="row" spacing={1.5}>
+        <ProjectCarbonDetail carbon={carbonUsage} />
+        <Stack spacing={1.5}>
+          <Typography variant="h5" fontSize={16}>
+            Scope 2 : <br />
+            ปริมาณการปล่อยก๊าซเรือนกระจกทางอ้อมจากการใช้พลังงาน
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            สามารถประมาณได้จากบิลงบประมาณจบโครงการ
+          </Typography>
+        </Stack>
       </Stack>
 
       <TableCustom

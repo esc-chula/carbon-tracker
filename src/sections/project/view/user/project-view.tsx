@@ -17,6 +17,8 @@ import ProjectRejectDetailButton from "../../project-reject-detail-button";
 import { showSuccess, showError } from "@/components/toast/toast";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
 import { canModifyProject } from "@/helper/project-permissions";
+import ProjectCarbonDetail from "../../project-carbon-detail";
+import { totalCarbonResult } from "@/types/project/get-project";
 
 type Params = {
   id: string;
@@ -91,6 +93,9 @@ function ProjectView() {
     project.data?.project.owner_id,
   );
 
+  const carbonResult = project.data?.project.carbon_result;
+  const carbonUsageAll = carbonResult ? totalCarbonResult(carbonResult) : 0;
+
   // --------------------------- Render ---------------------------
 
   if (project.isLoading || !project.isSuccess) {
@@ -123,6 +128,7 @@ function ProjectView() {
 
         <ProjectFirstScopeInformation
           data={project.data?.project?.carbon_detail?.scope1?.activities ?? []}
+          carbon={project.data?.project.carbon_result.scope1}
         />
 
         <ProjectSecondScopeInformation
@@ -132,13 +138,17 @@ function ProjectView() {
               generators: null,
             }
           }
+          carbon={project.data?.project.carbon_result.scope2}
         />
 
         <ProjectThirdScopeInformation
           data={project.data?.project?.carbon_detail?.scope3}
           projectId={project.data?.project.id}
           ownerId={project.data.project.owner_id}
-        />
+          carbon={project.data?.project.carbon_result.scope3}
+        >
+          <ProjectCarbonDetail carbon={carbonUsageAll} all />
+        </ProjectThirdScopeInformation>
 
         <Stack
           direction="row"

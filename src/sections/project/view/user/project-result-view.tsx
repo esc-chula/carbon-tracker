@@ -21,6 +21,8 @@ import ContainerWithOutlined from "@/components/container/container-with-outline
 import { useUpdateProjectStatusMutation } from "@/services/project/mutation";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
 import { canModifyProject } from "@/helper/project-permissions";
+import ProjectCarbonDetail from "../../project-carbon-detail";
+import { totalCarbonResult } from "@/types/project/get-project";
 
 type Params = {
   id: string;
@@ -80,6 +82,9 @@ function ProjectResultView() {
   };
 
   const ownerData = project.data?.project.owner;
+
+  const carbonResult = project.data?.project.carbon_result;
+  const carbonUsageAll = carbonResult ? totalCarbonResult(carbonResult) : 0;
 
   // --------------------------- Render ---------------------------
 
@@ -146,6 +151,7 @@ function ProjectResultView() {
 
         <ProjectFirstScopeInformation
           data={project.data?.project?.carbon_detail?.scope1?.activities ?? []}
+          carbon={project.data?.project.carbon_result.scope1}
         >
           {renderReviewStatus(project.data.review?.detail?.scope1)}
         </ProjectFirstScopeInformation>
@@ -157,6 +163,7 @@ function ProjectResultView() {
               generators: null,
             }
           }
+          carbon={project.data?.project.carbon_result.scope2}
         >
           {renderReviewStatus(project.data.review?.detail?.scope2)}
         </ProjectSecondScopeInformation>
@@ -164,6 +171,7 @@ function ProjectResultView() {
         <ProjectThirdScopeInformation
           data={project.data?.project?.carbon_detail?.scope3}
           projectId={project.data?.project.id}
+          carbon={project.data?.project.carbon_result.scope3}
           ownerId={project.data.project.owner_id}
           attendeeChildren={renderReviewStatus(
             project.data.review?.detail?.scope3?.attendee,
@@ -177,7 +185,9 @@ function ProjectResultView() {
           wasteChildren={renderReviewStatus(
             project.data.review?.detail?.scope3?.waste,
           )}
-        />
+        >
+          <ProjectCarbonDetail carbon={carbonUsageAll} all />
+        </ProjectThirdScopeInformation>
 
         {project.data.review?.note && (
           <ContainerWithOutlined>

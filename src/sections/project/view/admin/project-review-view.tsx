@@ -36,6 +36,8 @@ import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { buildReviewProjectPayload } from "../../helper/review-formatter";
 import type { ReviewFormValues } from "../../review-form/type";
 import { StyledAddButton } from "../../styles";
+import ProjectCarbonDetail from "../../project-carbon-detail";
+import { totalCarbonResult } from "@/types/project/get-project";
 
 // ---------------------------------------------------------------------------------
 
@@ -331,6 +333,11 @@ function ProjectReviewView() {
 
   const isReject = passedValues.includes(false);
 
+  const carbonResult = project.data?.project.carbon_result;
+  const carbonUsageAll = carbonResult ? totalCarbonResult(carbonResult) : 0;
+
+  // --------------------------- Function ---------------------------
+
   const handleCloseDialog = () => {
     if (!reviewProject.isPending) {
       setPendingValues(null);
@@ -436,6 +443,7 @@ function ProjectReviewView() {
               data={
                 project.data?.project?.carbon_detail?.scope1?.activities ?? []
               }
+              carbon={project.data?.project.carbon_result.scope1}
             >
               {renderReviewSection(
                 "detail.scope1.passed",
@@ -453,6 +461,7 @@ function ProjectReviewView() {
                   generators: null,
                 }
               }
+              carbon={project.data?.project.carbon_result.scope2}
             >
               {renderReviewSection(
                 "detail.scope2.passed",
@@ -467,6 +476,7 @@ function ProjectReviewView() {
               data={project.data?.project?.carbon_detail?.scope3}
               projectId={project.data?.project.id}
               ownerId={project.data?.project.owner_id}
+              carbon={project.data?.project.carbon_result.scope3}
               attendeeChildren={renderReviewSection(
                 "detail.scope3.attendee.passed",
                 errors.detail?.scope3?.attendee?.passed?.message,
@@ -495,7 +505,9 @@ function ProjectReviewView() {
                 appendScope3WasteRejectionNote,
                 removeScope3WasteRejectionNote,
               )}
-            />
+            >
+              <ProjectCarbonDetail carbon={carbonUsageAll} all />
+            </ProjectThirdScopeInformation>
           </Stack>
 
           <Stack sx={{ padding: "0px 24px" }}>

@@ -8,16 +8,19 @@ import type { Scope1Activity } from "@/types/project/project";
 import { ActivityNameMapper, ActivityUnitMapper } from "../helper/value-mapper";
 import { Stack, Typography } from "@mui/material";
 import type { ReactNode } from "react";
+import ProjectCarbonDetail from "../project-carbon-detail";
 
 // ---------------------------------------------------------------------------------
 
 type TProjectFirstScopeInformationProps = {
   data: TGetProjectResponse["project"]["carbon_detail"]["scope1"]["activities"];
+  carbon: TGetProjectResponse["project"]["carbon_result"]["scope1"];
   children?: ReactNode;
 };
 
 function ProjectFirstScopeInformation({
   data,
+  carbon,
   children,
 }: TProjectFirstScopeInformationProps) {
   // --------------------------- Values ---------------------------
@@ -37,13 +40,18 @@ function ProjectFirstScopeInformation({
 
   return (
     <ContainerWithOutlined>
-      <Stack spacing={0.5}>
-        <Typography variant="h5" fontSize={16}>
-          Scope 1 : ปริมาณการปล่อยก๊าซเรือนกระจกทางตรง
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          สามารถประมาณได้จากบิลงบประมาณจบโครงการ
-        </Typography>
+      <Stack direction="row" spacing={1.5}>
+        <ProjectCarbonDetail carbon={carbon.activity} />
+
+        <Stack spacing={1.5}>
+          <Typography variant="h5" fontSize={16}>
+            Scope 1 : <br />
+            ปริมาณการปล่อยก๊าซเรือนกระจกทางตรง
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            สามารถประมาณได้จากบิลงบประมาณจบโครงการ
+          </Typography>
+        </Stack>
       </Stack>
 
       <TableCustom
