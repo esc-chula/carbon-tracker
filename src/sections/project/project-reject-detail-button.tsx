@@ -13,6 +13,7 @@ function ProjectRejectDetailButton({ id }: TProjectRejectDetailButtonProps) {
   return (
     <Stack
       component="button"
+      type="button"
       direction="row"
       spacing={2}
       sx={{
