@@ -296,7 +296,6 @@ function ProjectForm({
           greyColor={greyColor}
           disableColor={disableColor}
           redColor={redColor}
-          watch={watch}
           setValue={setValue}
           removeScope1Activity={removeScope1Activity}
           appendScope1Activity={appendScope1Activity}

@@ -134,6 +134,20 @@ async function fetchGetProjectTransportationsCsv(payload: {
   return { blob, filename, contentType };
 }
 
+type EmissionFactorMap = Record<string, number>;
+
+type EmissionFactorResponse = {
+  factors?: Record<string, number>;
+};
+
+async function fetchProjectEmissionFactors(): Promise<EmissionFactorMap> {
+  const response = await ky
+    .get("projects/emissionfactors")
+    .json<EmissionFactorResponse>();
+
+  return response.factors ?? {};
+}
+
 // ---------------------------------------------------------------------------------
 
 const projectsQueryKeys = {
@@ -174,6 +188,16 @@ const projectsQueryKeys = {
       queryKey: [...projectsQueryKeys.certificate(payload)] as const,
       queryFn: () => fetchGetCertificate(payload),
     }),
+
+  emissionFactors: () =>
+    [...projectsQueryKeys.all(), "emission-factors"] as const,
+
+  emissionFactorsOptions: () =>
+    queryOptions({
+      queryKey: [...projectsQueryKeys.emissionFactors()] as const,
+      queryFn: () => fetchProjectEmissionFactors(),
+      staleTime: 1000 * 60 * 10,
+    }),
 };
 
 export {
@@ -183,4 +207,7 @@ export {
   fetchGetProject,
   fetchGetCertificate,
   fetchGetProjectTransportationsCsv,
+  fetchProjectEmissionFactors,
 };
+
+export type { EmissionFactorMap };

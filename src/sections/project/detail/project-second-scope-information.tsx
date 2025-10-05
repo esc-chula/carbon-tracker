@@ -18,6 +18,7 @@ type Scope2Building = {
   start_time: string;
   end_time: string;
   facilities: string;
+  meter_value: number;
 };
 
 type TProjectSecondScopeInformationProps = {
@@ -51,6 +52,7 @@ function ProjectSecondScopeInformation({
           .join(", ") ?? "",
       start_time: transFormDateToThai(building.start_time),
       end_time: transFormDateToThai(building.end_time),
+      meter_value: building.meter_value,
     })) ?? [];
 
   const generatorUsage = data.generators?.reduce((sum, c) => sum + c.value, 0);

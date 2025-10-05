@@ -164,11 +164,11 @@ const activityOptions = [
   { value: "normal_food", label: "อาหารปกติ" },
   { value: "vegan", label: "อาหารมังสวิรัติ" },
   {
-    value: "normal_food_with_drink",
+    value: "snack",
     label: "อาหารว่างและเครื่องดื่ม",
   },
   {
-    value: "vegan_with_drink",
+    value: "vegan_snack",
     label: "อาหารว่างมังสวิรัติและเครื่องดื่ม",
   },
 ];

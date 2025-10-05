@@ -1,7 +1,13 @@
 import { Field } from "@/components/hook-form/field";
 import RHFDateTimePicker from "@/components/hook-form/rhf-date-time-picker";
 
+import StatusChips from "@/components/StatusChips";
 import { SvgColor } from "@/components/svg/svg-color";
+import {
+  loadCarbonCalculator,
+  type CarbonCalculator,
+} from "@/helper/realtime-carbon-calculate/loader";
+import type { UseBooleanReturn } from "@/hooks/use-boolean";
 import type {
   ProjectFormValues,
   Scope1ActivityForm,
@@ -11,14 +17,20 @@ import type {
   Scope3SouvenirForm,
   Scope3WasteForm,
 } from "@/sections/project/form/type";
+import {
+  projectsQueryKeys,
+  type EmissionFactorMap,
+} from "@/services/project/query/project-query";
 import { Button, Grid, IconButton, Stack, Typography } from "@mui/material";
-import { Fragment } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   useFormContext,
+  useWatch,
   type FieldErrors,
   type UseFormHandleSubmit,
   type UseFormSetValue,
-  type UseFormWatch,
 } from "react-hook-form";
 import {
   activityOptions,
@@ -31,12 +43,10 @@ import {
   wasteOptions,
   type TRoom,
 } from "./form/constant";
-import { StyledAddButton, StyledStack } from "./styles";
-import type { UseBooleanReturn } from "@/hooks/use-boolean";
-import StatusChips from "@/components/StatusChips";
-import ProjectRejectDetailButton from "./project-reject-detail-button";
-import { useParams } from "next/navigation";
+import { buildRealtimeCarbonDetail } from "./helper/carbon-detail-builder";
 import ProjectCarbonDetail from "./project-carbon-detail";
+import ProjectRejectDetailButton from "./project-reject-detail-button";
+import { StyledAddButton, StyledStack } from "./styles";
 
 // ---------------------------------------------------------------------------------
 type Params = {
@@ -59,7 +69,6 @@ type TProjectFormSecondStepProps = {
   greyColor: string;
   disableColor: string;
   redColor: string;
-  watch: UseFormWatch<ProjectFormValues>;
   setValue: UseFormSetValue<ProjectFormValues>;
   removeScope1Activity: (index: number) => void;
   appendScope1Activity: (value: Scope1ActivityForm) => void;
@@ -81,6 +90,31 @@ type TProjectFormSecondStepProps = {
   isEdit?: boolean;
 };
 
+type CarbonSummary = {
+  scope1: number;
+  scope2: number;
+  scope3: number;
+  total: number;
+};
+
+const ZERO_SUMMARY: CarbonSummary = {
+  scope1: 0,
+  scope2: 0,
+  scope3: 0,
+  total: 0,
+};
+
+const createZeroSummary = (): CarbonSummary => ({ ...ZERO_SUMMARY });
+
+const nearlyEqual = (a: number, b: number, epsilon = 1e-6) =>
+  Math.abs(a - b) <= epsilon;
+
+const summariesEqual = (a: CarbonSummary, b: CarbonSummary) =>
+  nearlyEqual(a.scope1, b.scope1) &&
+  nearlyEqual(a.scope2, b.scope2) &&
+  nearlyEqual(a.scope3, b.scope3) &&
+  nearlyEqual(a.total, b.total);
+
 export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const {
     step,
@@ -98,7 +132,6 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     greyColor,
     disableColor,
     redColor,
-    watch,
     setValue,
     removeScope1Activity,
     appendScope1Activity,
@@ -122,9 +155,207 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
   // --------------------------- Hook ---------------------------
 
-  const { control } = useFormContext();
+  const { control, watch } = useFormContext<ProjectFormValues>();
   const params = useParams<Params>();
   const projectId = params?.id ?? "";
+  const emissionFactorsQuery = useQuery({
+    ...projectsQueryKeys.emissionFactorsOptions(),
+  });
+
+  const emissionFactors: EmissionFactorMap | undefined =
+    emissionFactorsQuery.data;
+  const emissionFactorErrorMessage =
+    emissionFactorsQuery.error instanceof Error
+      ? emissionFactorsQuery.error.message
+      : null;
+
+  const scope2EntriesWatch = useWatch({ control, name: "scope2_entries" });
+
+  const watchedValues = watch();
+
+  const realtimeCarbonDetail = useMemo(
+    () => buildRealtimeCarbonDetail(watchedValues),
+    [watchedValues],
+  );
+
+  const calculatorRef = useRef<CarbonCalculator | null>(null);
+  const [calculatorLoaded, setCalculatorLoaded] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    loadCarbonCalculator()
+      .then((calc) => {
+        if (mounted) {
+          calculatorRef.current = calc;
+          setCalculatorLoaded(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load carbon calculator:", error);
+        if (mounted) {
+          calculatorRef.current = null;
+          setCalculatorLoaded(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const [carbonSummary, setCarbonSummary] = useState<CarbonSummary>(() =>
+    createZeroSummary(),
+  );
+
+  useEffect(() => {
+    scope2EntriesWatch?.forEach((entry, index) => {
+      const kind = entry?.kind;
+
+      if (kind === "generator") {
+        const generatorFacilities = entry?.generator_facilities ?? [];
+        if (!generatorFacilities.length) {
+          setValue(
+            `scope2_entries.${index}.generator_facilities`,
+            ["เครื่องปั่นไฟฟ้า"],
+            {
+              shouldDirty: false,
+              shouldTouch: false,
+              shouldValidate: false,
+            },
+          );
+        }
+
+        if (entry?.meter_facilities?.length) {
+          setValue(`scope2_entries.${index}.meter_facilities`, [], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+      } else if (kind === "meter") {
+        const meterFacilities = entry?.meter_facilities ?? [];
+        if (!meterFacilities.length) {
+          setValue(`scope2_entries.${index}.meter_facilities`, ["มิเตอร์"], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+
+        if (entry?.generator_facilities?.length) {
+          setValue(`scope2_entries.${index}.generator_facilities`, [], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+
+        if (entry?.unit !== "kWh") {
+          setValue(`scope2_entries.${index}.unit`, "kWh", {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+      } else {
+        if (entry?.generator_facilities?.length) {
+          setValue(`scope2_entries.${index}.generator_facilities`, [], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+
+        if (entry?.meter_facilities?.length) {
+          setValue(`scope2_entries.${index}.meter_facilities`, [], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+      }
+    });
+  }, [scope2EntriesWatch, setValue]);
+
+  useEffect(() => {
+    if (step !== 2) {
+      setCarbonSummary((prev) =>
+        summariesEqual(prev, ZERO_SUMMARY) ? prev : createZeroSummary(),
+      );
+      return;
+    }
+
+    if (!calculatorLoaded || !calculatorRef.current) {
+      setCarbonSummary((prev) =>
+        summariesEqual(prev, ZERO_SUMMARY) ? prev : createZeroSummary(),
+      );
+      return;
+    }
+
+    if (
+      emissionFactorErrorMessage ||
+      !emissionFactors ||
+      Object.keys(emissionFactors).length === 0
+    ) {
+      setCarbonSummary((prev) =>
+        summariesEqual(prev, ZERO_SUMMARY) ? prev : createZeroSummary(),
+      );
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      try {
+        const result = calculatorRef.current!(
+          realtimeCarbonDetail,
+          emissionFactors,
+        );
+
+        if (result?.error) {
+          setCarbonSummary((prev) =>
+            summariesEqual(prev, ZERO_SUMMARY) ? prev : createZeroSummary(),
+          );
+          return;
+        }
+
+        const summary: CarbonSummary = {
+          scope1: result.scope1?.activity ?? 0,
+          scope2:
+            (result.scope2?.building ?? 0) + (result.scope2?.generator ?? 0),
+          scope3:
+            (result.scope3?.transportation ?? 0) +
+            (result.scope3?.attendee ?? 0) +
+            (result.scope3?.overnight ?? 0) +
+            (result.scope3?.souvenir ?? 0) +
+            (result.scope3?.waste ?? 0),
+          total: result.total ?? 0,
+        };
+
+        if (!Number.isFinite(summary.total)) {
+          summary.total = summary.scope1 + summary.scope2 + summary.scope3;
+        }
+
+        setCarbonSummary((prev) =>
+          summariesEqual(prev, summary) ? prev : summary,
+        );
+      } catch (error) {
+        console.error("Carbon calculation error:", error);
+        setCarbonSummary((prev) =>
+          summariesEqual(prev, ZERO_SUMMARY) ? prev : createZeroSummary(),
+        );
+      }
+    }, 1500);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [
+    step,
+    calculatorLoaded,
+    emissionFactors,
+    emissionFactorErrorMessage,
+    realtimeCarbonDetail,
+  ]);
 
   const fieldErrorMessage = (error: unknown) =>
     typeof error === "object" && error != null && "message" in error
@@ -141,7 +372,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const renderFirstScope = (
     <StyledStack>
       <Stack direction="row" spacing={1.5}>
-        <ProjectCarbonDetail carbon={12} />
+        <ProjectCarbonDetail carbon={carbonSummary.scope1} />
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" fontWeight={700}>
@@ -223,7 +454,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const renderSecondScope = (
     <StyledStack>
       <Stack direction="row" spacing={1.5}>
-        <ProjectCarbonDetail carbon={12} />
+        <ProjectCarbonDetail carbon={carbonSummary.scope2} />
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" fontWeight={700}>
@@ -242,11 +473,16 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         const generatorFacilities = watch(
           `scope2_entries.${index}.generator_facilities`,
         );
+        const meterFacilities = watch(
+          `scope2_entries.${index}.meter_facilities`,
+        );
+
         const energyValue = watch(`scope2_entries.${index}.value`);
+        const meterValue = watch(`scope2_entries.${index}.meter_value`);
         const room = watch(`scope2_entries.${index}.room`);
 
         return (
-          <Fragment key={index}>
+          <Fragment key={`${index}-${kind ?? "default"}`}>
             <Stack direction="row" spacing={2} alignItems="center">
               <Typography variant="body1" fontWeight={400}>
                 การใช้พลังงาน
@@ -256,6 +492,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 options={[
                   { value: "building", label: "การใช้งานอาคาร." },
                   { value: "generator", label: "การใช้เครื่องปั่นไฟ" },
+                  { value: "meter", label: "มิเตอร์ไฟฟ้า" },
                 ]}
               />
             </Stack>
@@ -266,17 +503,22 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     <Field.MultipleAutoComplete
                       name={`scope2_entries.${index}.generator_facilities`}
                       label="อุปกรณ์ที่ใช้"
-                      options={equipmentOptions}
-                      helperText={
-                        errors.scope2_entries?.[index]?.generator_facilities
-                          ?.message
-                      }
+                      options={[
+                        {
+                          value: "เครื่องปั่นไฟฟ้า",
+                          label: "เครื่องปั่นไฟฟ้า",
+                        },
+                      ]}
                       value={[
                         {
                           value: "เครื่องปั่นไฟฟ้า",
                           label: "เครื่องปั่นไฟฟ้า",
                         },
                       ]}
+                      helperText={
+                        errors.scope2_entries?.[index]?.generator_facilities
+                          ?.message
+                      }
                       disabled
                     />
                   </Grid>
@@ -297,6 +539,73 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                       helperText={errors.scope2_entries?.[index]?.unit?.message}
                       disabled={!energyValue}
                     />
+                  </Grid>
+                  <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
+                    <IconButton onClick={() => removeScope2Entry(index)}>
+                      <SvgColor
+                        src="/assets/icons/ic-trash.svg"
+                        color={redColor}
+                      />
+                    </IconButton>
+                  </Grid>
+                </>
+              ) : kind === "meter" ? (
+                <>
+                  <Grid size={{ xs: 2.75 }}>
+                    <Field.MultipleAutoComplete
+                      name={`scope2_entries.${index}.meter_facilities`}
+                      label="อุปกรณ์ที่ใช้"
+                      options={[
+                        {
+                          value: "มิเตอร์",
+                          label: "มิเตอร์",
+                        },
+                      ]}
+                      value={[
+                        {
+                          value: "มิเตอร์",
+                          label: "มิเตอร์",
+                        },
+                      ]}
+                      helperText={
+                        errors.scope2_entries?.[index]?.meter_facilities
+                          ?.message
+                      }
+                      disabled
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 2.75 }}>
+                    <Field.CustomAutoComplete
+                      name={`scope2_entries.${index}.name`}
+                      label="อาคารที่ใช้"
+                      options={buildingOptions}
+                      helperText={errors.scope2_entries?.[index]?.name?.message}
+                      creatable
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 2.75 }}>
+                    <Field.CustomAutoComplete
+                      name={`scope2_entries.${index}.room`}
+                      label="ห้องที่ใช้"
+                      options={roomOptions[building as TRoom] ?? []}
+                      disabled={!building}
+                      creatable
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 2.75 }}>
+                    <Field.Text
+                      type="number"
+                      name={`scope2_entries.${index}.meter_value`}
+                      label="ปริมาณพลังงานที่ใช้"
+                      slotProps={{ htmlInput: { min: 0 } }}
+                      helperText={
+                        errors.scope2_entries?.[index]?.meter_value?.message
+                      }
+                      disabled={!room}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1.75 }}>
+                    <Typography>kWh</Typography>
                   </Grid>
                   <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
                     <IconButton onClick={() => removeScope2Entry(index)}>
@@ -381,8 +690,10 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             room: "",
             building_facilities: [],
             generator_facilities: [],
+            meter_facilities: [],
             start_time: undefined,
             end_time: undefined,
+            meter_value: undefined,
             value: undefined,
             unit: "",
           })
@@ -396,7 +707,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const renderThirdScope = (
     <StyledStack>
       <Stack direction="row" spacing={1.5} alignItems="center">
-        <ProjectCarbonDetail carbon={12} />
+        <ProjectCarbonDetail carbon={carbonSummary.scope3} />
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" fontWeight={700}>
@@ -716,7 +1027,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
             {renderThirdScope}
 
-            <ProjectCarbonDetail carbon={1} all />
+            <ProjectCarbonDetail carbon={carbonSummary.total} all />
 
             <Stack
               direction="row"

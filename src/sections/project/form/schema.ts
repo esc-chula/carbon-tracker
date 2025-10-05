@@ -41,13 +41,18 @@ const Scope1ActivitySchema = z.object({
 // Scope 2 schema
 const Scope2EntrySchema = z
   .object({
-    kind: z.enum(["building", "generator"]),
+    kind: z.enum(["building", "generator", "meter"]),
     name: z.string().optional(),
     room: z.string().optional(),
     building_facilities: z.array(z.string()).optional(),
     generator_facilities: z.array(z.string()).optional(),
+    meter_facilities: z.array(z.string()).optional(),
     start_time: z.string().optional(),
     end_time: z.string().optional(),
+    meter_value: z.preprocess(
+      toOptionalNumber,
+      z.number().positive("กรุณากรอกค่าที่ไม่ติดลบ").optional(),
+    ),
     value: z.preprocess(
       toOptionalNumber,
       z.number().positive("กรุณากรอกค่าที่ไม่ติดลบ").optional(),
@@ -114,6 +119,38 @@ const Scope2EntrySchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["generator_facilities"],
+          message: "กรุณาเลือกอุปกรณ์ที่ใช้",
+        });
+      }
+    }
+
+    if (data.kind === "meter") {
+      if (!data.name?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["name"],
+          message: "กรุณากรอกชื่ออาคาร",
+        });
+      }
+      if (!data.room?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["room"],
+          message: "กรุณากรอกห้องใช้",
+        });
+      }
+      if (data.meter_value == null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["meter_value"],
+          message: "กรุณากรอกค่ามิเตอร์",
+        });
+      }
+
+      if (!data.meter_facilities?.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["meter_facilities"],
           message: "กรุณาเลือกอุปกรณ์ที่ใช้",
         });
       }
@@ -300,8 +337,10 @@ const defaultValues: ProjectFormValues = {
       room: "",
       building_facilities: [],
       generator_facilities: [],
+      meter_facilities: [],
       start_time: undefined,
       end_time: undefined,
+      meter_value: undefined,
       value: undefined,
       unit: "",
     },

@@ -3,7 +3,8 @@ import type { ProjectFormValues } from "../form/type";
 import type { TGetProjectResponse } from "@/types/project/get-project";
 import type { TOwner } from "@/types/user/get-owner";
 
-const cloneDefaultValues = (): ProjectFormValues => structuredClone(defaultValues);
+const cloneDefaultValues = (): ProjectFormValues =>
+  structuredClone(defaultValues);
 
 type BuildInitialValuesParams = {
   project?: TGetProjectResponse["project"];
@@ -74,14 +75,19 @@ function projectToFormValues({
 
   const buildings = carbonDetail.scope2?.buildings ?? [];
   buildings?.forEach((building) => {
+    const meterValue = building?.meter_value ?? 0;
+    const isMeter = meterValue !== 0;
+
     scope2Entries.push({
-      kind: "building",
+      kind: isMeter ? "meter" : "building",
       name: building?.name ?? "",
       room: building?.room ?? "",
-      building_facilities: building?.facilities ?? [],
+      building_facilities: isMeter ? [] : (building?.facilities ?? []),
       generator_facilities: [],
+      meter_facilities: isMeter ? (building?.facilities ?? []) : [],
       start_time: building?.start_time ?? "",
       end_time: building?.end_time ?? "",
+      meter_value: meterValue || undefined,
       value: undefined,
       unit: "",
     });
@@ -95,8 +101,10 @@ function projectToFormValues({
       room: undefined,
       building_facilities: [],
       generator_facilities: generator?.facilities ?? [],
+      meter_facilities: [],
       start_time: undefined,
       end_time: undefined,
+      meter_value: undefined,
       value: generator?.value ?? undefined,
       unit: generator?.unit ?? "",
     });

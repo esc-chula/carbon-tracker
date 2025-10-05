@@ -28,8 +28,9 @@ export type Scope1Activity = {
 export type Scope2Building = {
   name: string;
   room: string;
-  start_time: ISODateTime;
-  end_time: ISODateTime;
+  start_time: ISODateTime | null;
+  end_time: ISODateTime | null;
+  meter_value: number;
   facilities: string[] | null;
 };
 

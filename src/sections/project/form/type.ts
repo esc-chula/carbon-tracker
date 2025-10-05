@@ -7,15 +7,17 @@ type Scope1ActivityForm = {
 };
 
 type Scope2EntryForm = {
-  kind?: "building" | "generator";
+  kind?: "building" | "generator" | "meter";
 
   name?: string;
   room?: string;
   building_facilities?: Array<string>;
   generator_facilities?: Array<string>;
+  meter_facilities?: Array<string>;
   start_time?: string;
   end_time?: string;
 
+  meter_value?: number;
   value?: number;
   unit?: string;
 };
