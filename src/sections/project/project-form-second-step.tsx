@@ -473,12 +473,12 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         const generatorFacilities = watch(
           `scope2_entries.${index}.generator_facilities`,
         );
-        const meterFacilities = watch(
-          `scope2_entries.${index}.meter_facilities`,
-        );
+        // const meterFacilities = watch(
+        //   `scope2_entries.${index}.meter_facilities`,
+        // );
 
         const energyValue = watch(`scope2_entries.${index}.value`);
-        const meterValue = watch(`scope2_entries.${index}.meter_value`);
+        // const meterValue = watch(`scope2_entries.${index}.meter_value`);
         const room = watch(`scope2_entries.${index}.room`);
 
         return (
