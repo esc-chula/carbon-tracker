@@ -1,33 +1,40 @@
 import { Field } from "@/components/hook-form/field";
 import RHFDateTimePicker from "@/components/hook-form/rhf-date-time-picker";
 
+import StatusChips from "@/components/StatusChips";
 import { SvgColor } from "@/components/svg/svg-color";
+import {
+  loadCarbonCalculator,
+  type CarbonCalculator,
+} from "@/helper/realtime-carbon-calculate/loader";
+import type { UseBooleanReturn } from "@/hooks/use-boolean";
 import type {
-  Accommodation,
-  Activity,
-  Energy,
-  Gift,
-  Participant,
   ProjectFormValues,
-  Waste,
+  Scope1ActivityForm,
+  Scope2EntryForm,
+  Scope3AttendeeForm,
+  Scope3OvernightForm,
+  Scope3SouvenirForm,
+  Scope3WasteForm,
 } from "@/sections/project/form/type";
 import {
-  Box,
-  Button,
-  Grid,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { Fragment, useState } from "react";
+  projectsQueryKeys,
+  type EmissionFactorMap,
+} from "@/services/project/query/project-query";
+import { Button, Grid, IconButton, Stack, Typography } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   useFormContext,
+  useWatch,
   type FieldErrors,
   type UseFormHandleSubmit,
   type UseFormSetValue,
-  type UseFormWatch,
 } from "react-hook-form";
 import {
+  activityOptions,
+  activityUnitOptions,
   buildingOptions,
   energyUnitOptions,
   equipmentOptions,
@@ -36,141 +43,369 @@ import {
   wasteOptions,
   type TRoom,
 } from "./form/constant";
+import { buildRealtimeCarbonDetail } from "./helper/carbon-detail-builder";
+import ProjectCarbonDetail from "./project-carbon-detail";
+import ProjectRejectDetailButton from "./project-reject-detail-button";
 import { StyledAddButton, StyledStack } from "./styles";
-import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
-import { useBoolean } from "@/hooks/use-boolean";
 
 // ---------------------------------------------------------------------------------
+type Params = {
+  id: string;
+};
 
 type TProjectFormSecondStepProps = {
   step: number;
-  activities: Activity[];
-  energies: Energy[];
-  participant: Participant[];
-  accommodation: Accommodation[];
-  gift: Gift[];
-  waste: Waste[];
+  scope1Activities: Scope1ActivityForm[];
+  scope2Entries: Scope2EntryForm[];
+  scope3Attendee: Scope3AttendeeForm[];
+  scope3Overnight: Scope3OvernightForm[];
+  scope3Souvenir: Scope3SouvenirForm[];
+  scope3Waste: Scope3WasteForm[];
   errors: FieldErrors<ProjectFormValues>;
-  projectCode: string;
-  projectName: string;
-  fullName: string;
-  telText: string;
+  customId: string;
+  title: string;
+  ownerFullName: string;
+  phoneNumberText: string;
   greyColor: string;
   disableColor: string;
   redColor: string;
-  watch: UseFormWatch<ProjectFormValues>;
   setValue: UseFormSetValue<ProjectFormValues>;
-  removeActivity: (index: number) => void;
-  appendActivity: (value: Activity) => void;
-  removeEnergy: (index: number) => void;
-  appendEnergy: (value: Energy) => void;
-  removeParticipant: (index: number) => void;
-  appendParticipant: (value: Participant) => void;
-  removeAccommodation: (index: number) => void;
-  appendAccommodation: (value: Accommodation) => void;
-  removeGift: (index: number) => void;
-  appendGift: (value: Gift) => void;
-  removeWaste: (index: number) => void;
-  appendWaste: (value: Waste) => void;
+  removeScope1Activity: (index: number) => void;
+  appendScope1Activity: (value: Scope1ActivityForm) => void;
+  removeScope2Entry: (index: number) => void;
+  appendScope2Entry: (value: Scope2EntryForm) => void;
+  removeScope3Attendee: (index: number) => void;
+  appendScope3Attendee: (value: Scope3AttendeeForm) => void;
+  removeScope3Overnight: (index: number) => void;
+  appendScope3Overnight: (value: Scope3OvernightForm) => void;
+  removeScope3Souvenir: (index: number) => void;
+  appendScope3Souvenir: (value: Scope3SouvenirForm) => void;
+  removeScope3Waste: (index: number) => void;
+  appendScope3Waste: (value: Scope3WasteForm) => void;
   handleBack: () => void;
   onSubmit: (data: ProjectFormValues, status: "draft" | "pending") => void;
-  handleSubmit: UseFormHandleSubmit<ProjectFormValues, ProjectFormValues>;
+  openDialog: UseBooleanReturn;
+  confirmDisabled: boolean;
+  handleSubmit: UseFormHandleSubmit<ProjectFormValues>;
+  isEdit?: boolean;
 };
+
+type CarbonSummary = {
+  scope1: number;
+  scope2: number;
+  scope3: number;
+  total: number;
+};
+
+const ZERO_SUMMARY: CarbonSummary = {
+  scope1: 0,
+  scope2: 0,
+  scope3: 0,
+  total: 0,
+};
+
+const createZeroSummary = (): CarbonSummary => ({ ...ZERO_SUMMARY });
+
+const nearlyEqual = (a: number, b: number, epsilon = 1e-6) =>
+  Math.abs(a - b) <= epsilon;
+
+const summariesEqual = (a: CarbonSummary, b: CarbonSummary) =>
+  nearlyEqual(a.scope1, b.scope1) &&
+  nearlyEqual(a.scope2, b.scope2) &&
+  nearlyEqual(a.scope3, b.scope3) &&
+  nearlyEqual(a.total, b.total);
 
 export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const {
     step,
-    activities,
-    energies,
-    participant,
-    accommodation,
-    gift,
-    waste,
+    scope1Activities,
+    scope2Entries,
+    scope3Attendee,
+    scope3Overnight,
+    scope3Souvenir,
+    scope3Waste,
     errors,
-    projectCode,
-    projectName,
-    fullName,
-    telText,
+    customId,
+    title,
+    ownerFullName,
+    phoneNumberText,
     greyColor,
     disableColor,
     redColor,
-    watch,
     setValue,
-    removeActivity,
-    appendActivity,
-    removeEnergy,
-    appendEnergy,
-    removeParticipant,
-    appendParticipant,
-    removeAccommodation,
-    appendAccommodation,
-    removeGift,
-    appendGift,
-    removeWaste,
-    appendWaste,
+    removeScope1Activity,
+    appendScope1Activity,
+    removeScope2Entry,
+    appendScope2Entry,
+    removeScope3Attendee,
+    appendScope3Attendee,
+    removeScope3Overnight,
+    appendScope3Overnight,
+    removeScope3Souvenir,
+    appendScope3Souvenir,
+    removeScope3Waste,
+    appendScope3Waste,
     handleBack,
+    openDialog,
+    confirmDisabled,
     onSubmit,
     handleSubmit,
+    isEdit = false,
   } = props;
 
   // --------------------------- Hook ---------------------------
 
-  const { control } = useFormContext();
-  const isOpenDialog = useBoolean();
-  const [disabled, setDisabled] = useState(false);
+  const { control, watch } = useFormContext<ProjectFormValues>();
+  const params = useParams<Params>();
+  const projectId = params?.id ?? "";
+  const emissionFactorsQuery = useQuery({
+    ...projectsQueryKeys.emissionFactorsOptions(),
+  });
 
-  // --------------------------- Function ---------------------------
+  const emissionFactors: EmissionFactorMap | undefined =
+    emissionFactorsQuery.data;
+  const emissionFactorErrorMessage =
+    emissionFactorsQuery.error instanceof Error
+      ? emissionFactorsQuery.error.message
+      : null;
 
-  const handleClick = () => {
-    setDisabled(true);
+  const scope2EntriesWatch = useWatch({ control, name: "scope2_entries" });
 
-    void handleSubmit((data: ProjectFormValues) => onSubmit(data, "pending"))();
+  const watchedValues = watch();
 
-    setTimeout(() => {
-      setDisabled(false);
-    }, 2000);
-  };
+  const realtimeCarbonDetail = useMemo(
+    () => buildRealtimeCarbonDetail(watchedValues),
+    [watchedValues],
+  );
+
+  const calculatorRef = useRef<CarbonCalculator | null>(null);
+  const [calculatorLoaded, setCalculatorLoaded] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    loadCarbonCalculator()
+      .then((calc) => {
+        if (mounted) {
+          calculatorRef.current = calc;
+          setCalculatorLoaded(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load carbon calculator:", error);
+        if (mounted) {
+          calculatorRef.current = null;
+          setCalculatorLoaded(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const [carbonSummary, setCarbonSummary] = useState<CarbonSummary>(() =>
+    createZeroSummary(),
+  );
+
+  useEffect(() => {
+    scope2EntriesWatch?.forEach((entry, index) => {
+      const kind = entry?.kind;
+
+      if (kind === "generator") {
+        const generatorFacilities = entry?.generator_facilities ?? [];
+        if (!generatorFacilities.length) {
+          setValue(
+            `scope2_entries.${index}.generator_facilities`,
+            ["เครื่องปั่นไฟฟ้า"],
+            {
+              shouldDirty: false,
+              shouldTouch: false,
+              shouldValidate: false,
+            },
+          );
+        }
+
+        if (entry?.meter_facilities?.length) {
+          setValue(`scope2_entries.${index}.meter_facilities`, [], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+      } else if (kind === "meter") {
+        const meterFacilities = entry?.meter_facilities ?? [];
+        if (!meterFacilities.length) {
+          setValue(`scope2_entries.${index}.meter_facilities`, ["มิเตอร์"], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+
+        if (entry?.generator_facilities?.length) {
+          setValue(`scope2_entries.${index}.generator_facilities`, [], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+
+        if (entry?.unit !== "kWh") {
+          setValue(`scope2_entries.${index}.unit`, "kWh", {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+      } else {
+        if (entry?.generator_facilities?.length) {
+          setValue(`scope2_entries.${index}.generator_facilities`, [], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+
+        if (entry?.meter_facilities?.length) {
+          setValue(`scope2_entries.${index}.meter_facilities`, [], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+      }
+    });
+  }, [scope2EntriesWatch, setValue]);
+
+  useEffect(() => {
+    if (step !== 2) {
+      setCarbonSummary((prev) =>
+        summariesEqual(prev, ZERO_SUMMARY) ? prev : createZeroSummary(),
+      );
+      return;
+    }
+
+    if (!calculatorLoaded || !calculatorRef.current) {
+      setCarbonSummary((prev) =>
+        summariesEqual(prev, ZERO_SUMMARY) ? prev : createZeroSummary(),
+      );
+      return;
+    }
+
+    if (
+      emissionFactorErrorMessage ||
+      !emissionFactors ||
+      Object.keys(emissionFactors).length === 0
+    ) {
+      setCarbonSummary((prev) =>
+        summariesEqual(prev, ZERO_SUMMARY) ? prev : createZeroSummary(),
+      );
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      try {
+        const result = calculatorRef.current!(
+          realtimeCarbonDetail,
+          emissionFactors,
+        );
+
+        if (result?.error) {
+          setCarbonSummary((prev) =>
+            summariesEqual(prev, ZERO_SUMMARY) ? prev : createZeroSummary(),
+          );
+          return;
+        }
+
+        const summary: CarbonSummary = {
+          scope1: result.scope1?.activity ?? 0,
+          scope2:
+            (result.scope2?.building ?? 0) + (result.scope2?.generator ?? 0),
+          scope3:
+            (result.scope3?.transportation ?? 0) +
+            (result.scope3?.attendee ?? 0) +
+            (result.scope3?.overnight ?? 0) +
+            (result.scope3?.souvenir ?? 0) +
+            (result.scope3?.waste ?? 0),
+          total: result.total ?? 0,
+        };
+
+        if (!Number.isFinite(summary.total)) {
+          summary.total = summary.scope1 + summary.scope2 + summary.scope3;
+        }
+
+        setCarbonSummary((prev) =>
+          summariesEqual(prev, summary) ? prev : summary,
+        );
+      } catch (error) {
+        console.error("Carbon calculation error:", error);
+        setCarbonSummary((prev) =>
+          summariesEqual(prev, ZERO_SUMMARY) ? prev : createZeroSummary(),
+        );
+      }
+    }, 1500);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [
+    step,
+    calculatorLoaded,
+    emissionFactors,
+    emissionFactorErrorMessage,
+    realtimeCarbonDetail,
+  ]);
+
+  const fieldErrorMessage = (error: unknown) =>
+    typeof error === "object" && error != null && "message" in error
+      ? (error as { message?: string }).message
+      : undefined;
 
   // --------------------------- Value ---------------------------
 
   const file = watch("transportations_csv_file");
+  const status = watch("status");
 
   // --------------------------- Render ---------------------------F
 
   const renderFirstScope = (
     <StyledStack>
-      <Typography variant="subtitle1" fontWeight={700}>
-        Scope 1 : ข้อมูลการปลดปล่อยก๊าซเรือนกระจกทางตรง
-      </Typography>
-      <Typography variant="caption" color={greyColor}>
-        สามารถประมาณได้จากบิลงบประมาณจบโครงการ
-      </Typography>
+      <Stack direction="row" spacing={1.5}>
+        <ProjectCarbonDetail carbon={carbonSummary.scope1} />
+
+        <Stack spacing={1.5}>
+          <Typography variant="subtitle1" fontWeight={700}>
+            Scope 1 : <br />
+            ปริมาณการปล่อยก๊าซเรือนกระจกทางตรง
+          </Typography>
+          <Typography variant="caption" color={greyColor}>
+            สามารถประมาณได้จากบิลงบประมาณจบโครงการ
+          </Typography>
+        </Stack>
+      </Stack>
+
       <Grid container spacing={2} alignItems="start">
-        {activities.map((field, index) => {
-          const activity_type = watch(`activities.${index}.activity_type`);
-          const amount = watch(`activities.${index}.amount`);
+        {scope1Activities.map((field, index) => {
+          const activityName = watch(`scope1_activities.${index}.name`);
+          const activityValue = watch(`scope1_activities.${index}.value`);
 
           return (
             <Fragment key={index}>
               <Grid size={{ xs: 7.5 }}>
                 <Field.CustomAutoComplete
-                  name={`activities.${index}.activity_type`}
+                  name={`scope1_activities.${index}.name`}
                   label="ประเภทกิจกรรม"
-                  options={[
-                    { value: "gas", label: "ก๊าซหุงต้ม" },
-                    { value: "normal_food", label: "อาหารปกติ" },
-                    { value: "vegan", label: "อาหารมังสวิรัติ" },
-                  ]}
-                  helperText={
-                    errors.activities?.[index]?.activity_type?.message
-                  }
+                  options={activityOptions}
+                  helperText={errors.scope1_activities?.[index]?.name?.message}
                   onInputChange={(_, value) => {
-                    if (!value) return setValue(`activities.${index}.unit`, "");
+                    if (!value)
+                      return setValue(`scope1_activities.${index}.unit`, "");
 
                     if (value === "ก๊าซหุงต้ม") {
-                      setValue(`activities.${index}.unit`, "kg");
+                      setValue(`scope1_activities.${index}.unit`, "kg");
                     } else {
-                      setValue(`activities.${index}.unit`, "box");
+                      setValue(`scope1_activities.${index}.unit`, "box");
                     }
                   }}
                 />
@@ -178,29 +413,25 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
               <Grid size={{ xs: 2 }}>
                 <Field.Text
                   type="number"
-                  name={`activities.${index}.amount`}
+                  name={`scope1_activities.${index}.value`}
                   label="ปริมาณพลังงานที่ใช้"
                   slotProps={{ htmlInput: { min: 0 } }}
-                  disabled={!activity_type}
+                  disabled={!activityName}
                 />
               </Grid>
               <Grid size={{ xs: 2 }}>
                 <Field.CustomAutoComplete
-                  name={`activities.${index}.unit`}
+                  name={`scope1_activities.${index}.unit`}
                   label="หน่วย"
-                  options={[
-                    { value: "box", label: "กล่อง" },
-                    { value: "kg", label: "กิโลกรัม" },
-                    { value: "g", label: "กรัม" },
-                  ]}
-                  helperText={errors.activities?.[index]?.unit?.message}
-                  disabled={!amount}
+                  options={activityUnitOptions}
+                  helperText={errors.scope1_activities?.[index]?.unit?.message}
+                  disabled={!activityValue}
                   creatable
                   readOnly
                 />
               </Grid>
               <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                <IconButton onClick={() => removeActivity(index)}>
+                <IconButton onClick={() => removeScope1Activity(index)}>
                   <SvgColor src="/assets/icons/ic-trash.svg" color={redColor} />
                 </IconButton>
               </Grid>
@@ -212,7 +443,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         variant="outlined"
         startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
         onClick={() =>
-          appendActivity({ activity_type: "", amount: undefined, unit: "" })
+          appendScope1Activity({ name: "", value: undefined, unit: "" })
         }
       >
         เพิ่มกิจกรรม
@@ -222,72 +453,162 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
   const renderSecondScope = (
     <StyledStack>
-      <Stack spacing={0.5}>
-        <Typography variant="subtitle1" fontWeight={700}>
-          Scope 2 : ข้อมูลการปลดปล่อยก๊าซเรือนกระจกทางอ้อมจากการใช้พลังงาน
-        </Typography>
-        <Typography variant="caption" color={greyColor}>
-          สามารถประมาณได้จากบิลงบประมาณจบโครงการ
-        </Typography>
+      <Stack direction="row" spacing={1.5}>
+        <ProjectCarbonDetail carbon={carbonSummary.scope2} />
+
+        <Stack spacing={1.5}>
+          <Typography variant="subtitle1" fontWeight={700}>
+            Scope 2 : <br />
+            ปริมาณการปล่อยก๊าซเรือนกระจกทางอ้อมจากการใช้พลังงาน
+          </Typography>
+          <Typography variant="caption" color={greyColor}>
+            สามารถประมาณได้จากบิลงบประมาณจบโครงการ
+          </Typography>
+        </Stack>
       </Stack>
-      {energies.map((field, index) => {
-        const type = watch(`energies.${index}.type`);
-        const building = watch(`energies.${index}.building`);
-        const equipment = watch(`energies.${index}.equipment`);
-        const quantity = watch(`energies.${index}.quantity`);
-        const room = watch(`energies.${index}.room`);
+
+      {scope2Entries.map((field, index) => {
+        const kind = watch(`scope2_entries.${index}.kind`);
+        const building = watch(`scope2_entries.${index}.name`);
+        const generatorFacilities = watch(
+          `scope2_entries.${index}.generator_facilities`,
+        );
+        const meterFacilities = watch(
+          `scope2_entries.${index}.meter_facilities`,
+        );
+
+        const energyValue = watch(`scope2_entries.${index}.value`);
+        const meterValue = watch(`scope2_entries.${index}.meter_value`);
+        const room = watch(`scope2_entries.${index}.room`);
 
         return (
-          <Fragment key={index}>
+          <Fragment key={`${index}-${kind ?? "default"}`}>
             <Stack direction="row" spacing={2} alignItems="center">
               <Typography variant="body1" fontWeight={400}>
                 การใช้พลังงาน
               </Typography>
               <Field.GroupRadio
-                name={`energies.${index}.type`}
+                name={`scope2_entries.${index}.kind`}
                 options={[
                   { value: "building", label: "การใช้งานอาคาร." },
-                  { value: "electric", label: "การใช้เครื่องปั่นไฟ" },
+                  { value: "generator", label: "การใช้เครื่องปั่นไฟ" },
+                  { value: "meter", label: "มิเตอร์ไฟฟ้า" },
                 ]}
               />
             </Stack>
             <Grid container spacing={2} alignItems="start">
-              {type === "electric" ? (
+              {kind === "generator" ? (
                 <>
                   <Grid size={{ xs: 2 }}>
                     <Field.MultipleAutoComplete
-                      name={`energies.${index}.equipment`}
+                      name={`scope2_entries.${index}.generator_facilities`}
                       label="อุปกรณ์ที่ใช้"
-                      options={equipmentOptions}
+                      options={[
+                        {
+                          value: "เครื่องปั่นไฟฟ้า",
+                          label: "เครื่องปั่นไฟฟ้า",
+                        },
+                      ]}
                       value={[
                         {
                           value: "เครื่องปั่นไฟฟ้า",
                           label: "เครื่องปั่นไฟฟ้า",
                         },
                       ]}
+                      helperText={
+                        errors.scope2_entries?.[index]?.generator_facilities
+                          ?.message
+                      }
                       disabled
                     />
                   </Grid>
                   <Grid size={{ xs: 7.5 }}>
                     <Field.Text
                       type="number"
-                      name={`energies.${index}.quantity`}
+                      name={`scope2_entries.${index}.value`}
                       label="ปริมาณพลังงานที่ใช้"
                       slotProps={{ htmlInput: { min: 0 } }}
-                      disabled={!equipment}
+                      disabled={!generatorFacilities?.length}
                     />
                   </Grid>
                   <Grid size={{ xs: 2 }}>
                     <Field.CustomAutoComplete
-                      name={`energies.${index}.unit`}
+                      name={`scope2_entries.${index}.unit`}
                       label="หน่วย"
                       options={energyUnitOptions}
-                      helperText={errors.energies?.[index]?.unit?.message}
-                      disabled={!quantity}
+                      helperText={errors.scope2_entries?.[index]?.unit?.message}
+                      disabled={!energyValue}
                     />
                   </Grid>
                   <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                    <IconButton onClick={() => removeEnergy(index)}>
+                    <IconButton onClick={() => removeScope2Entry(index)}>
+                      <SvgColor
+                        src="/assets/icons/ic-trash.svg"
+                        color={redColor}
+                      />
+                    </IconButton>
+                  </Grid>
+                </>
+              ) : kind === "meter" ? (
+                <>
+                  <Grid size={{ xs: 2.75 }}>
+                    <Field.MultipleAutoComplete
+                      name={`scope2_entries.${index}.meter_facilities`}
+                      label="อุปกรณ์ที่ใช้"
+                      options={[
+                        {
+                          value: "มิเตอร์",
+                          label: "มิเตอร์",
+                        },
+                      ]}
+                      value={[
+                        {
+                          value: "มิเตอร์",
+                          label: "มิเตอร์",
+                        },
+                      ]}
+                      helperText={
+                        errors.scope2_entries?.[index]?.meter_facilities
+                          ?.message
+                      }
+                      disabled
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 2.75 }}>
+                    <Field.CustomAutoComplete
+                      name={`scope2_entries.${index}.name`}
+                      label="อาคารที่ใช้"
+                      options={buildingOptions}
+                      helperText={errors.scope2_entries?.[index]?.name?.message}
+                      creatable
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 2.75 }}>
+                    <Field.CustomAutoComplete
+                      name={`scope2_entries.${index}.room`}
+                      label="ห้องที่ใช้"
+                      options={roomOptions[building as TRoom] ?? []}
+                      disabled={!building}
+                      creatable
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 2.75 }}>
+                    <Field.Text
+                      type="number"
+                      name={`scope2_entries.${index}.meter_value`}
+                      label="ปริมาณพลังงานที่ใช้"
+                      slotProps={{ htmlInput: { min: 0 } }}
+                      helperText={
+                        errors.scope2_entries?.[index]?.meter_value?.message
+                      }
+                      disabled={!room}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1.75 }}>
+                    <Typography>kWh</Typography>
+                  </Grid>
+                  <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
+                    <IconButton onClick={() => removeScope2Entry(index)}>
                       <SvgColor
                         src="/assets/icons/ic-trash.svg"
                         color={redColor}
@@ -299,16 +620,16 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <>
                   <Grid size={{ xs: 2.3 }}>
                     <Field.CustomAutoComplete
-                      name={`energies.${index}.building`}
+                      name={`scope2_entries.${index}.name`}
                       label="อาคารที่ใช้"
                       options={buildingOptions}
-                      helperText={errors.energies?.[index]?.building?.message}
+                      helperText={errors.scope2_entries?.[index]?.name?.message}
                       creatable
                     />
                   </Grid>
                   <Grid size={{ xs: 2.3 }}>
                     <Field.CustomAutoComplete
-                      name={`energies.${index}.room`}
+                      name={`scope2_entries.${index}.room`}
                       label="ห้องที่ใช้"
                       options={roomOptions[building as TRoom] ?? []}
                       disabled={!building}
@@ -317,27 +638,36 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                   </Grid>
                   <Grid size={{ xs: 2.3 }}>
                     <Field.MultipleAutoComplete
-                      name={`energies.${index}.equipment`}
+                      name={`scope2_entries.${index}.building_facilities`}
                       label="อุปกรณ์ที่ใช้"
                       options={equipmentOptions}
-                      helperText={errors.energies?.[index]?.equipment?.message}
+                      helperText={
+                        errors.scope2_entries?.[index]?.building_facilities
+                          ?.message
+                      }
                       disabled={!room}
                     />
                   </Grid>
                   <Grid size={{ xs: 2.3 }}>
                     <RHFDateTimePicker
-                      name={`energies.${index}.startDate`}
+                      name={`scope2_entries.${index}.start_time`}
                       label="วันและเวลาเริ่มใช้"
+                      helperText={
+                        errors.scope2_entries?.[index]?.start_time?.message
+                      }
                     />
                   </Grid>
                   <Grid size={{ xs: 2.3 }}>
                     <RHFDateTimePicker
-                      name={`energies.${index}.endDate`}
+                      name={`scope2_entries.${index}.end_time`}
                       label="วันและเวลาหยุดใช้"
+                      helperText={
+                        errors.scope2_entries?.[index]?.end_time?.message
+                      }
                     />
                   </Grid>
                   <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                    <IconButton onClick={() => removeEnergy(index)}>
+                    <IconButton onClick={() => removeScope2Entry(index)}>
                       <SvgColor
                         src="/assets/icons/ic-trash.svg"
                         color={redColor}
@@ -354,14 +684,17 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         variant="outlined"
         startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
         onClick={() =>
-          appendEnergy({
-            type: "building",
-            building: "",
+          appendScope2Entry({
+            kind: "building",
+            name: "",
             room: "",
-            equipment: [],
-            startDate: undefined,
-            endDate: undefined,
-            quantity: undefined,
+            building_facilities: [],
+            generator_facilities: [],
+            meter_facilities: [],
+            start_time: undefined,
+            end_time: undefined,
+            meter_value: undefined,
+            value: undefined,
             unit: "",
           })
         }
@@ -373,13 +706,17 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
   const renderThirdScope = (
     <StyledStack>
-      <Stack spacing={0.5}>
-        <Typography variant="subtitle1" fontWeight={700}>
-          Scope 3 : ข้อมูลการปลดปล่อยก๊าซเรือนกระจกทางอ้อม
-        </Typography>
-        <Typography variant="caption" color={greyColor}>
-          การเดินทางของผู้เข้าร่วมและ staff
-        </Typography>
+      <Stack direction="row" spacing={1.5} alignItems="center">
+        <ProjectCarbonDetail carbon={carbonSummary.scope3} />
+
+        <Stack spacing={1.5}>
+          <Typography variant="subtitle1" fontWeight={700}>
+            Scope 3 : อื่นๆ
+          </Typography>
+          <Typography variant="caption" color={greyColor}>
+            การเดินทางของผู้เข้าร่วมและ staff
+          </Typography>
+        </Stack>
       </Stack>
 
       <Field.CSVUploadField control={control} name="transportations_csv_file" />
@@ -406,42 +743,42 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           </Typography>
         </Typography>
         <Grid container spacing={2} alignItems="start">
-          {participant.map((field, index) => {
-            const date = watch(`participant.${index}.date`);
+          {scope3Attendee.map((field, index) => {
+            const date = watch(`scope3_attendee.${index}.date`);
 
             return (
               <Fragment key={index}>
                 <Grid size={{ xs: 3 }}>
                   <RHFDateTimePicker
                     mode="date"
-                    name={`participant.${index}.date`}
+                    name={`scope3_attendee.${index}.date`}
                     label="เลือกวันที่"
-                    helperText={errors.participant?.[index]?.date?.message}
+                    helperText={errors.scope3_attendee?.[index]?.date?.message}
                     required
                   />
                 </Grid>
                 <Grid size={{ xs: 8.5 }}>
                   <Field.Text
                     type="number"
-                    name={`participant.${index}.participant_amount`}
+                    name={`scope3_attendee.${index}.value`}
                     label="จำนวนคน"
                     slotProps={{ htmlInput: { min: 0 } }}
-                    error={!!errors.participant?.[index]?.participant_amount}
-                    helperText={
-                      errors.participant?.[index]?.participant_amount?.message
-                    }
+                    error={!!errors.scope3_attendee?.[index]?.value}
+                    helperText={errors.scope3_attendee?.[index]?.value?.message}
                     disabled={!date}
                     required
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
                   <IconButton
-                    onClick={() => removeParticipant(index)}
-                    disabled={participant.length === 1}
+                    onClick={() => removeScope3Attendee(index)}
+                    disabled={scope3Attendee.length === 1}
                   >
                     <SvgColor
                       src="/assets/icons/ic-trash.svg"
-                      color={participant.length === 1 ? disableColor : redColor}
+                      color={
+                        scope3Attendee.length === 1 ? disableColor : redColor
+                      }
                     />
                   </IconButton>
                 </Grid>
@@ -453,9 +790,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           variant="outlined"
           startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
           onClick={() =>
-            appendParticipant({
+            appendScope3Attendee({
               date: undefined,
-              participant_amount: undefined,
+              value: undefined,
             })
           }
         >
@@ -467,30 +804,30 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           การพักแรมของผู้เข้าร่วมและ staff ตลอดทั้งโครงการ
         </Typography>
         <Grid container spacing={2} alignItems="start">
-          {accommodation.map((field, index) => {
-            const date = watch(`accommodation.${index}.date`);
+          {scope3Overnight?.map((field, index) => {
+            const date = watch(`scope3_overnight.${index}.date`);
 
             return (
               <Fragment key={index}>
                 <Grid size={{ xs: 3 }}>
                   <RHFDateTimePicker
                     mode="date"
-                    name={`accommodation.${index}.date`}
+                    name={`scope3_overnight.${index}.date`}
                     label="เลือกวันที่พักแรม"
-                    helperText={errors.accommodation?.[index]?.date?.message}
+                    helperText={errors.scope3_overnight?.[index]?.date?.message}
                   />
                 </Grid>
                 <Grid size={{ xs: 8.5 }}>
                   <Field.Text
                     type="number"
-                    name={`accommodation.${index}.participant_amount`}
+                    name={`scope3_overnight.${index}.value`}
                     label="จำนวนคน"
                     slotProps={{ htmlInput: { min: 0 } }}
                     disabled={!date}
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                  <IconButton onClick={() => removeAccommodation(index)}>
+                  <IconButton onClick={() => removeScope3Overnight(index)}>
                     <SvgColor
                       src="/assets/icons/ic-trash.svg"
                       color={redColor}
@@ -505,9 +842,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           variant="outlined"
           startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
           onClick={() =>
-            appendAccommodation({
+            appendScope3Overnight({
               date: undefined,
-              participant_amount: undefined,
+              value: undefined,
             })
           }
         >
@@ -519,23 +856,25 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           ของแจกผู้เข้าร่วมและ staff
         </Typography>
         <Grid container spacing={2} alignItems="start">
-          {gift.map((field, index) => {
-            const gift_type = watch(`gift.${index}.gift_type`);
-            const amount = watch(`gift.${index}.amount`);
+          {scope3Souvenir?.map((field, index) => {
+            const souvenirType = watch(`scope3_souvenir.${index}.type`);
+            const amount = watch(`scope3_souvenir.${index}.value`);
 
             return (
               <Fragment key={index}>
                 <Grid size={{ xs: 7.5 }}>
                   <Field.CustomAutoComplete
-                    name={`gift.${index}.gift_type`}
+                    name={`scope3_souvenir.${index}.type`}
                     label="เลือกประเภทของแจก"
                     options={giftUnitOptions}
-                    helperText={errors.gift?.[index]?.gift_type?.message}
+                    helperText={fieldErrorMessage(
+                      errors.scope3_souvenir?.[index]?.type,
+                    )}
                     onInputChange={(_, value) => {
                       if (value) {
-                        setValue(`gift.${index}.unit`, "kg");
+                        setValue(`scope3_souvenir.${index}.unit`, "kg");
                       } else {
-                        setValue(`gift.${index}.unit`, "");
+                        setValue(`scope3_souvenir.${index}.unit`, "");
                       }
                     }}
                     creatable
@@ -544,24 +883,26 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <Grid size={{ xs: 2 }}>
                   <Field.Text
                     type="number"
-                    name={`gift.${index}.amount`}
+                    name={`scope3_souvenir.${index}.value`}
                     label="ปริมาณของแจก"
                     slotProps={{ htmlInput: { min: 0 } }}
-                    disabled={!gift_type}
+                    disabled={!souvenirType}
                   />
                 </Grid>
                 <Grid size={{ xs: 2 }}>
                   <Field.CustomAutoComplete
-                    name={`gift.${index}.unit`}
+                    name={`scope3_souvenir.${index}.unit`}
                     label="หน่วย"
                     options={[{ value: "kg", label: "กิโลกรัม" }]}
-                    helperText={errors.gift?.[index]?.unit?.message}
+                    helperText={fieldErrorMessage(
+                      errors.scope3_souvenir?.[index]?.unit,
+                    )}
                     disabled={!amount}
                     readOnly
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                  <IconButton onClick={() => removeGift(index)}>
+                  <IconButton onClick={() => removeScope3Souvenir(index)}>
                     <SvgColor
                       src="/assets/icons/ic-trash.svg"
                       color={redColor}
@@ -576,7 +917,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           variant="outlined"
           startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
           onClick={() =>
-            appendGift({ gift_type: "", amount: undefined, unit: "" })
+            appendScope3Souvenir({ type: "", value: undefined, unit: "" })
           }
         >
           เพิ่มของแจก
@@ -587,23 +928,25 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           ของเสียหลังการจัดงาน
         </Typography>
         <Grid container spacing={2} alignItems="start">
-          {waste.map((field, index) => {
-            const waste_type = watch(`waste.${index}.waste_type`);
-            const amount = watch(`waste.${index}.amount`);
+          {scope3Waste?.map((field, index) => {
+            const wasteType = watch(`scope3_waste.${index}.type`);
+            const amount = watch(`scope3_waste.${index}.value`);
 
             return (
               <Fragment key={index}>
                 <Grid size={{ xs: 7.5 }}>
                   <Field.CustomAutoComplete
-                    name={`waste.${index}.waste_type`}
+                    name={`scope3_waste.${index}.type`}
                     label="เลือกประเภทของเสีย"
                     options={wasteOptions}
-                    helperText={errors.waste?.[index]?.waste_type?.message}
+                    helperText={fieldErrorMessage(
+                      errors.scope3_waste?.[index]?.type,
+                    )}
                     onInputChange={(_, value) => {
                       if (value) {
-                        setValue(`waste.${index}.unit`, "kg");
+                        setValue(`scope3_waste.${index}.unit`, "kg");
                       } else {
-                        setValue(`waste.${index}.unit`, "");
+                        setValue(`scope3_waste.${index}.unit`, "");
                       }
                     }}
                     creatable
@@ -612,24 +955,26 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <Grid size={{ xs: 2 }}>
                   <Field.Text
                     type="number"
-                    name={`waste.${index}.amount`}
+                    name={`scope3_waste.${index}.value`}
                     label="ปริมาณของเสีย"
                     slotProps={{ htmlInput: { min: 0 } }}
-                    disabled={!waste_type}
+                    disabled={!wasteType}
                   />
                 </Grid>
                 <Grid size={{ xs: 2 }}>
                   <Field.CustomAutoComplete
-                    name={`waste.${index}.unit`}
+                    name={`scope3_waste.${index}.unit`}
                     label="หน่วย"
                     options={[{ value: "kg", label: "กิโลกรัม" }]}
-                    helperText={errors.waste?.[index]?.unit?.message}
+                    helperText={fieldErrorMessage(
+                      errors.scope3_waste?.[index]?.unit,
+                    )}
                     disabled={!amount}
                     readOnly
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                  <IconButton onClick={() => removeWaste(index)}>
+                  <IconButton onClick={() => removeScope3Waste(index)}>
                     <SvgColor
                       src="/assets/icons/ic-trash.svg"
                       color={redColor}
@@ -644,7 +989,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           variant="outlined"
           startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
           onClick={() =>
-            appendWaste({ waste_type: "", amount: undefined, unit: "" })
+            appendScope3Waste({ type: "", value: undefined, unit: "" })
           }
         >
           เพิ่มของเสีย
@@ -658,12 +1003,22 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
       {step === 2 && (
         <>
           <Stack sx={{ padding: "16px 24px" }}>
-            <Typography variant="h4">{`[${projectCode}] ${projectName}`}</Typography>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Typography variant="h4">{`[${customId}] ${title}`}</Typography>
+
+              {isEdit && <StatusChips variantType={status} />}
+            </Stack>
             <Typography
               variant="body2"
               color="text.secondary"
-            >{`ผู้กรอก: ${fullName} (${telText})`}</Typography>
+            >{`ผู้กรอก: ${ownerFullName} (${phoneNumberText})`}</Typography>
           </Stack>
+
+          {status === "fixing" && (
+            <Stack padding="24px 0px  0px 24px">
+              <ProjectRejectDetailButton id={projectId} />
+            </Stack>
+          )}
 
           <Stack sx={{ padding: 3, gap: 4, marginBottom: 10 }}>
             {renderFirstScope}
@@ -672,62 +1027,37 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
             {renderThirdScope}
 
+            <ProjectCarbonDetail carbon={carbonSummary.total} all />
+
             <Stack
               direction="row"
               spacing={2}
               sx={{ padding: "16px 24px", justifyContent: "end" }}
             >
-              <Button variant="outlined" onClick={handleBack}>
+              <Button variant="text" color="secondary" onClick={handleBack}>
                 ย้อนกลับ
               </Button>
-              {/* <Button
+              <Button
                 type="button"
                 variant="outlined"
+                color="secondary"
+                disabled={confirmDisabled}
                 onClick={() => {
                   void handleSubmit((data) => onSubmit(data, "draft"))();
                 }}
               >
                 บันทึกแบบร่าง
-              </Button> */}
+              </Button>
 
               <Button
                 type="button"
                 variant="contained"
-                onClick={isOpenDialog.onTrue}
+                onClick={openDialog.onTrue}
               >
                 ส่งแบบฟอร์ม
               </Button>
             </Stack>
           </Stack>
-
-          <ConfirmDialog
-            open={isOpenDialog.value}
-            title={
-              <Box component="img" src="/assets/icons/ic-upload-form.svg" />
-            }
-            content={
-              <Stack spacing={1}>
-                <Typography variant="h3">
-                  คุณต้องการส่งแบบฟอร์มหรือไม่
-                </Typography>
-                <Typography variant="h5" fontWeight={500} color="#637381">
-                  ข้อมูลของโครงการจะไม่สามารถแก้ไขได้
-                  <br />
-                  หลังจากส่งแบบฟอร์ม
-                </Typography>
-              </Stack>
-            }
-            action={
-              <Button
-                variant="contained"
-                onClick={handleClick}
-                disabled={disabled}
-              >
-                ส่งแบบฟอร์ม
-              </Button>
-            }
-            onClose={isOpenDialog.onFalse}
-          />
         </>
       )}
     </>

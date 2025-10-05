@@ -15,6 +15,7 @@ import { PIE_CHART_COLOR_SCHEMA } from "../constants";
 import DashboardCalendarHeatmap from "../dashboard-calendar";
 import DashboardPieChart from "../dashboard-pie-chart";
 import { StyledBox, StyledPaper } from "../styles";
+import { color } from "@/styles/colors";
 
 // ---------------------------------------------------------------------------------
 
@@ -22,6 +23,15 @@ function DashboardView() {
   // --------------------------- API ---------------------------
 
   const dashboard = useQuery({ ...dashboardKeys.overviewOptions({}) });
+
+  // --------------------------- Value ---------------------------
+
+  const TREE_CONSTANT = 21;
+
+  const totalTree = Math.round(
+    (dashboard.data?.dashboard.carbon_emission_per_person.total ?? 0) /
+      TREE_CONSTANT,
+  );
 
   // --------------------------- Render ---------------------------
 
@@ -263,6 +273,58 @@ function DashboardView() {
               )}
               data={dashboard.data.dashboard.heatmap.electricity_usages}
             />
+          </StyledPaper>
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <StyledPaper elevation={2}>
+            <Typography variant="h2" fontWeight={700}>
+              เพื่อชดเชยการปล่อยคาร์บอน เราต้องปลูกต้นไม้
+            </Typography>
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              height={1}
+              spacing={4}
+            >
+              <Stack>
+                <Typography
+                  variant="body1"
+                  fontSize={64}
+                  fontWeight={700}
+                  color={color.PRIMARY_MAIN}
+                >
+                  {totalTree.toLocaleString("en-US")} ต้น/คน/ปี
+                </Typography>
+                <Typography variant="body1">
+                  ต้นไม้เฉลี่ยดูดซับ ~20 kgCO₂
+                </Typography>
+              </Stack>
+
+              <Stack
+                direction="row"
+                sx={{
+                  flex: 1,
+                  flexWrap: "wrap",
+                  gap: 2,
+                  paddingTop: 1,
+                  maxHeight: (35 + 16) * 2, // item height (35) + gap (8px*2) × 2 rows
+                  overflow: "hidden",
+                }}
+              >
+                {[...Array(totalTree)].map((_, index) => (
+                  <Box
+                    key={index}
+                    component="img"
+                    sx={{
+                      width: 1,
+                      maxWidth: 35,
+                      height: 35,
+                    }}
+                    src="/assets/icons/ic-tree.svg"
+                  />
+                ))}
+              </Stack>
+            </Stack>
           </StyledPaper>
         </Grid>
       </Grid>

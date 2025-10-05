@@ -5,9 +5,11 @@ import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 
+type TRadioValue = string | boolean;
+
 type RHFRadioProps = {
   name: string;
-  value: string;
+  value: TRadioValue;
   label: string;
   helperText?: React.ReactNode;
   labelProps?: Omit<FormControlLabelProps, "control" | "label" | "value">;
@@ -26,7 +28,7 @@ function RHFRadio({ name, value, label, labelProps }: RHFRadioProps) {
             value={value}
             control={
               <Radio
-                checked={field.value === value}
+                checked={String(field.value) === String(value)}
                 onChange={() => field.onChange(value)}
               />
             }

@@ -6,9 +6,13 @@ import { Box, Divider, Stack, Typography, useTheme } from "@mui/material";
 
 type TProjectFormStepperProps = {
   step: number;
+  isEdit?: boolean;
 };
 
-function ProjectFormStepper({ step }: TProjectFormStepperProps) {
+function ProjectFormStepper({
+  step,
+  isEdit = false,
+}: TProjectFormStepperProps) {
   const theme = useTheme();
 
   // --------------------------- Value ---------------------------
@@ -53,7 +57,7 @@ function ProjectFormStepper({ step }: TProjectFormStepperProps) {
         variant="button"
         sx={{ color: projectAddingColor, transition: "color 0.3s" }}
       >
-        เพิ่มโครงการใหม่
+        {!isEdit ? "เพิ่มโครงการใหม่" : "แก้ไขข้อมูลโครงการ"}
       </Typography>
       <Divider sx={{ width: 180 }} />
       <Box
@@ -80,7 +84,7 @@ function ProjectFormStepper({ step }: TProjectFormStepperProps) {
         variant="button"
         sx={{ color: projectDetailColor, transition: "color 0.3s" }}
       >
-        กรอกรายละเอียดโครงการ
+        {!isEdit ? "กรอกรายละเอียดโครงการ" : "แก้ไขรายละเอียดโครงการ"}
       </Typography>
     </Stack>
   );

@@ -1,4 +1,11 @@
-export type TProjectStatus = "draft" | "pending" | "approved" | "rejected";
+import type { CarbonResult } from "./get-project";
+
+export type TProjectStatus =
+  | "fixing"
+  | "draft"
+  | "pending"
+  | "approved"
+  | "rejected";
 
 export type TListProjectsRequest = {
   limit: number;
@@ -20,6 +27,7 @@ export type TListProjectsItem = {
   updated_by: string;
   updated_at: string;
   deleted_at: string | null;
+  carbon_result: CarbonResult;
 };
 
 export type TListProjectsResponse = {

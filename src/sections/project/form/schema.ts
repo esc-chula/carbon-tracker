@@ -26,10 +26,10 @@ const toRequiredNumber = (val: unknown) => {
   return undefined;
 };
 
-// Activity schema
-const ActivitySchema = z.object({
-  activity_type: z.string().min(1, "กรุณาเลือกประเภทกิจกรรม"),
-  amount: z.preprocess(
+// Scope 1 schema
+const Scope1ActivitySchema = z.object({
+  name: z.string().min(1, "กรุณาเลือกประเภทกิจกรรม"),
+  value: z.preprocess(
     toRequiredNumber,
     z
       .number({ required_error: "กรุณากรอกปริมาณพลังงานที่ใช้" })
@@ -38,27 +38,33 @@ const ActivitySchema = z.object({
   unit: z.string().min(1, "กรุณาเลือกหน่วย"),
 });
 
-// Energy schema
-const EnergySchema = z
+// Scope 2 schema
+const Scope2EntrySchema = z
   .object({
-    type: z.string(),
-    building: z.string().optional(),
+    kind: z.enum(["building", "generator", "meter"]),
+    name: z.string().optional(),
     room: z.string().optional(),
-    equipment: z.array(z.string()).min(1, "กรุณาเลือกอุปกรณ์ที่ใช้"),
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
-    quantity: z.preprocess(
+    building_facilities: z.array(z.string()).optional(),
+    generator_facilities: z.array(z.string()).optional(),
+    meter_facilities: z.array(z.string()).optional(),
+    start_time: z.string().optional(),
+    end_time: z.string().optional(),
+    meter_value: z.preprocess(
+      toOptionalNumber,
+      z.number().positive("กรุณากรอกค่าที่ไม่ติดลบ").optional(),
+    ),
+    value: z.preprocess(
       toOptionalNumber,
       z.number().positive("กรุณากรอกค่าที่ไม่ติดลบ").optional(),
     ),
     unit: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.type === "building") {
-      if (!data.building?.trim()) {
+    if (data.kind === "building") {
+      if (!data.name?.trim()) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["building"],
+          path: ["name"],
           message: "กรุณากรอกชื่ออาคาร",
         });
       }
@@ -69,27 +75,35 @@ const EnergySchema = z
           message: "กรุณากรอกห้องใช้",
         });
       }
-      if (!data.startDate?.trim()) {
+      if (!data.start_time?.trim()) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["startDate"],
+          path: ["start_time"],
           message: "กรุณาเลือกวันและเวลาเริ่ม",
         });
       }
-      if (!data.endDate?.trim()) {
+      if (!data.end_time?.trim()) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["endDate"],
+          path: ["end_time"],
           message: "กรุณาเลือกวันและเวลาสิ้นสุด",
+        });
+      }
+
+      if (!data.building_facilities?.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["building_facilities"],
+          message: "กรุณาเลือกอุปกรณ์ที่ใช้",
         });
       }
     }
 
-    if (data.type === "electric") {
-      if (data.quantity == null) {
+    if (data.kind === "generator") {
+      if (data.value == null) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["quantity"],
+          path: ["value"],
           message: "กรุณากรอกปริมาณพลังงานที่ใช้",
         });
       }
@@ -100,25 +114,65 @@ const EnergySchema = z
           message: "กรุณาเลือกหน่วย",
         });
       }
+
+      if (!data.generator_facilities?.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["generator_facilities"],
+          message: "กรุณาเลือกอุปกรณ์ที่ใช้",
+        });
+      }
     }
 
-    if (data.startDate && data.endDate) {
-      const start = new Date(data.startDate).getTime();
-      const end = new Date(data.endDate).getTime();
+    if (data.kind === "meter") {
+      if (!data.name?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["name"],
+          message: "กรุณากรอกชื่ออาคาร",
+        });
+      }
+      if (!data.room?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["room"],
+          message: "กรุณากรอกห้องใช้",
+        });
+      }
+      if (data.meter_value == null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["meter_value"],
+          message: "กรุณากรอกค่ามิเตอร์",
+        });
+      }
+
+      if (!data.meter_facilities?.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["meter_facilities"],
+          message: "กรุณาเลือกอุปกรณ์ที่ใช้",
+        });
+      }
+    }
+
+    if (data.start_time && data.end_time) {
+      const start = new Date(data.start_time).getTime();
+      const end = new Date(data.end_time).getTime();
       if (!Number.isNaN(start) && !Number.isNaN(end) && end < start) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["endDate"],
+          path: ["end_time"],
           message: "วันสิ้นสุดต้องไม่ก่อนวันเริ่ม",
         });
       }
     }
   });
 
-// Participant schema
-const ParticipantSchema = z.object({
+// Scope 3 schema
+const Scope3AttendeeSchema = z.object({
   date: z.string({ required_error: "กรุณาเลือกวันที่" }),
-  participant_amount: z.preprocess(
+  value: z.preprocess(
     toRequiredNumber,
     z
       .number({ required_error: "กรุณาระบุจำนวนคน" })
@@ -126,10 +180,9 @@ const ParticipantSchema = z.object({
   ),
 });
 
-// Accommodation schema
-const AccommodationSchema = z.object({
+const Scope3OvernightSchema = z.object({
   date: z.string({ required_error: "กรุณาเลือกวันที่พักแรม" }),
-  participant_amount: z.preprocess(
+  value: z.preprocess(
     toRequiredNumber,
     z
       .number({ required_error: "กรุณาระบุจำนวนคน" })
@@ -137,10 +190,9 @@ const AccommodationSchema = z.object({
   ),
 });
 
-// Gift schema
-const GiftSchema = z.object({
-  gift_type: z.string().min(1, "กรุณาเลือกประเภทของแจก"),
-  amount: z.preprocess(
+const Scope3SouvenirSchema = z.object({
+  type: z.string().min(1, "กรุณาเลือกประเภทของแจก"),
+  value: z.preprocess(
     toRequiredNumber,
     z
       .number({ required_error: "กรุณาระบุปริมาณของแจก" })
@@ -149,10 +201,9 @@ const GiftSchema = z.object({
   unit: z.string().min(1, "กรุณาเลือกหน่วย"),
 });
 
-// Waste schema
-const WasteSchema = z.object({
-  waste_type: z.string().min(1, "กรุณาเลือกประเภทของเสีย"),
-  amount: z.preprocess(
+const Scope3WasteSchema = z.object({
+  type: z.string().min(1, "กรุณาเลือกประเภทของเสีย"),
+  value: z.preprocess(
     toRequiredNumber,
     z
       .number({ required_error: "กรุณาระบุปริมาณของเสีย" })
@@ -161,65 +212,146 @@ const WasteSchema = z.object({
   unit: z.string().min(1, "กรุณาเลือกหน่วย"),
 });
 
-const ProjectFormSchema = z.object({
-  projectCode: z.string().min(1, "กรุณากรอกรหัสโครงการ"),
-  projectName: z.string().min(1, "กรุณากรอกชื่อโครงการ"),
-  underProject: z.string().min(1, "กรุณาเลือกประเภทโครงการ"),
-  otherUnderProject: z.string().optional(),
-  clubName: z.string().optional(),
+const ProjectFormStepOneBaseSchema = z.object({
+  custom_id: z.string().min(1, "กรุณากรอกรหัสโครงการ"),
+  title: z.string().min(1, "กรุณากรอกชื่อโครงการ"),
+  org: z.string().min(1, "กรุณาเลือกประเภทโครงการ"),
+  org_detail: z.string().optional(),
+  owner_fullname: z.string().min(1, "กรุณากรอกชื่อ-นามสกุล"),
+  owner_nickname: z.string().min(1, "กรุณากรอกชื่อเล่น"),
+  owner_student_id: z.string().min(1, "กรุณากรอกรหัสนิสิต"),
+  owner_major: z.string().min(1, "กรุณาเลือกภาคที่เรียน"),
+  owner_phone_number: z.string().min(1, "กรุณากรอกเบอร์โทรศัพท์"),
   field: z.string().optional(),
-  fullName: z.string().min(1, "กรุณากรอกชื่อ-นามสกุล"),
-  nickname: z.string().min(1, "กรุณากรอกชื่อเล่น"),
-  student_id: z.string().min(1, "กรุณากรอกรหัสนิสิต"),
-  department: z.string().min(1, "กรุณาเลือกภาคที่เรียน"),
-  tel: z.string().min(1, "กรุณากรอกเบอร์โทรศัพท์"),
-  activities: z.array(ActivitySchema).optional(),
-  energies: z.array(EnergySchema).optional(),
-  participant: z.array(ParticipantSchema),
-  accommodation: z.array(AccommodationSchema).optional(),
-  gift: z.array(GiftSchema).optional(),
-  waste: z.array(WasteSchema).optional(),
+  clubName: z.string().optional(),
+  otherUnderProject: z.string().optional(),
+});
+
+const ProjectFormStepOneSchema = ProjectFormStepOneBaseSchema.superRefine(
+  (data, ctx) => {
+    const org = data.org?.trim();
+    if (!org) return;
+
+    if (org === "กวศ.") {
+      if (!data.field?.trim()) {
+        ctx.addIssue({
+          path: ["field"],
+          code: z.ZodIssueCode.custom,
+          message: "กรุณากรอกฝ่าย",
+        });
+      }
+    }
+
+    if (org === "ชมรม") {
+      if (!data.clubName?.trim()) {
+        ctx.addIssue({
+          path: ["clubName"],
+          code: z.ZodIssueCode.custom,
+          message: "กรุณากรอกชื่อชมรม",
+        });
+      }
+    }
+
+    if (org === "other") {
+      if (!data.otherUnderProject?.trim()) {
+        ctx.addIssue({
+          path: ["otherUnderProject"],
+          code: z.ZodIssueCode.custom,
+          message: "กรุณาระบุ",
+        });
+      }
+    }
+  },
+);
+
+const ProjectFormStepTwoSchema = z.object({
+  scope1_activities: z.array(Scope1ActivitySchema).optional(),
+  scope2_entries: z.array(Scope2EntrySchema).optional(),
+  scope3_attendee: z.array(Scope3AttendeeSchema),
+  scope3_overnight: z.array(Scope3OvernightSchema).optional(),
+  scope3_souvenir: z.array(Scope3SouvenirSchema).optional(),
+  scope3_waste: z.array(Scope3WasteSchema).optional(),
+  transportations_csv_file: z.any().optional(),
+});
+
+const ProjectFormSchema = ProjectFormStepOneBaseSchema.merge(
+  ProjectFormStepTwoSchema,
+).superRefine((data, ctx) => {
+  const org = data.org?.trim();
+  if (!org) return;
+
+  if (org === "กวศ." && !data.field?.trim()) {
+    ctx.addIssue({
+      path: ["field"],
+      code: z.ZodIssueCode.custom,
+      message: "กรุณากรอกฝ่าย",
+    });
+  }
+
+  if (org === "ชมรม" && !data.clubName?.trim()) {
+    ctx.addIssue({
+      path: ["clubName"],
+      code: z.ZodIssueCode.custom,
+      message: "กรุณากรอกชื่อชมรม",
+    });
+  }
+
+  if ((org === "other" || org === "อื่นๆ") && !data.otherUnderProject?.trim()) {
+    ctx.addIssue({
+      path: ["otherUnderProject"],
+      code: z.ZodIssueCode.custom,
+      message: "กรุณาระบุ",
+    });
+  }
 });
 
 // Export schemas
 export {
-  ActivitySchema,
-  EnergySchema,
-  ParticipantSchema,
-  AccommodationSchema,
-  GiftSchema,
-  WasteSchema,
   ProjectFormSchema,
+  ProjectFormStepOneSchema,
+  ProjectFormStepTwoSchema,
+  Scope1ActivitySchema,
+  Scope2EntrySchema,
+  Scope3AttendeeSchema,
+  Scope3OvernightSchema,
+  Scope3SouvenirSchema,
+  Scope3WasteSchema,
 };
 
 const defaultValues: ProjectFormValues = {
-  projectCode: "",
-  projectName: "",
-  underProject: "",
-  otherUnderProject: "",
-  fullName: "",
-  nickname: "",
-  student_id: "",
-  clubName: "",
-  department: "",
-  tel: "",
-  activities: [{ activity_type: "", amount: undefined, unit: "" }],
-  energies: [
+  custom_id: "",
+  title: "",
+  org: "",
+  org_detail: "",
+
+  owner_fullname: "",
+  owner_nickname: "",
+  owner_student_id: "",
+  owner_major: "",
+  owner_phone_number: "",
+  scope1_activities: [{ name: "", value: undefined, unit: "" }],
+  scope2_entries: [
     {
-      type: "building",
-      building: "",
+      kind: "building",
+      name: "",
       room: "",
-      equipment: [],
-      startDate: undefined,
-      endDate: undefined,
-      quantity: undefined,
+      building_facilities: [],
+      generator_facilities: [],
+      meter_facilities: [],
+      start_time: undefined,
+      end_time: undefined,
+      meter_value: undefined,
+      value: undefined,
       unit: "",
     },
   ],
-  participant: [{ date: undefined, participant_amount: undefined }],
-  accommodation: [{ date: undefined, participant_amount: undefined }],
-  gift: [{ gift_type: "", amount: undefined, unit: "" }],
-  waste: [{ waste_type: "", amount: undefined, unit: "" }],
+  scope3_attendee: [{ date: undefined, value: undefined }],
+  scope3_overnight: [{ date: undefined, value: undefined }],
+  scope3_souvenir: [{ type: "", value: undefined, unit: "" }],
+  scope3_waste: [{ type: "", value: undefined, unit: "" }],
+  field: "",
+  clubName: "",
+  otherUnderProject: "",
 };
 
 export { defaultValues };

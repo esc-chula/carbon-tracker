@@ -78,7 +78,7 @@ export default function NavBar() {
                       src="/listview.svg"
                     />
                   }
-                  onClick={() => router.push("/create-project")}
+                  onClick={() => router.push("/project/create")}
                 >
                   <Typography
                     sx={{

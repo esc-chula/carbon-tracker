@@ -1,5 +1,5 @@
-import ProjectView from "@/sections/project/view/project-view";
+import ProjectsView from "@/sections/project/view/user/projects-view";
 
 export default function HomePage() {
-  return <ProjectView />;
+  return <ProjectsView />;
 }

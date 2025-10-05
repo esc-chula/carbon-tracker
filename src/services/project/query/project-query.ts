@@ -53,12 +53,28 @@ async function fetchGetCarbonEmission(
 async function fetchGetProject(
   payload: TGetProjectRequest,
 ): Promise<TGetProjectResponse> {
+  const hasQueryParams =
+    payload.include_transportations !== undefined ||
+    payload.include_review !== undefined;
+
+  const searchParams = hasQueryParams ? new URLSearchParams() : undefined;
+
+  if (searchParams) {
+    if (payload.include_transportations !== undefined) {
+      searchParams.set(
+        "include_transportations",
+        String(payload.include_transportations),
+      );
+    }
+
+    if (payload.include_review !== undefined) {
+      searchParams.set("include_review", String(payload.include_review));
+    }
+  }
+
   const res = await ky
     .get(`projects/${payload.id}`, {
-      searchParams:
-        payload.include_transportations !== undefined
-          ? { include_transportations: payload.include_transportations }
-          : undefined,
+      searchParams,
     })
     .json<TGetProjectResponse>();
   return res;
@@ -90,6 +106,48 @@ async function fetchGetCertificate(
   return { blob, filename, contentType };
 }
 
+async function fetchGetProjectTransportationsCsv(payload: {
+  id: string;
+}): Promise<{ blob: Blob; filename: string; contentType: string }> {
+  const res = await ky.get(`projects/${payload.id}/transportations`, {
+    headers: { Accept: "text/csv" },
+  });
+
+  const blob = await res.blob();
+  const contentType = res.headers.get("content-type") ?? "text/csv";
+
+  const disposition = res.headers.get("content-disposition") ?? "";
+  let filename = "transportations.csv";
+  const match = /filename\*?=(?:UTF-8'')?["']?([^"';]+)["']?/i.exec(
+    disposition,
+  );
+  if (match?.[1]) {
+    try {
+      filename = decodeURIComponent(match[1]);
+    } catch {
+      filename = match[1];
+    }
+  } else if (payload.id) {
+    filename = `transportations-${payload.id}.csv`;
+  }
+
+  return { blob, filename, contentType };
+}
+
+type EmissionFactorMap = Record<string, number>;
+
+type EmissionFactorResponse = {
+  factors?: Record<string, number>;
+};
+
+async function fetchProjectEmissionFactors(): Promise<EmissionFactorMap> {
+  const response = await ky
+    .get("projects/emissionfactors")
+    .json<EmissionFactorResponse>();
+
+  return response.factors ?? {};
+}
+
 // ---------------------------------------------------------------------------------
 
 const projectsQueryKeys = {
@@ -99,7 +157,6 @@ const projectsQueryKeys = {
     [...projectsQueryKeys.all(), { payload }] as const,
 
   listOptions: (payload: TListProjectsRequest) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     queryOptions({
       queryKey: [...projectsQueryKeys.list(payload)] as const,
       queryFn: () => fetchListProjects(payload),
@@ -109,7 +166,6 @@ const projectsQueryKeys = {
     [...projectsQueryKeys.all(), "calculate", { payload }] as const,
 
   calculateOptions: (payload: TGetCarbonEmissionRequest) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     queryOptions({
       queryKey: [...projectsQueryKeys.calculate(payload)] as const,
       queryFn: () => fetchGetCarbonEmission(payload),
@@ -119,7 +175,6 @@ const projectsQueryKeys = {
     [...projectsQueryKeys.all(), "project", { payload }] as const,
 
   projectOptions: (payload: TGetProjectRequest) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     queryOptions({
       queryKey: [...projectsQueryKeys.project(payload)] as const,
       queryFn: () => fetchGetProject(payload),
@@ -129,10 +184,19 @@ const projectsQueryKeys = {
     [...projectsQueryKeys.all(), "certificate", { payload }] as const,
 
   certificateOptions: (payload: TGetCertificateRequest) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     queryOptions({
       queryKey: [...projectsQueryKeys.certificate(payload)] as const,
       queryFn: () => fetchGetCertificate(payload),
+    }),
+
+  emissionFactors: () =>
+    [...projectsQueryKeys.all(), "emission-factors"] as const,
+
+  emissionFactorsOptions: () =>
+    queryOptions({
+      queryKey: [...projectsQueryKeys.emissionFactors()] as const,
+      queryFn: () => fetchProjectEmissionFactors(),
+      staleTime: 1000 * 60 * 10,
     }),
 };
 
@@ -142,4 +206,8 @@ export {
   fetchGetCarbonEmission,
   fetchGetProject,
   fetchGetCertificate,
+  fetchGetProjectTransportationsCsv,
+  fetchProjectEmissionFactors,
 };
+
+export type { EmissionFactorMap };

@@ -1,8 +1,13 @@
 import React from "react";
-import { Chip, styled, type ChipProps } from "@mui/material";
+import { Chip, colors, styled, type ChipProps } from "@mui/material";
 import theme from "@/styles/theme/theme";
 
-export type ChipVariant = "pending" | "approved" | "rejected" | "draft";
+export type ChipVariant =
+  | "fixing"
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "draft";
 
 interface StatusChipProps extends ChipProps {
   variantType?: ChipVariant;
@@ -12,7 +17,8 @@ const variantStyles: Record<
   ChipVariant,
   { backgroundColor: string; color: string }
 > = {
-  pending: { backgroundColor: "#F9F0D5", color: "#876607" },
+  fixing: { backgroundColor: "#FFDBB2", color: "#8C4D03" },
+  pending: { backgroundColor: "#D7EEFC", color: "#13608C" },
   approved: { backgroundColor: "#D8FBDE", color: "#0A5554" },
   rejected: { backgroundColor: "#FFEBEB", color: "#7A092E" },
   draft: { backgroundColor: "#E9EAEB", color: "#212B36" },
@@ -26,6 +32,7 @@ const StyledChip = styled(Chip, {
 
 const StatusChips: React.FC<StatusChipProps> = ({ variantType, ...props }) => {
   const variantLabels: Record<ChipVariant, string> = {
+    fixing: "กำลังแก้ไข",
     pending: "กำลังตรวจ",
     approved: "ผ่านการตรวจ",
     rejected: "ไม่ผ่านการตรวจ",

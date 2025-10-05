@@ -1,4 +1,5 @@
 import { Field } from "@/components/hook-form/field";
+import StatusChips from "@/components/StatusChips";
 import {
   departmentOptions,
   fieldOptions,
@@ -7,33 +8,66 @@ import type { ProjectFormValues } from "@/sections/project/form/type";
 import { StyledStack } from "@/sections/project/styles";
 import { Button, Grid, Stack, Typography } from "@mui/material";
 import FormHelperText from "@mui/material/FormHelperText";
-import { useRouter } from "next/navigation";
-import type { FieldErrors } from "react-hook-form";
+import { useParams, useRouter } from "next/navigation";
+import { useFormContext, type FieldErrors } from "react-hook-form";
+import ProjectRejectDetailButton from "./project-reject-detail-button";
 
 // ---------------------------------------------------------------------------------
+
+type Params = {
+  id: string;
+};
 
 type TProjectFormFirstStepProps = {
   step: number;
   errors: FieldErrors<ProjectFormValues>;
-  underProject: string;
+  org: string;
   handleNext: () => void;
+  isEdit?: boolean;
 };
 
 export function ProjectFormFirstStep({
   step,
   errors,
-  underProject,
+  org,
   handleNext,
+  isEdit = false,
 }: TProjectFormFirstStepProps) {
+  // --------------------------- Hook ---------------------------
+
   const router = useRouter();
+  const { getValues } = useFormContext();
+  const params = useParams<Params>();
+
+  // --------------------------- Value ---------------------------
+
+  const projectId = params?.id ?? "";
+  const status = getValues("status");
+
+  // --------------------------- Render ---------------------------
 
   return (
     <>
       {step === 1 && (
         <>
-          <Stack sx={{ padding: "16px 24px" }}>
-            <Typography variant="h4">เพิ่มข้อมูลโครงการใหม่</Typography>
+          <Stack
+            direction="row"
+            spacing={3}
+            sx={{ padding: "16px 24px", alignItems: "center" }}
+          >
+            <Typography variant="h4">
+              {!isEdit ? "เพิ่มข้อมูลโครงการใหม่" : "แก้ไขข้อมูลโครงการ"}
+            </Typography>
+
+            {isEdit && <StatusChips variantType={status} />}
           </Stack>
+
+          {status === "fixing" && (
+            <Stack padding="24px 0px  0px 24px">
+              <ProjectRejectDetailButton id={projectId} />
+            </Stack>
+          )}
+
           <Stack sx={{ padding: 3, gap: 4 }}>
             <StyledStack>
               <Typography variant="subtitle1" fontWeight={700}>
@@ -41,7 +75,7 @@ export function ProjectFormFirstStep({
               </Typography>
               <Field.Text
                 type="string"
-                name="projectCode"
+                name="custom_id"
                 label="รหัสโครงการ"
                 regex={/^\d*$/}
                 slotProps={{
@@ -49,15 +83,15 @@ export function ProjectFormFirstStep({
                     maxLength: 4,
                   },
                 }}
-                error={!!errors.projectCode}
-                helperText={errors.projectCode?.message}
+                error={!!errors.custom_id}
+                helperText={errors.custom_id?.message}
                 required
               />
               <Field.Text
-                name="projectName"
+                name="title"
                 label="ชื่อโครงการ"
-                error={!!errors.projectName}
-                helperText={errors.projectName?.message}
+                error={!!errors.title}
+                helperText={errors.title?.message}
                 required
               />
               <Grid container spacing={2} alignItems="start">
@@ -70,7 +104,7 @@ export function ProjectFormFirstStep({
                   </Typography>
                 </Grid>
                 <Grid size={{ xs: 0.8 }} sx={{ paddingTop: 0.8 }}>
-                  <Field.Radio name="underProject" label="กวศ." value="กวศ." />
+                  <Field.Radio name="org" label="กวศ." value="กวศ." />
                 </Grid>
                 <Grid size={{ xs: 2.8 }}>
                   <Field.CustomAutoComplete
@@ -79,11 +113,11 @@ export function ProjectFormFirstStep({
                     options={fieldOptions}
                     helperText={errors.field?.message}
                     required
-                    disabled={underProject !== "กวศ."}
+                    disabled={org !== "กวศ."}
                   />
                 </Grid>
                 <Grid size={{ xs: 0.8 }} sx={{ paddingTop: 0.8 }}>
-                  <Field.Radio name="underProject" label="ชมรม" value="ชมรม" />
+                  <Field.Radio name="org" label="ชมรม" value="ชมรม" />
                 </Grid>
                 <Grid size={{ xs: 2.8 }}>
                   <Field.Text
@@ -92,15 +126,11 @@ export function ProjectFormFirstStep({
                     error={!!errors.clubName}
                     helperText={errors.clubName?.message}
                     required
-                    disabled={underProject !== "ชมรม"}
+                    disabled={org !== "ชมรม"}
                   />
                 </Grid>
                 <Grid size={{ xs: 0.8 }} sx={{ paddingTop: 0.8 }}>
-                  <Field.Radio
-                    name="underProject"
-                    label="อื่นๆ"
-                    value="other"
-                  />
+                  <Field.Radio name="org" label="อื่นๆ" value="other" />
                 </Grid>
                 <Grid size={{ xs: 2.8 }}>
                   <Field.Text
@@ -109,16 +139,13 @@ export function ProjectFormFirstStep({
                     error={!!errors.otherUnderProject}
                     helperText={errors.otherUnderProject?.message}
                     required
-                    disabled={underProject !== "other"}
+                    disabled={org !== "other"}
                   />
                 </Grid>
               </Grid>
-              {!!errors.underProject && (
-                <FormHelperText
-                  sx={{ marginTop: -2 }}
-                  error={!!errors.underProject}
-                >
-                  {errors.underProject.message}
+              {!!errors.org && (
+                <FormHelperText sx={{ marginTop: -2 }} error={!!errors.org}>
+                  {errors.org.message}
                 </FormHelperText>
               )}
             </StyledStack>
@@ -129,46 +156,46 @@ export function ProjectFormFirstStep({
               <Grid container spacing={2}>
                 <Grid size={{ xs: 8 }}>
                   <Field.Text
-                    name="fullName"
+                    name="owner_fullname"
                     label="ชื่อ-นามสกุล"
-                    error={!!errors.fullName}
-                    helperText={errors.fullName?.message}
+                    error={!!errors.owner_fullname}
+                    helperText={errors.owner_fullname?.message}
                     required
                   />
                 </Grid>
                 <Grid size={{ xs: 2 }}>
                   <Field.Text
-                    name="nickname"
+                    name="owner_nickname"
                     label="ชื่อเล่น"
-                    error={!!errors.nickname}
-                    helperText={errors.nickname?.message}
+                    error={!!errors.owner_nickname}
+                    helperText={errors.owner_nickname?.message}
                     required
                   />
                 </Grid>
                 <Grid size={{ xs: 2 }}>
                   <Field.Phone
-                    name="student_id"
+                    name="owner_student_id"
                     label="รหัสนิสิต"
-                    error={!!errors.student_id}
-                    helperText={errors?.student_id?.message}
+                    error={!!errors.owner_student_id}
+                    helperText={errors?.owner_student_id?.message}
                     required
                   />
                 </Grid>
                 <Grid size={{ xs: 9 }}>
                   <Field.CustomAutoComplete
-                    name="department"
+                    name="owner_major"
                     label="ภาคที่เรียน"
                     options={departmentOptions}
-                    helperText={errors.department?.message}
+                    helperText={errors.owner_major?.message}
                     required
                   />
                 </Grid>
                 <Grid size={{ xs: 3 }}>
                   <Field.Phone
-                    name="tel"
+                    name="owner_phone_number"
                     label="เบอร์โทรศัพท์"
-                    error={!!errors.tel}
-                    helperText={errors.tel?.message}
+                    error={!!errors.owner_phone_number}
+                    helperText={errors.owner_phone_number?.message}
                     required
                   />
                 </Grid>

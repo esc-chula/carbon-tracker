@@ -2,48 +2,32 @@ type TRoom = "อาคาร 3" | "อาคารวิศวฯ 100 ปี" |
 
 const roomOptions = {
   "อาคาร 3": [
-    { value: "Hall of Intania", label: "Hall of Intania" },
+    { value: "Hall of Intania", label: "Hall of Intania" }, // TODO: meter only
     { value: "ห้องประชุมสวนรวมใจ 1", label: "ห้องประชุมสวนรวมใจ 1" },
     { value: "ห้องประชุมสวนรวมใจ 2", label: "ห้องประชุมสวนรวมใจ 2" },
     { value: "ห้องประชุม Truelab", label: "ห้องประชุม Truelab" },
     { value: "201", label: "201" },
-    { value: "202", label: "202" },
-    { value: "203", label: "203" },
     { value: "204", label: "204" },
     { value: "205", label: "205" },
     { value: "206", label: "206" },
     { value: "207", label: "207" },
     { value: "208", label: "208" },
     { value: "209", label: "209" },
-    { value: "210", label: "210" },
-    { value: "211", label: "211" },
-    { value: "212", label: "212" },
-    { value: "213", label: "213" },
     { value: "214", label: "214" },
     { value: "215", label: "215" },
-    { value: "216", label: "216" },
-    { value: "217", label: "217" },
     { value: "218", label: "218" },
     { value: "219", label: "219" },
     { value: "220", label: "220" },
-    { value: "221", label: "221" },
     { value: "222", label: "222" },
-    { value: "223", label: "223" },
     { value: "224", label: "224" },
     { value: "301", label: "301" },
-    { value: "302", label: "302" },
-    { value: "303", label: "303" },
     { value: "304", label: "304" },
     { value: "305", label: "305" },
     { value: "306", label: "306" },
     { value: "307", label: "307" },
     { value: "308", label: "308" },
     { value: "309", label: "309" },
-    { value: "310", label: "310" },
-    { value: "311", label: "311" },
-    { value: "312", label: "312" },
     { value: "313", label: "313" },
-    { value: "314", label: "314" },
     { value: "315", label: "315" },
     { value: "316", label: "316" },
     { value: "317", label: "317" },
@@ -52,9 +36,7 @@ const roomOptions = {
     { value: "320", label: "320" },
     { value: "321", label: "321" },
     { value: "322", label: "322" },
-    { value: "323", label: "323" },
     { value: "324", label: "324" },
-    { value: "ห้องสมุดชั้น 3", label: "ห้องสมุดชั้น 3" },
     { value: "401", label: "401" },
     { value: "402", label: "402" },
     { value: "403", label: "403" },
@@ -64,11 +46,6 @@ const roomOptions = {
     { value: "407", label: "407" },
     { value: "408", label: "408" },
     { value: "409", label: "409" },
-    { value: "410", label: "410" },
-    { value: "411", label: "411" },
-    { value: "412", label: "412" },
-    { value: "413", label: "413" },
-    { value: "414", label: "414" },
     { value: "415", label: "415" },
     { value: "416", label: "416" },
     { value: "417", label: "417" },
@@ -77,32 +54,25 @@ const roomOptions = {
     { value: "420", label: "420" },
     { value: "421", label: "421" },
     { value: "422", label: "422" },
-    { value: "423", label: "423" },
-    { value: "424", label: "424" },
-    { value: "ห้องสมุดชั้น 4", label: "ห้องสมุดชั้น 4" },
-    { value: "ฝั่งโซฟาใกล้บันได", label: "ฝั่งโซฟาใกล้บันได" },
-    { value: "ฝั่งโต๊ะใกล้ห้องเงียบ", label: "ฝั่งโต๊ะใกล้ห้องเงียบ" },
-    { value: "บริเวณรอบๆที่เหลือ", label: "บริเวณรอบๆที่เหลือ" },
+    { value: "425", label: "425" },
+    { value: "ห้องสมุดชั้น3", label: "ห้องสมุดชั้น3" },
+    { value: "ห้้องสมุดชั้น4", label: "ห้้องสมุดชั้น4" },
   ],
   "อาคารเจริญวิศวกรรม (อาคาร 4)": [
-    { value: "หอประชุมชั้น 2", label: "หอประชุมชั้น 2" },
-    {
-      value: "โถงอาคารเจริญวิศวกรรม ชั้น 1",
-      label: "โถงอาคารเจริญวิศวกรรม ชั้น 1",
-    },
+    { value: "ห้องประชุมชั้น 2", label: "ห้องประชุมชั้น 2" }, // TODO: meter only
   ],
   "อาคารวิศวฯ 100 ปี": [
-    { value: "โถงใต้อาคารวิศวฯ 100 ปี", label: "โถงใต้อาคารวิศวฯ 100 ปี" },
-    { value: "201A", label: "201A" },
-    { value: "201B", label: "201B" },
+    { value: "ห้องอเนกประสงค์ ชั้น 12", label: "ห้องอเนกประสงค์ ชั้น 12" }, // TODO: meter only
+    { value: "ชั้นลอย ห้องอเนกประสงค์", label: "ชั้นลอย ห้องอเนกประสงค์" }, // TODO: meter only
+
+    { value: "201 A", label: "201 A" },
+    { value: "201 B", label: "201 B" },
     { value: "301", label: "301" },
     { value: "302", label: "302" },
     { value: "303", label: "303" },
     { value: "304", label: "304" },
     { value: "305", label: "305" },
     { value: "306", label: "306" },
-    { value: "Large meeting", label: "Large meeting" },
-    { value: "ห้องลานเกียร์เย็น", label: "ห้องลานเกียร์เย็น" },
     { value: "401", label: "401" },
     { value: "402", label: "402" },
     { value: "403", label: "403" },
@@ -115,8 +85,6 @@ const roomOptions = {
     { value: "505", label: "505" },
     { value: "601", label: "601" },
     { value: "602", label: "602" },
-    { value: "ห้องอเนกประสงค์ ชั้น 12", label: "ห้องอเนกประสงค์ ชั้น 12" },
-    { value: "ชั้นลอย", label: "ชั้นลอย" },
   ],
 };
 
@@ -191,6 +159,26 @@ const departmentOptions = [
   },
 ];
 
+const activityOptions = [
+  { value: "gas", label: "ก๊าซหุงต้ม" },
+  { value: "normal_food", label: "อาหารปกติ" },
+  { value: "vegan", label: "อาหารมังสวิรัติ" },
+  {
+    value: "snack",
+    label: "อาหารว่างและเครื่องดื่ม",
+  },
+  {
+    value: "vegan_snack",
+    label: "อาหารว่างมังสวิรัติและเครื่องดื่ม",
+  },
+];
+
+const activityUnitOptions = [
+  { value: "box", label: "กล่อง" },
+  { value: "kg", label: "กิโลกรัม" },
+  { value: "g", label: "กรัม" },
+];
+
 const buildingOptions = [
   { value: "อาคาร 3", label: "อาคาร 3" },
   { value: "อาคารวิศวฯ 100 ปี", label: "อาคารวิศวฯ 100 ปี" },
@@ -202,8 +190,9 @@ const buildingOptions = [
 
 const equipmentOptions = [
   { label: "ทีวี", value: "tv" },
-  { label: "Projector", value: "projector" },
-  { label: "ไมโครโฟน", value: "microphone" },
+  { label: "โปรเจกเตอร์", value: "projector" },
+  { label: "คอมพิวเตอร์", value: "computer" },
+  { label: "เครื่องเสียง", value: "audio_equipment" },
 ];
 
 const energyUnitOptions = [
@@ -214,11 +203,15 @@ const energyUnitOptions = [
 const giftUnitOptions = [
   { value: "กระดาษ", label: "กระดาษ" },
   { value: "พลาสติก", label: "พลาสติก" },
+  { value: "โลหะ", label: "โลหะ" },
+  { value: "ผ้า", label: "ผ้า" },
+  { value: "ไม้", label: "ไม้" },
+  { value: "อื่นๆ", label: "อื่นๆ" },
 ];
 
 const wasteOptions = [
   { value: "ขวดพลาสติก (PET)", label: "ขวดพลาสติก (PET)" },
-  { value: "ขวดพลาสติก (HTPE)", label: "ขวดพลาสติก (HTPE) [ขวดขุ่น]" },
+  { value: "ขวดพลาสติก (HDPE)", label: "ขวดพลาสติก (HDPE) [ขวดขุ่น]" },
   { value: "อะลูมิเนียม (กระป๋อง)", label: "อะลูมิเนียม (กระป๋อง)" },
   { value: "เศษอาหาร", label: "เศษอาหาร" },
   { value: "ขยะรีไซเคิลพลัส", label: "ขยะรีไซเคิลพลัส" },
@@ -227,6 +220,8 @@ const wasteOptions = [
 
 export type { TRoom };
 export {
+  activityOptions,
+  activityUnitOptions,
   buildingOptions,
   departmentOptions,
   energyUnitOptions,
