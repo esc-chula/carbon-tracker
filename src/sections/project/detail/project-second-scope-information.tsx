@@ -34,7 +34,7 @@ function ProjectSecondScopeInformation({
 }: TProjectSecondScopeInformationProps) {
   // --------------------------- Values ---------------------------
 
-  const columns: DisplayColumn<Scope2Building>[] = [
+  const buildingColumns: DisplayColumn<Scope2Building>[] = [
     { id: "name", label: "อาคารที่ใช้", width: 250 },
     { id: "room", label: "ห้องที่ใช้", width: 250 },
     { id: "facilities", label: "อุปกรณ์ที่ใช้", width: 220 },
@@ -42,18 +42,40 @@ function ProjectSecondScopeInformation({
     { id: "end_time", label: "วันและเวลาหยุดใช้", width: 220 },
   ];
 
-  const rows: Scope2Building[] =
-    data?.buildings?.map((building) => ({
-      name: building.name,
-      room: building.room,
-      facilities:
-        building.facilities
-          ?.map((facility) => FacilityMapper(facility))
-          .join(", ") ?? "",
-      start_time: transFormDateToThai(building.start_time),
-      end_time: transFormDateToThai(building.end_time),
-      meter_value: building.meter_value,
-    })) ?? [];
+  const meterColumns: DisplayColumn<Scope2Building>[] = [
+    { id: "facilities", label: "อุปกรณ์ที่ใช้", width: 250 },
+    { id: "name", label: "อาคารที่ใช้", width: 250 },
+    { id: "room", label: "ห้องที่ใช้", width: 220 },
+    { id: "meter_value", label: "ปริมาณพลังงานที่ใช้", width: 220 },
+    { id: "end_time", label: "หน่วย", width: 220 },
+  ];
+
+  const buildingRows: Scope2Building[] =
+    data?.buildings
+      ?.filter((building) => !building.meter_value)
+      .map((building) => ({
+        name: building.name,
+        room: building.room,
+        facilities:
+          building.facilities
+            ?.map((facility) => FacilityMapper(facility))
+            .join(", ") ?? "",
+        start_time: transFormDateToThai(building.start_time),
+        end_time: transFormDateToThai(building.end_time),
+        meter_value: building.meter_value,
+      })) ?? [];
+
+  const meterRows: Scope2Building[] =
+    data?.buildings
+      ?.filter((building) => building.meter_value > 0)
+      .map((building) => ({
+        name: building.name,
+        room: building.room,
+        facilities: building.facilities?.[0] ?? "มิเตอร์",
+        start_time: "-",
+        end_time: "kWh",
+        meter_value: building.meter_value,
+      })) ?? [];
 
   const generatorUsage = data.generators?.reduce((sum, c) => sum + c.value, 0);
 
@@ -75,8 +97,15 @@ function ProjectSecondScopeInformation({
       </Stack>
 
       <TableCustom
-        rows={rows}
-        columns={columns}
+        rows={buildingRows}
+        columns={buildingColumns}
+        showIndex
+        indexHeader="รายการที่"
+      />
+
+      <TableCustom
+        rows={meterRows}
+        columns={meterColumns}
         showIndex
         indexHeader="รายการที่"
       />
