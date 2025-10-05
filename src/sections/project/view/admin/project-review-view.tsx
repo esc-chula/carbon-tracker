@@ -405,18 +405,6 @@ function ProjectReviewView() {
 
   // --------------------------- Render ---------------------------
 
-  if (owner.isLoading || owner.isFetching) {
-    return (
-      <Stack
-        alignItems="center"
-        justifyContent="center"
-        sx={{ minHeight: 400 }}
-      >
-        <CircularProgress />
-      </Stack>
-    );
-  }
-
   if (!owner.data?.owner?.is_admin) {
     return null;
   }
