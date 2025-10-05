@@ -1,6 +1,7 @@
 "use client";
 
 import { projectsQueryKeys } from "@/services/project/query/project-query";
+import { ownersQueryKeys } from "@/services/user/query/user-query";
 import {
   Box,
   Button,
@@ -96,6 +97,15 @@ function ProjectReviewView() {
   // --------------------------- API ---------------------------
 
   const queryClient = useQueryClient();
+
+  const owner = useQuery({ ...ownersQueryKeys.meOptions() });
+
+  useEffect(() => {
+    if (owner.isLoading || owner.isFetching) return;
+    if (owner.data?.owner?.is_admin === false) {
+      router.replace("/");
+    }
+  }, [owner.data?.owner?.is_admin, owner.isFetching, owner.isLoading, router]);
 
   const project = useQuery({
     ...projectsQueryKeys.projectOptions({
@@ -394,6 +404,22 @@ function ProjectReviewView() {
   };
 
   // --------------------------- Render ---------------------------
+
+  if (owner.isLoading || owner.isFetching) {
+    return (
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{ minHeight: 400 }}
+      >
+        <CircularProgress />
+      </Stack>
+    );
+  }
+
+  if (!owner.data?.owner?.is_admin) {
+    return null;
+  }
 
   if (project.isLoading || !project.isSuccess) {
     return (
