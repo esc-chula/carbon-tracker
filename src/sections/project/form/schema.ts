@@ -89,14 +89,6 @@ const Scope2EntrySchema = z
           message: "กรุณาเลือกวันและเวลาสิ้นสุด",
         });
       }
-
-      if (!data.building_facilities?.length) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["building_facilities"],
-          message: "กรุณาเลือกอุปกรณ์ที่ใช้",
-        });
-      }
     }
 
     if (data.kind === "generator") {
