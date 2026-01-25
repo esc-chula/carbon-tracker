@@ -89,6 +89,19 @@ const Scope2EntrySchema = z
           message: "กรุณาเลือกวันและเวลาสิ้นสุด",
         });
       }
+
+      if (data.start_time && data.end_time) {
+        const start = new Date(data.start_time).getTime();
+        const end = new Date(data.end_time).getTime();
+
+        if (!Number.isNaN(start) && !Number.isNaN(end) && end <= start) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["end_time"],
+            message: "เวลาสิ้นสุดต้องอยู่หลังเวลาเริ่ม",
+          });
+        }
+      }
     }
 
     if (data.kind === "generator") {
@@ -144,18 +157,6 @@ const Scope2EntrySchema = z
           code: z.ZodIssueCode.custom,
           path: ["meter_facilities"],
           message: "กรุณาเลือกอุปกรณ์ที่ใช้",
-        });
-      }
-    }
-
-    if (data.start_time && data.end_time) {
-      const start = new Date(data.start_time).getTime();
-      const end = new Date(data.end_time).getTime();
-      if (!Number.isNaN(start) && !Number.isNaN(end) && end < start) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["end_time"],
-          message: "วันสิ้นสุดต้องไม่ก่อนวันเริ่ม",
         });
       }
     }
