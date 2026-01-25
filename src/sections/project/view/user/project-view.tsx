@@ -1,10 +1,23 @@
 "use client";
 
+import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
+import { showError, showSuccess } from "@/components/toast/toast";
+import { canModifyProject } from "@/helper/project-permissions";
+import { useBoolean } from "@/hooks/use-boolean";
+import { useUpdateProjectStatusMutation } from "@/services/project/mutation";
 import {
   fetchGetCertificate,
   projectsQueryKeys,
 } from "@/services/project/query/project-query";
-import { Button, CircularProgress, Stack } from "@mui/material";
+import { ownersQueryKeys } from "@/services/user/query/user-query";
+import { totalCarbonResult } from "@/types/project/get-project";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import ProjectFirstScopeInformation from "../../detail/project-first-scope-information";
@@ -13,12 +26,8 @@ import ProjectInformation from "../../detail/project-information";
 import ProjectOwnerInformation from "../../detail/project-owner-information";
 import ProjectSecondScopeInformation from "../../detail/project-second-scope-information";
 import ProjectThirdScopeInformation from "../../detail/project-third-scope-information";
-import ProjectRejectDetailButton from "../../project-reject-detail-button";
-import { showSuccess, showError } from "@/components/toast/toast";
-import { ownersQueryKeys } from "@/services/user/query/user-query";
-import { canModifyProject } from "@/helper/project-permissions";
 import ProjectCarbonDetail from "../../project-carbon-detail";
-import { totalCarbonResult } from "@/types/project/get-project";
+import ProjectRejectDetailButton from "../../project-reject-detail-button";
 
 type Params = {
   id: string;
@@ -30,6 +39,8 @@ function ProjectView() {
   const params = useParams<Params>();
   const router = useRouter();
   const { id } = params;
+
+  const openDialog = useBoolean();
 
   // --------------------------- API ---------------------------
 
@@ -43,6 +54,9 @@ function ProjectView() {
     }),
     enabled: !!id,
   });
+
+  const { mutateAsync: updateProjectStatus, isPending: isUpdatingStatus } =
+    useUpdateProjectStatusMutation();
 
   const generateCertificate = useMutation({
     mutationFn: fetchGetCertificate,
@@ -68,6 +82,16 @@ function ProjectView() {
 
   const handleExport = () => {
     generateCertificate.mutate({ id: id });
+  };
+
+  const handleReject = async () => {
+    await updateProjectStatus({ id: id, status: "pending" });
+
+    openDialog.onFalse();
+
+    router.push(`/admin/project/${id}/review`);
+
+    showSuccess("ยกเลิกการอนุมัติสำเร็จ");
   };
 
   // --------------------------- Values ---------------------------
@@ -114,63 +138,125 @@ function ProjectView() {
   }
 
   return (
-    <Stack sx={{ marginTop: 5, backgroundColor: "#ffffff", borderRadius: 3 }}>
-      <ProjectHeader data={headerData} />
+    <>
+      <Stack sx={{ marginTop: 5, backgroundColor: "#ffffff", borderRadius: 3 }}>
+        <ProjectHeader data={headerData} />
 
-      <Stack spacing={4} sx={{ padding: 3 }}>
-        {["rejected", "fixing"].includes(project.data.project.status) && (
-          <ProjectRejectDetailButton id={id} />
-        )}
-
-        <ProjectInformation data={informationData} />
-
-        <ProjectOwnerInformation data={ownerData} />
-
-        <ProjectFirstScopeInformation
-          data={project.data?.project?.carbon_detail?.scope1?.activities ?? []}
-          carbon={project.data?.project.carbon_result.scope1}
-        />
-
-        <ProjectSecondScopeInformation
-          data={
-            project.data?.project.carbon_detail.scope2 ?? {
-              buildings: null,
-              generators: null,
-            }
-          }
-          carbon={project.data?.project.carbon_result.scope2}
-        />
-
-        <ProjectThirdScopeInformation
-          data={project.data?.project?.carbon_detail?.scope3}
-          projectId={project.data?.project.id}
-          ownerId={project.data.project.owner_id}
-          carbon={project.data?.project.carbon_result.scope3}
-        >
-          <ProjectCarbonDetail carbon={carbonUsageAll} all />
-        </ProjectThirdScopeInformation>
-
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ padding: "16px 24px", justifyContent: "end" }}
-        >
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => router.push("/")}
-          >
-            ย้อนกลับ
-          </Button>
-
-          {project.data.project.status === "approved" && canManage && (
-            <Button variant="contained" onClick={handleExport}>
-              พิมพ์ใบรับรอง
-            </Button>
+        <Stack spacing={4} sx={{ padding: 3 }}>
+          {["rejected", "fixing"].includes(project.data.project.status) && (
+            <ProjectRejectDetailButton id={id} />
           )}
+
+          <ProjectInformation data={informationData} />
+
+          <ProjectOwnerInformation data={ownerData} />
+
+          <ProjectFirstScopeInformation
+            data={
+              project.data?.project?.carbon_detail?.scope1?.activities ?? []
+            }
+            carbon={project.data?.project.carbon_result.scope1}
+          />
+
+          <ProjectSecondScopeInformation
+            data={
+              project.data?.project.carbon_detail.scope2 ?? {
+                buildings: null,
+                generators: null,
+              }
+            }
+            carbon={project.data?.project.carbon_result.scope2}
+          />
+
+          <ProjectThirdScopeInformation
+            data={project.data?.project?.carbon_detail?.scope3}
+            projectId={project.data?.project.id}
+            ownerId={project.data.project.owner_id}
+            carbon={project.data?.project.carbon_result.scope3}
+          >
+            <ProjectCarbonDetail carbon={carbonUsageAll} all />
+          </ProjectThirdScopeInformation>
+
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ padding: "16px 24px", justifyContent: "end" }}
+          >
+            {project.data.project.status === "approved" &&
+            currentOwner?.is_admin ? (
+              <>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={openDialog.onTrue}
+                >
+                  ยกเลิกการอนุมัติ
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => router.push("/")}
+                >
+                  ย้อนกลับ
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => router.push("/")}
+                >
+                  ย้อนกลับ
+                </Button>
+
+                {project.data.project.status === "approved" && canManage && (
+                  <Button variant="contained" onClick={handleExport}>
+                    พิมพ์ใบรับรอง
+                  </Button>
+                )}
+              </>
+            )}
+          </Stack>
         </Stack>
       </Stack>
-    </Stack>
+
+      <ConfirmDialog
+        key={`${project.data?.project.id}-${openDialog.value}`}
+        open={openDialog.value}
+        title={
+          <Box component="img" src={"/assets/icons/ic-reject-dialog.svg"} />
+        }
+        content={
+          <Stack spacing={1}>
+            <Typography variant="h3" whiteSpace="break-spaces">
+              คุณต้องการยกเลิกการอนุมัติ{"\n"}แบบฟอร์มโครงการหรือไม่?
+            </Typography>
+            <Typography
+              variant="h5"
+              fontWeight={500}
+              color="#637381"
+              whiteSpace="break-spaces"
+            >
+              หลังจากยกเลิกการอนุมัติแบบฟอร์มโครงการแล้ว{"\n"}ระบบจะยกเลิกสถานะ
+              “ผ่านการตรวจ”{"\n"}กลับไปเป็นสถานะ “กำลังตรวจ”
+            </Typography>
+          </Stack>
+        }
+        action={
+          <Button
+            variant="contained"
+            color={"error"}
+            onClick={handleReject}
+            disabled={isUpdatingStatus}
+          >
+            ยกเลิกการอนุมัติ
+          </Button>
+        }
+        onClose={openDialog.onFalse}
+      />
+    </>
   );
 }
 

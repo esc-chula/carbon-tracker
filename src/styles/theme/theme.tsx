@@ -131,7 +131,7 @@ const theme = createTheme({
       700: color.ERROR_700,
       800: color.ERROR_800,
       900: color.ERROR_900,
-      main: color.ERROR_500,
+      main: color.ERROR_700,
       contrastText: color.TEXT_WHITE,
     },
 
@@ -333,6 +333,14 @@ const theme = createTheme({
           "&.Mui-disabled": {
             borderColor: color.TEXT_DISABLE,
             color: color.TEXT_DISABLE,
+          },
+        },
+        outlinedError: {
+          borderColor: "#B71931",
+          color: "#B71931",
+          "&:hover": {
+            backgroundColor: alpha("#B71931", 0.08),
+            borderColor: "#B71931",
           },
         },
       },
