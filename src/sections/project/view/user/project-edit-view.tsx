@@ -24,6 +24,7 @@ import ProjectForm, {
 } from "../../project-form";
 import ProjectFormStepper from "../../project-form-stepper";
 import { HTTPError } from "ky";
+import { mapApiErrorToMessage } from "@/lib/error-mapping";
 
 // ---------------------------------------------------------------------------------
 
@@ -135,8 +136,13 @@ function ProjectEditView() {
       }
 
       showSuccess("บันทึกแบบร่างสำเร็จ");
-    } catch {
-      showError("ส่งแบบฟอร์มไม่สำเร็จ");
+    } catch (error) {
+      let errorMessage = "ส่งแบบฟอร์มไม่สำเร็จ";
+      if (error instanceof HTTPError) {
+        const errorData = await error.response.json();
+        errorMessage = mapApiErrorToMessage(errorData, errorMessage);
+      }
+      showError(errorMessage);
     }
   };
 
