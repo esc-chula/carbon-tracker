@@ -99,7 +99,13 @@ export default function NavBar() {
               <>
                 <Button
                   color="inherit"
-                  startIcon={<Dashboard sx={{ color: "#000000" }} />}
+                  startIcon={
+                    <Box
+                      component="img"
+                      src="/assets/icons/ic-dashboard.svg"
+                      sx={{ width: 20, height: 20 }}
+                    />
+                  }
                   onClick={() => router.replace("/dashboard")}
                 >
                   <Typography

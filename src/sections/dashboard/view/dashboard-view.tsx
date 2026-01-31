@@ -28,10 +28,10 @@ function DashboardView() {
 
   const TREE_CONSTANT = 21;
 
-  const totalTree = Math.round(
+  const totalTree = (
     (dashboard.data?.dashboard.carbon_emission_per_person.total ?? 0) /
-      TREE_CONSTANT,
-  );
+    TREE_CONSTANT
+  ).toFixed(2);
 
   // --------------------------- Render ---------------------------
 
@@ -54,7 +54,7 @@ function DashboardView() {
     <Stack spacing={4} sx={{ paddingY: 4 }}>
       <Stack spacing={1}>
         <Typography variant="h1" fontWeight={700}>
-          ก๊าซเรือนกระจกจากกิจกรรมนิสิตคณะวิศวกรรมศาสตร์ จุฬา มาจากไหน?
+          ก๊าซเรือนกระจกจากกิจกรรมนิสิตคณะวิศวกรรมศาสตร์จุฬาฯ มาจากไหน?
         </Typography>
         <Typography variant="h4" fontWeight={500}>
           จากโครงการทั้งหมด{" "}
@@ -78,7 +78,7 @@ function DashboardView() {
         >
           <Stack>
             <Typography variant="h2" fontWeight={700}>
-              ฝ่ายไหนปล่อยคาร์บอนจากการใช้ไฟฟ้ามากที่สุด
+              ฝ่ายใดปล่อยคาร์บอนจากการใช้ไฟฟ้ามากที่สุด
             </Typography>
             <Typography variant="body1" fontWeight={500}>
               ปริมาณการปล่อยคาร์บอนแยกตามฝ่าย
@@ -261,10 +261,10 @@ function DashboardView() {
         <Grid size={{ xs: 12 }}>
           <StyledPaper elevation={2} sx={{ paddingBottom: 0 }}>
             <Typography variant="h2" fontWeight={700}>
-              ฤดูกาลแห่งการกินไฟ
+              Heatmap การใช้ไฟฟ้าของกิจกรรมนิสิต
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              Heatmap การใช้ไฟฟ้าตลอดทั้งปีการศึกษา 2568
+              Heatmap แสดงการใช้ไฟฟ้าแต่ละวันตลอดปีการศึกษา
             </Typography>
 
             <DashboardCalendarHeatmap
@@ -293,7 +293,7 @@ function DashboardView() {
                   fontWeight={700}
                   color={color.PRIMARY_MAIN}
                 >
-                  {totalTree.toLocaleString("en-US")} ต้น/คน/ปี
+                  {totalTree} ต้น/คน/ปี
                 </Typography>
                 <Typography variant="body1">
                   ต้นไม้เฉลี่ยดูดซับ ~20 kgCO₂
