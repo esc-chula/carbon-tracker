@@ -34,7 +34,7 @@
     "firebase": "^12.1.0",
     "ky": "^1.8.2",
     "localizedFormat": "link:dayjs/plugin/localizedFormat",
-    "next": "^15.2.3",
+    "next": "15.2.8",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-calendar-heatmap": "^1.10.0",
