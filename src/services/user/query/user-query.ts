@@ -9,6 +9,13 @@ async function fetchGetOwner(): Promise<TGetOwnerResponse> {
   return res;
 }
 
+async function fetchValidateOwner(): Promise<void> {
+  const res = await ky.post("owners/validate", { throwHttpErrors: false });
+  if (res.status !== 204) {
+    throw new Error("Unauthorized email");
+  }
+}
+
 // ---------------------------------------------------------------------------------
 
 const ownersQueryKeys = {
@@ -23,4 +30,4 @@ const ownersQueryKeys = {
     }),
 };
 
-export { ownersQueryKeys, fetchGetOwner };
+export { ownersQueryKeys, fetchGetOwner, fetchValidateOwner };

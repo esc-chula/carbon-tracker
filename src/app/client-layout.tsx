@@ -30,6 +30,7 @@ export default function ClientLayout({
 
   return (
     <ReactQueryProvider>
+      <SonnerProvider />
       <AuthProvider>
         <RequireAuth>
           <LocalizationProvider
@@ -38,7 +39,6 @@ export default function ClientLayout({
             dateFormats={configDatePicker}
           >
             <ThemeProvider theme={theme}>
-              <SonnerProvider />
               <CssBaseline />
               {!shouldHideLayout && <NavBar />}
               {children}
