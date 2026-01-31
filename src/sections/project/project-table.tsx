@@ -43,6 +43,11 @@ import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
 import { useBoolean } from "@/hooks/use-boolean";
 import { totalCarbonResult } from "@/types/project/get-project";
 import { canModifyProject } from "@/helper/project-permissions";
+import {
+  getMajorAbbr,
+  getOrganizationText,
+  getStudentYear,
+} from "./helper/table-display";
 
 dayjs.extend(buddhistEra);
 
@@ -205,10 +210,10 @@ export default function ProjectTable({
                 </StyledTableCell>
                 <StyledTableCell sx={{ minWidth: 160 }}>สถานะ</StyledTableCell>
                 <StyledTableCell sx={{ minWidth: 160 }}>
-                  วันที่อัปเดตล่าสุด
+                  ฝ่าย/ชมรม
                 </StyledTableCell>
                 <StyledTableCell sx={{ minWidth: 220 }}>
-                  อัปเดตโดย
+                  ผู้กรอก
                 </StyledTableCell>
                 <StyledTableCell sx={{ minWidth: 160 }}>
                   ปล่อยคาร์บอน
@@ -262,12 +267,16 @@ export default function ProjectTable({
                       <StatusChips variantType={row.status} />
                     </StyledTableCell>
                     <StyledTableCell>
-                      {dayjs(row.updated_at).format("DD/MM/BBBB")}
+                      {getOrganizationText(row.org, row.org_detail)}
                     </StyledTableCell>
-                    <StyledTableCell>{row.updated_by}</StyledTableCell>
-                     <StyledTableCell>
-                    {totalCarbonResult(row.carbon_result).toFixed(2)} kgCO₂
-                  </StyledTableCell>
+                    <StyledTableCell>
+                      {row.owner.nickname} #
+                      {getStudentYear(row.owner.student_id)}{" "}
+                      {getMajorAbbr(row.owner.major)}
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      {totalCarbonResult(row.carbon_result).toFixed(2)} kgCO₂
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       <ProjectPopoverMenu>
                         {canManage && (
