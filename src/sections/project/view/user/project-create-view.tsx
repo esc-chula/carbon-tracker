@@ -14,6 +14,8 @@ import { useCreateProjectMutation } from "@/services/project/mutation";
 import CreateProjectFormatter from "../../helper/create-project-formatter";
 import { showError, showSuccess } from "@/components/toast/toast";
 import type { TProjectStatus } from "@/types/project/list-project";
+import { HTTPError } from "ky";
+import { mapApiErrorToMessage } from "@/lib/error-mapping";
 
 // ---------------------------------------------------------------------------------
 
@@ -68,8 +70,13 @@ function ProjectCreateView() {
         router.push("/");
         return;
       }
-    } catch {
-      showError("ส่งแบบฟอร์มไม่สำเร็จ");
+    } catch (error) {
+      let errorMessage = "ส่งแบบฟอร์มไม่สำเร็จ";
+      if (error instanceof HTTPError) {
+        const errorData = await error.response.json();
+        errorMessage = mapApiErrorToMessage(errorData, errorMessage);
+      }
+      showError(errorMessage);
     }
   };
 
