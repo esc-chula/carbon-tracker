@@ -58,7 +58,13 @@ export default function Footer() {
             >
               เพิ่มเติม
             </Typography>
-            <Typography>รูปแบบไฟล์ CSV</Typography>
+            <Typography
+              component="a"
+              href="https://docs.google.com/spreadsheets/d/1mQA58HG3fzmBJHN607rujnrMdw3uK41ZPqmvMRu04dU/edit?pli=1&gid=0#gid=0"
+              target="_blank"
+            >
+              รูปแบบไฟล์ CSV
+            </Typography>
           </Stack>
           <Stack spacing={3}>
             <Typography
