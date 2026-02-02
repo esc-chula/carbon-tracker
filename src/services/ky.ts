@@ -2,9 +2,9 @@
 "use client";
 
 import ky from "ky";
-import { getAuth } from "firebase/auth";
+import { getFirebaseAuth } from "@/lib/firebase";
 
-const auth = getAuth();
+const auth = getFirebaseAuth();
 
 const kyWithAuth = ky.create({
   prefixUrl: process.env.NEXT_PUBLIC_BASE_URL ?? "",

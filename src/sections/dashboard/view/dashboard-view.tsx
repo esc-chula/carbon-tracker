@@ -28,10 +28,10 @@ function DashboardView() {
 
   const TREE_CONSTANT = 21;
 
-  const totalTree = Math.round(
+  const totalTree = (
     (dashboard.data?.dashboard.carbon_emission_per_person.total ?? 0) /
-      TREE_CONSTANT,
-  );
+    TREE_CONSTANT
+  ).toFixed(2);
 
   // --------------------------- Render ---------------------------
 
@@ -54,7 +54,7 @@ function DashboardView() {
     <Stack spacing={4} sx={{ paddingY: 4 }}>
       <Stack spacing={1}>
         <Typography variant="h1" fontWeight={700}>
-          ก๊าซเรือนกระจกในจุฬาฯ มาจากไหน?
+          ก๊าซเรือนกระจกจากกิจกรรมนิสิตคณะวิศวกรรมศาสตร์จุฬาฯ มาจากไหน?
         </Typography>
         <Typography variant="h4" fontWeight={500}>
           จากโครงการทั้งหมด{" "}
@@ -78,10 +78,10 @@ function DashboardView() {
         >
           <Stack>
             <Typography variant="h2" fontWeight={700}>
-              ฝ่ายไหนปล่อย carbon มากที่สุด?
+              ฝ่ายใดปล่อยคาร์บอนจากการใช้ไฟฟ้ามากที่สุด
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              ปริมาณการปล่อย carbon แยกตามฝ่าย
+              ปริมาณการปล่อยคาร์บอนแยกตามฝ่าย
             </Typography>
           </Stack>
 
@@ -198,7 +198,7 @@ function DashboardView() {
                 <Stack spacing={1}>
                   <Stack>
                     <Typography variant="body1" fontWeight={500}>
-                      Scope 1 : การปลดปล่อยทางตรง
+                      การปลดปล่อยโดยตรง
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
                       {dashboard.data.dashboard.carbon_emission_per_person.scope1.toFixed(
@@ -217,7 +217,7 @@ function DashboardView() {
 
                   <Stack>
                     <Typography variant="body1" fontWeight={500}>
-                      Scope 2 : การปลดปล่อยทางอ้อมจากการใช้พลังงาน
+                      การปลดปล่อยทางอ้อมจากการใช้พลังงาน
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
                       {dashboard.data.dashboard.carbon_emission_per_person.scope2.toFixed(
@@ -236,7 +236,7 @@ function DashboardView() {
 
                   <Stack>
                     <Typography variant="body1" fontWeight={500}>
-                      Scope 3 : การปลดปล่อยก๊าซเรือนกระจกทางอ้อม
+                      การปลดปล่อยทางอ้อมอื่นๆ จากกิจกรรม
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
                       {dashboard.data.dashboard.carbon_emission_per_person.scope3.toFixed(
@@ -261,10 +261,10 @@ function DashboardView() {
         <Grid size={{ xs: 12 }}>
           <StyledPaper elevation={2} sx={{ paddingBottom: 0 }}>
             <Typography variant="h2" fontWeight={700}>
-              ฤดูกาลแห่งการกินไฟ
+              Heatmap การใช้ไฟฟ้าของกิจกรรมนิสิต
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              Heatmap การใช้ไฟฟ้าตลอดทั้งปีการศึกษา 2568
+              Heatmap แสดงการใช้ไฟฟ้าแต่ละวันตลอดปีการศึกษา
             </Typography>
 
             <DashboardCalendarHeatmap
@@ -293,7 +293,7 @@ function DashboardView() {
                   fontWeight={700}
                   color={color.PRIMARY_MAIN}
                 >
-                  {totalTree.toLocaleString("en-US")} ต้น/คน/ปี
+                  {totalTree} ต้น/คน/ปี
                 </Typography>
                 <Typography variant="body1">
                   ต้นไม้เฉลี่ยดูดซับ ~20 kgCO₂

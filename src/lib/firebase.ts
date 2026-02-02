@@ -22,5 +22,4 @@ export function getFirebaseAuth(): Auth {
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: "select_account",
-  hd: "student.chula.ac.th",
 });

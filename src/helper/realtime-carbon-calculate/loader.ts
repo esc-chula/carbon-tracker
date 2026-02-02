@@ -22,6 +22,7 @@ type CarbonCalculatorResult = {
 type CarbonCalculator = (
   carbonDetail: RealtimeCarbonDetail,
   emissionFactors: Record<string, number>,
+  csvContent: string,
 ) => CarbonCalculatorResult;
 
 type GoInstance = {
@@ -34,7 +35,7 @@ type GoConstructor = new () => GoInstance;
 declare global {
   interface Window {
     Go?: GoConstructor;
-    calcCarbonWASM?: CarbonCalculator;
+    calcCarbonWithCSV?: CarbonCalculator;
   }
 }
 
@@ -92,7 +93,7 @@ const waitForCalculator = (timeoutMs = 3000): Promise<void> =>
           };
 
     const check = () => {
-      if (typeof window.calcCarbonWASM === "function") {
+      if (typeof window.calcCarbonWithCSV === "function") {
         resolve();
         return;
       }
@@ -135,8 +136,8 @@ async function loadCarbonCalculator(): Promise<CarbonCalculator> {
     throw new Error("Carbon calculator is only available in the browser");
   }
 
-  if (typeof window.calcCarbonWASM === "function") {
-    return window.calcCarbonWASM;
+  if (typeof window.calcCarbonWithCSV === "function") {
+    return window.calcCarbonWithCSV;
   }
 
   calculatorPromise ??= (async () => {
@@ -154,11 +155,11 @@ async function loadCarbonCalculator(): Promise<CarbonCalculator> {
 
     await waitForCalculator();
 
-    if (typeof window.calcCarbonWASM !== "function") {
+    if (typeof window.calcCarbonWithCSV !== "function") {
       throw new Error("Carbon calculator function is unavailable");
     }
 
-    return window.calcCarbonWASM;
+    return window.calcCarbonWithCSV;
   })().catch((error) => {
     calculatorPromise = null;
     throw error;

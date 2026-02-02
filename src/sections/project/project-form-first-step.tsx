@@ -158,6 +158,7 @@ export function ProjectFormFirstStep({
                   <Field.Text
                     name="owner_fullname"
                     label="ชื่อ-นามสกุล"
+                    regex={/^[ \u0E00-\u0E7F]*$/}
                     error={!!errors.owner_fullname}
                     helperText={errors.owner_fullname?.message}
                     required

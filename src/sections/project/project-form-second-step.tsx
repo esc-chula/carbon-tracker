@@ -204,6 +204,25 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     };
   }, []);
 
+  const DEFAULT_CSV_CONTENT = "วิธีเดินทาง,จังหวัดต้นทาง,เขตต้นทาง";
+  const [csvContent, setCsvContent] = useState(DEFAULT_CSV_CONTENT);
+  const csvFile = watchedValues.transportations_csv_file;
+
+  useEffect(() => {
+    if (!csvFile) {
+      setCsvContent(DEFAULT_CSV_CONTENT);
+      return;
+    }
+
+    if (csvFile instanceof File) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCsvContent((e.target?.result as string) || DEFAULT_CSV_CONTENT);
+      };
+      reader.readAsText(csvFile);
+    }
+  }, [csvFile]);
+
   const [carbonSummary, setCarbonSummary] = useState<CarbonSummary>(() =>
     createZeroSummary(),
   );
@@ -309,6 +328,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         const result = calculatorRef.current!(
           realtimeCarbonDetail,
           emissionFactors,
+          csvContent,
         );
 
         if (result?.error) {
@@ -355,6 +375,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     emissionFactors,
     emissionFactorErrorMessage,
     realtimeCarbonDetail,
+    csvContent,
   ]);
 
   const fieldErrorMessage = (error: unknown) =>
@@ -725,7 +746,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         <Button
           component="a"
           href={
-            "https://docs.google.com/spreadsheets/d/1aZXR5jRYHNlC6jHlkh0Qa4R4gYYiy-A7OMuFdhPZ0AI/edit?usp=sharing"
+            "https://docs.google.com/spreadsheets/d/1mQA58HG3fzmBJHN607rujnrMdw3uK41ZPqmvMRu04dU/edit?usp=sharing"
           }
           target="_blank"
           variant="contained"

@@ -65,7 +65,12 @@ function ProjectForm({
 
   const methods = useForm<ProjectFormValues>({
     resolver: zodResolver(ProjectFormSchema),
-    defaultValues: initialValues,
+    defaultValues: {
+      ...initialValues,
+      owner_fullname: /[a-zA-Z]/.test(initialValues.owner_fullname || "")
+        ? ""
+        : initialValues.owner_fullname,
+    },
   });
 
   const {

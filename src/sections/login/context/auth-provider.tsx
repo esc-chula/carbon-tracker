@@ -17,6 +17,9 @@ import {
   type ReactNode,
 } from "react";
 import { getFirebaseAuth, googleProvider } from "@/lib/firebase";
+import { fetchValidateOwner } from "@/services/user/query/user-query";
+import { showError } from "@/components/toast/toast";
+import { useRouter } from "next/navigation";
 
 type AuthCtx = {
   user: User | null;
@@ -30,6 +33,7 @@ type AuthCtx = {
 const Ctx = createContext<AuthCtx | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const auth = getFirebaseAuth();
@@ -54,6 +58,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       signInGoogle: async () => {
         await signInWithPopup(auth, googleProvider);
+        try {
+          await fetchValidateOwner();
+        } catch (error) {
+          showError("กรุณาเข้าสู่ระบบด้วยอีเมลจุฬา");
+          await signOut(auth);
+          router.push("/login");
+        }
       },
       signOutAll: async () => {
         await signOut(auth);

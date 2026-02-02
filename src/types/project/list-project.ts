@@ -1,4 +1,5 @@
 import type { CarbonResult } from "./get-project";
+import type { TOwner } from "../user/get-owner";
 
 export type TProjectStatus =
   | "fixing"
@@ -28,6 +29,7 @@ export type TListProjectsItem = {
   updated_at: string;
   deleted_at: string | null;
   carbon_result: CarbonResult;
+  owner: TOwner;
 };
 
 export type TListProjectsResponse = {
