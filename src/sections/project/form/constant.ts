@@ -1,6 +1,16 @@
-type TRoom = "อาคาร 3" | "อาคารวิศวฯ 100 ปี" | "อาคารเจริญวิศวกรรม (อาคาร 4)";
+const ROOM_BUILDINGS = [
+  "อาคาร 3",
+  "อาคารวิศวฯ 100 ปี",
+  "อาคารเจริญวิศวกรรม (อาคาร 4)",
+] as const;
 
-const roomOptionsMeterOnly = {
+type TRoom = (typeof ROOM_BUILDINGS)[number];
+
+type Option = { value: string; label: string };
+type RoomRecord = Record<TRoom, Option[]>;
+type RoomRecordPartial = Partial<RoomRecord>;
+
+const roomOptionsMeterOnly: RoomRecordPartial = {
   "อาคาร 3": [{ value: "Hall of Intania", label: "Hall of Intania" }],
   "อาคารเจริญวิศวกรรม (อาคาร 4)": [
     { value: "ห้องประชุมชั้น 2", label: "ห้องประชุมชั้น 2" },
@@ -11,7 +21,7 @@ const roomOptionsMeterOnly = {
   ],
 };
 
-const roomOptionsExcludeMeterOnly = {
+const roomOptionsExcludeMeterOnly: RoomRecordPartial = {
   "อาคาร 3": [
     { value: "ห้องประชุมสวนรวมใจ 1", label: "ห้องประชุมสวนรวมใจ 1" },
     { value: "ห้องประชุมสวนรวมใจ 2", label: "ห้องประชุมสวนรวมใจ 2" },
@@ -92,22 +102,11 @@ const roomOptionsExcludeMeterOnly = {
   ],
 };
 
-type RoomRecord = Record<string, { value: string; label: string }[]>;
-
-const mergeRoomOptions = (obj1: RoomRecord, obj2: RoomRecord): RoomRecord => {
-  const allKeys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
-
-  const merged: RoomRecord = {};
-
-  allKeys.forEach((key) => {
-    const list1 = obj1[key] ?? [];
-    const list2 = obj2[key] ?? [];
-
-    merged[key] = [...list1, ...list2];
-  });
-
-  return merged;
-};
+const mergeRoomOptions = (...sources: RoomRecordPartial[]): RoomRecord =>
+  ROOM_BUILDINGS.reduce((acc, building) => {
+    acc[building] = sources.flatMap((source) => source[building] ?? []);
+    return acc;
+  }, {} as RoomRecord);
 
 const roomOptions = mergeRoomOptions(
   roomOptionsMeterOnly,
@@ -205,12 +204,13 @@ const activityUnitOptions = [
   { value: "g", label: "กรัม" },
 ];
 
-const getBuildingOptions = (roomOptions: RoomRecord) => {
-  return Object.keys(roomOptions).map((val) => ({
-    value: val,
-    label: val,
+const getBuildingOptions = (roomOptions: RoomRecordPartial) =>
+  ROOM_BUILDINGS.filter(
+    (building) => (roomOptions[building]?.length ?? 0) > 0,
+  ).map((building) => ({
+    value: building,
+    label: building,
   }));
-};
 
 const buildingOptionsMeterOnly = getBuildingOptions(roomOptionsMeterOnly);
 

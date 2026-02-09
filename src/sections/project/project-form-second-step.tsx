@@ -655,9 +655,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                       name={`scope2_entries.${index}.room`}
                       label="ห้องที่ใช้"
                       options={
-                        roomOptionsExcludeMeterOnly[
-                          building as keyof typeof roomOptionsExcludeMeterOnly
-                        ] ?? []
+                        roomOptionsExcludeMeterOnly[building as TRoom] ?? []
                       }
                       disabled={!building}
                       creatable
