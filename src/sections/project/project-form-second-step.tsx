@@ -36,10 +36,12 @@ import {
   activityOptions,
   activityUnitOptions,
   buildingOptions,
+  buildingOptionsExcludeMeterOnly,
   energyUnitOptions,
   equipmentOptions,
   giftUnitOptions,
   roomOptions,
+  roomOptionsExcludeMeterOnly,
   wasteOptions,
   type TRoom,
 } from "./form/constant";
@@ -643,7 +645,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     <Field.CustomAutoComplete
                       name={`scope2_entries.${index}.name`}
                       label="อาคารที่ใช้"
-                      options={buildingOptions}
+                      options={buildingOptionsExcludeMeterOnly}
                       helperText={errors.scope2_entries?.[index]?.name?.message}
                       creatable
                     />
@@ -652,7 +654,11 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     <Field.CustomAutoComplete
                       name={`scope2_entries.${index}.room`}
                       label="ห้องที่ใช้"
-                      options={roomOptions[building as TRoom] ?? []}
+                      options={
+                        roomOptionsExcludeMeterOnly[
+                          building as keyof typeof roomOptionsExcludeMeterOnly
+                        ] ?? []
+                      }
                       disabled={!building}
                       creatable
                     />
