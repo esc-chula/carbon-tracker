@@ -36,10 +36,12 @@ import {
   activityOptions,
   activityUnitOptions,
   buildingOptions,
+  buildingOptionsExcludeMeterOnly,
   energyUnitOptions,
   equipmentOptions,
   giftUnitOptions,
   roomOptions,
+  roomOptionsExcludeMeterOnly,
   wasteOptions,
   type TRoom,
 } from "./form/constant";
@@ -292,6 +294,37 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             shouldTouch: false,
             shouldValidate: false,
           });
+        }
+
+        if (entry.name?.trim()) {
+          const isValidBuilding = buildingOptionsExcludeMeterOnly.some(
+            (b) => b.value === entry.name,
+          );
+          if (!isValidBuilding) {
+            setValue(`scope2_entries.${index}.name`, "", {
+              shouldDirty: false,
+              shouldTouch: false,
+              shouldValidate: false,
+            });
+            setValue(`scope2_entries.${index}.room`, "", {
+              shouldDirty: false,
+              shouldTouch: false,
+              shouldValidate: false,
+            });
+          }
+        }
+
+        if (entry.room?.trim()) {
+          const validRooms =
+            roomOptionsExcludeMeterOnly[entry.name as TRoom] ?? [];
+          const isValidRoom = validRooms.some((r) => r.value === entry.room);
+          if (!isValidRoom) {
+            setValue(`scope2_entries.${index}.room`, "", {
+              shouldDirty: false,
+              shouldTouch: false,
+              shouldValidate: false,
+            });
+          }
         }
       }
     });
@@ -643,7 +676,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     <Field.CustomAutoComplete
                       name={`scope2_entries.${index}.name`}
                       label="อาคารที่ใช้"
-                      options={buildingOptions}
+                      options={buildingOptionsExcludeMeterOnly}
                       helperText={errors.scope2_entries?.[index]?.name?.message}
                       creatable
                     />
@@ -652,7 +685,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     <Field.CustomAutoComplete
                       name={`scope2_entries.${index}.room`}
                       label="ห้องที่ใช้"
-                      options={roomOptions[building as TRoom] ?? []}
+                      options={
+                        roomOptionsExcludeMeterOnly[building as TRoom] ?? []
+                      }
                       disabled={!building}
                       creatable
                     />

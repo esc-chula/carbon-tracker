@@ -1,8 +1,28 @@
-type TRoom = "อาคาร 3" | "อาคารวิศวฯ 100 ปี" | "อาคารเจริญวิศวกรรม (อาคาร 4)";
+const ROOM_BUILDINGS = [
+  "อาคาร 3",
+  "อาคารวิศวฯ 100 ปี",
+  "อาคารเจริญวิศวกรรม (อาคาร 4)",
+] as const;
 
-const roomOptions = {
+type TRoom = (typeof ROOM_BUILDINGS)[number];
+
+type Option = { value: string; label: string };
+type RoomRecord = Record<TRoom, Option[]>;
+type RoomRecordPartial = Partial<RoomRecord>;
+
+const roomOptionsMeterOnly: RoomRecordPartial = {
+  "อาคาร 3": [{ value: "Hall of Intania", label: "Hall of Intania" }],
+  "อาคารเจริญวิศวกรรม (อาคาร 4)": [
+    { value: "ห้องประชุมชั้น 2", label: "ห้องประชุมชั้น 2" },
+  ],
+  "อาคารวิศวฯ 100 ปี": [
+    { value: "ห้องอเนกประสงค์ ชั้น 12", label: "ห้องอเนกประสงค์ ชั้น 12" },
+    { value: "ชั้นลอย ห้องอเนกประสงค์", label: "ชั้นลอย ห้องอเนกประสงค์" },
+  ],
+};
+
+const roomOptionsExcludeMeterOnly: RoomRecordPartial = {
   "อาคาร 3": [
-    { value: "Hall of Intania", label: "Hall of Intania" }, // TODO: meter only
     { value: "ห้องประชุมสวนรวมใจ 1", label: "ห้องประชุมสวนรวมใจ 1" },
     { value: "ห้องประชุมสวนรวมใจ 2", label: "ห้องประชุมสวนรวมใจ 2" },
     { value: "ห้องประชุม Truelab", label: "ห้องประชุม Truelab" },
@@ -58,13 +78,7 @@ const roomOptions = {
     { value: "ห้องสมุดชั้น3", label: "ห้องสมุดชั้น3" },
     { value: "ห้้องสมุดชั้น4", label: "ห้้องสมุดชั้น4" },
   ],
-  "อาคารเจริญวิศวกรรม (อาคาร 4)": [
-    { value: "ห้องประชุมชั้น 2", label: "ห้องประชุมชั้น 2" }, // TODO: meter only
-  ],
   "อาคารวิศวฯ 100 ปี": [
-    { value: "ห้องอเนกประสงค์ ชั้น 12", label: "ห้องอเนกประสงค์ ชั้น 12" }, // TODO: meter only
-    { value: "ชั้นลอย ห้องอเนกประสงค์", label: "ชั้นลอย ห้องอเนกประสงค์" }, // TODO: meter only
-
     { value: "201 A", label: "201 A" },
     { value: "201 B", label: "201 B" },
     { value: "301", label: "301" },
@@ -87,6 +101,17 @@ const roomOptions = {
     { value: "602", label: "602" },
   ],
 };
+
+const mergeRoomOptions = (...sources: RoomRecordPartial[]): RoomRecord =>
+  ROOM_BUILDINGS.reduce((acc, building) => {
+    acc[building] = sources.flatMap((source) => source[building] ?? []);
+    return acc;
+  }, {} as RoomRecord);
+
+const roomOptions = mergeRoomOptions(
+  roomOptionsMeterOnly,
+  roomOptionsExcludeMeterOnly,
+);
 
 const fieldOptions = [
   { value: "ฝ่ายกิจการภายใน", label: "ฝ่ายกิจการภายใน" },
@@ -179,14 +204,21 @@ const activityUnitOptions = [
   { value: "g", label: "กรัม" },
 ];
 
-const buildingOptions = [
-  { value: "อาคาร 3", label: "อาคาร 3" },
-  { value: "อาคารวิศวฯ 100 ปี", label: "อาคารวิศวฯ 100 ปี" },
-  {
-    value: "อาคารเจริญวิศวกรรม (อาคาร 4)",
-    label: "อาคารเจริญวิศวกรรม (อาคาร 4)",
-  },
-];
+const getBuildingOptions = (roomOptions: RoomRecordPartial) =>
+  ROOM_BUILDINGS.filter(
+    (building) => (roomOptions[building]?.length ?? 0) > 0,
+  ).map((building) => ({
+    value: building,
+    label: building,
+  }));
+
+const buildingOptionsMeterOnly = getBuildingOptions(roomOptionsMeterOnly);
+
+const buildingOptionsExcludeMeterOnly = getBuildingOptions(
+  roomOptionsExcludeMeterOnly,
+);
+
+const buildingOptions = getBuildingOptions(roomOptions);
 
 const equipmentOptions = [
   { label: "ทีวี", value: "tv" },
@@ -223,11 +255,15 @@ export {
   activityOptions,
   activityUnitOptions,
   buildingOptions,
+  buildingOptionsMeterOnly,
+  buildingOptionsExcludeMeterOnly,
   departmentOptions,
   energyUnitOptions,
   equipmentOptions,
   fieldOptions,
   giftUnitOptions,
   roomOptions,
+  roomOptionsMeterOnly,
+  roomOptionsExcludeMeterOnly,
   wasteOptions,
 };
