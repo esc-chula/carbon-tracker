@@ -295,6 +295,37 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             shouldValidate: false,
           });
         }
+
+        if (entry.name?.trim()) {
+          const isValidBuilding = buildingOptionsExcludeMeterOnly.some(
+            (b) => b.value === entry.name,
+          );
+          if (!isValidBuilding) {
+            setValue(`scope2_entries.${index}.name`, "", {
+              shouldDirty: false,
+              shouldTouch: false,
+              shouldValidate: false,
+            });
+            setValue(`scope2_entries.${index}.room`, "", {
+              shouldDirty: false,
+              shouldTouch: false,
+              shouldValidate: false,
+            });
+          }
+        }
+
+        if (entry.room?.trim()) {
+          const validRooms =
+            roomOptionsExcludeMeterOnly[entry.name as TRoom] ?? [];
+          const isValidRoom = validRooms.some((r) => r.value === entry.room);
+          if (!isValidRoom) {
+            setValue(`scope2_entries.${index}.room`, "", {
+              shouldDirty: false,
+              shouldTouch: false,
+              shouldValidate: false,
+            });
+          }
+        }
       }
     });
   }, [scope2EntriesWatch, setValue]);
