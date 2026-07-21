@@ -3,6 +3,7 @@ const errorMapping: Record<string, string> = {
   READ_CSV_FAILED: "อ่านไฟล์ข้อมูลการเดินทาง (CSV) ไม่สำเร็จ",
   READ_CSV_FAILED_EMPTY_CONTENT: "ไม่พบข้อมูลในไฟล์การเดินทาง (CSV)",
   CUSTOM_ID_ALREADY_EXISTS: "รหัสโครงการนี้ถูกใช้ไปแล้ว",
+  PROJECT_YEAR_FROZEN: "ไม่สามารถแก้ไขโครงการในปีการศึกษาที่ผ่านมาได้",
   INTERNAL_ERROR: "ระบบเกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง",
 };
 
