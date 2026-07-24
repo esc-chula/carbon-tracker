@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/sections/login/context/auth-provider";
+import { dashboardKeys } from "@/services/dashboard/query/dashboard-query";
 import theme from "@/styles/theme/theme";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
@@ -18,6 +19,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -31,6 +33,11 @@ export default function NavBar() {
   const { user, signOutAll } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  const dashboard = useQuery({
+    ...dashboardKeys.overviewOptions({}),
+    enabled: !!user,
+  });
 
   // --------------------------- Function ---------------------------
 
@@ -51,7 +58,10 @@ export default function NavBar() {
   // --------------------------- Value ---------------------------
 
   const redColor = "#B71931";
-  const selectedAcademicYear = searchParams.get("year") ?? "2026";
+  const currentYear = dashboard.data?.dashboard.current_year;
+  const selectedAcademicYear =
+    searchParams.get("year") ?? String(currentYear ?? "");
+  const availableYears = dashboard.data?.dashboard.available_years ?? [];
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -111,6 +121,7 @@ export default function NavBar() {
                   <Select
                     value={selectedAcademicYear}
                     IconComponent={KeyboardArrowDownIcon}
+                    disabled={!availableYears.length}
                     onChange={(event) => handleYearChange(event.target.value)}
                     MenuProps={{
                       slotProps: {
@@ -135,8 +146,11 @@ export default function NavBar() {
                       },
                     }}
                   >
-                    <MenuItem value="2026">ปีการศึกษา 2569</MenuItem>
-                    <MenuItem value="2025">ปีการศึกษา 2568</MenuItem>
+                    {availableYears.map((year) => (
+                      <MenuItem key={year} value={String(year)}>
+                        ปีการศึกษา {year + 543}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
 
