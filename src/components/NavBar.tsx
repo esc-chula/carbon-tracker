@@ -62,6 +62,7 @@ export default function NavBar() {
   const selectedAcademicYear =
     searchParams.get("year") ?? String(currentYear ?? "");
   const availableYears = dashboard.data?.dashboard.available_years ?? [];
+  const sortedAvailableYears = [...availableYears].sort((a, b) => b - a);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -121,7 +122,7 @@ export default function NavBar() {
                   <Select
                     value={selectedAcademicYear}
                     IconComponent={KeyboardArrowDownIcon}
-                    disabled={!availableYears.length}
+                    disabled={!sortedAvailableYears.length}
                     onChange={(event) => handleYearChange(event.target.value)}
                     MenuProps={{
                       slotProps: {
@@ -146,7 +147,7 @@ export default function NavBar() {
                       },
                     }}
                   >
-                    {availableYears.map((year) => (
+                    {sortedAvailableYears.map((year) => (
                       <MenuItem key={year} value={String(year)}>
                         ปีการศึกษา {year + 543}
                       </MenuItem>

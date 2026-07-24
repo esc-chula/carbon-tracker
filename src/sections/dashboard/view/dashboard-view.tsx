@@ -16,13 +16,15 @@ import DashboardCalendarHeatmap from "../dashboard-calendar";
 import DashboardPieChart from "../dashboard-pie-chart";
 import { StyledBox, StyledPaper } from "../styles";
 import { color } from "@/styles/colors";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 // ---------------------------------------------------------------------------------
 
 function DashboardView() {
   // --------------------------- API ---------------------------
 
+  const router = useRouter();
   const searchParams = useSearchParams();
   const yearParam = searchParams.get("year");
   const parsedYear = yearParam ? Number(yearParam) : undefined;
@@ -30,6 +32,13 @@ function DashboardView() {
     parsedYear && !Number.isNaN(parsedYear) ? parsedYear : undefined;
 
   const dashboard = useQuery({ ...dashboardKeys.overviewOptions({ year }) });
+
+  useEffect(() => {
+    const currentYear = dashboard.data?.dashboard.current_year;
+    if (yearParam || !currentYear) return;
+
+    router.replace(`/dashboard?year=${currentYear}`);
+  }, [dashboard.data?.dashboard.current_year, router, yearParam]);
 
   // --------------------------- Value ---------------------------
 
