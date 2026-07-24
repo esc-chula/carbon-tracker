@@ -16,13 +16,20 @@ import DashboardCalendarHeatmap from "../dashboard-calendar";
 import DashboardPieChart from "../dashboard-pie-chart";
 import { StyledBox, StyledPaper } from "../styles";
 import { color } from "@/styles/colors";
+import { useSearchParams } from "next/navigation";
 
 // ---------------------------------------------------------------------------------
 
 function DashboardView() {
   // --------------------------- API ---------------------------
 
-  const dashboard = useQuery({ ...dashboardKeys.overviewOptions({}) });
+  const searchParams = useSearchParams();
+  const yearParam = searchParams.get("year");
+  const parsedYear = yearParam ? Number(yearParam) : undefined;
+  const year =
+    parsedYear && !Number.isNaN(parsedYear) ? parsedYear : undefined;
+
+  const dashboard = useQuery({ ...dashboardKeys.overviewOptions({ year }) });
 
   // --------------------------- Value ---------------------------
 

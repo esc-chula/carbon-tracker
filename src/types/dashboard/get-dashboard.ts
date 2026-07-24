@@ -6,6 +6,8 @@ export type TGetDashboardRequest = {
 // response
 export type TGetDashboardResponse = {
   dashboard: {
+    available_years: number[] | null;
+    current_year: number;
     carbon_emission_by_organization:
       | {
           organization: string;

@@ -2,21 +2,23 @@
 
 import { useAuth } from "@/sections/login/context/auth-provider";
 import theme from "@/styles/theme/theme";
-import { Dashboard } from "@mui/icons-material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
   AppBar,
   Box,
   Button,
   Divider,
+  FormControl,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
+  Select,
   Stack,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 // ---------------------------------------------------------------------------------
@@ -25,6 +27,7 @@ export default function NavBar() {
   // --------------------------- Hook ---------------------------
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, signOutAll } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -39,9 +42,16 @@ export default function NavBar() {
     setAnchorEl(null);
   };
 
+  const handleYearChange = (year: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("year", year);
+    router.push(`/dashboard?${params.toString()}`);
+  };
+
   // --------------------------- Value ---------------------------
 
   const redColor = "#B71931";
+  const selectedAcademicYear = searchParams.get("year") ?? "2026";
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -97,6 +107,39 @@ export default function NavBar() {
 
             {user && (
               <>
+                <FormControl size="small" sx={{ minWidth: 160 }}>
+                  <Select
+                    value={selectedAcademicYear}
+                    IconComponent={KeyboardArrowDownIcon}
+                    onChange={(event) => handleYearChange(event.target.value)}
+                    MenuProps={{
+                      slotProps: {
+                        paper: {
+                          sx: {
+                            borderRadius: 2,
+                          },
+                        },
+                      },
+                    }}
+                    sx={{
+                      minWidth: 180,
+                      height: 40,
+                      borderRadius: 2,
+                      border: "2px solid #E5E8EB",
+                      fontWeight: 400,
+                      "& fieldset": {
+                        border: "none",
+                      },
+                      "& .MuiSelect-icon": {
+                        color: "#637381",
+                      },
+                    }}
+                  >
+                    <MenuItem value="2026">ปีการศึกษา 2569</MenuItem>
+                    <MenuItem value="2025">ปีการศึกษา 2568</MenuItem>
+                  </Select>
+                </FormControl>
+
                 <Button
                   color="inherit"
                   startIcon={
