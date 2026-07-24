@@ -9,6 +9,7 @@ export type TCreateProjectRequest = {
   owner_major: string;
   owner_nickname: string;
   owner_phone_number: string;
+  owner_line_id: string;
   owner_student_id: string;
   status: TProjectStatus;
   title: string;

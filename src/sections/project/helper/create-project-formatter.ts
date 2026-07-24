@@ -38,6 +38,7 @@ function CreateProjectFormatter(
     owner_major: data.owner_major,
     owner_nickname: data.owner_nickname,
     owner_phone_number: data.owner_phone_number,
+    owner_line_id: data.owner_line_id.trim(),
     owner_student_id: data.owner_student_id,
     status,
     title: data.title,

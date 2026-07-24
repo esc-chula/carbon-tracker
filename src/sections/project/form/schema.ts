@@ -215,6 +215,7 @@ const ProjectFormStepOneBaseSchema = z.object({
   owner_student_id: z.string().min(1, "กรุณากรอกรหัสนิสิต"),
   owner_major: z.string().min(1, "กรุณาเลือกภาคที่เรียน"),
   owner_phone_number: z.string().min(1, "กรุณากรอกเบอร์โทรศัพท์"),
+  owner_line_id: z.string().min(1, "กรุณาระบุ Line ID"),
   field: z.string().optional(),
   clubName: z.string().optional(),
   otherUnderProject: z.string().optional(),
@@ -322,6 +323,7 @@ const defaultValues: ProjectFormValues = {
   owner_student_id: "",
   owner_major: "",
   owner_phone_number: "",
+  owner_line_id: "",
   scope1_activities: [{ name: "", value: undefined, unit: "" }],
   scope2_entries: [
     {

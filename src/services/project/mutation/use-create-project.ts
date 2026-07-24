@@ -21,6 +21,7 @@ async function postCreateProject(
   formData.append("owner_major", payload.owner_major);
   formData.append("owner_nickname", payload.owner_nickname);
   formData.append("owner_phone_number", payload.owner_phone_number);
+  formData.append("owner_line_id", payload.owner_line_id);
   formData.append("owner_student_id", payload.owner_student_id);
   formData.append("status", payload.status);
   formData.append("title", payload.title);
