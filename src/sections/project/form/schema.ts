@@ -1,6 +1,12 @@
 import type { ProjectFormValues } from "./type";
 import { z } from "zod";
 
+const POLICY_PHOTO_ERROR =
+  "กรุณาอัปโหลดรูปภาพ PNG หรือ JPG (max. 3MB) สูงสุด 4 รูป";
+const MAX_POLICY_PHOTO_SIZE = 3 * 1024 * 1024;
+const MAX_POLICY_PHOTO_COUNT = 4;
+const POLICY_PHOTO_MIME_TYPES = ["image/png", "image/jpeg"];
+
 /** Helpers to parse numbers coming from <input type="number" /> */
 const toOptionalNumber = (val: unknown) => {
   if (val === "" || val == null) return undefined;
@@ -25,6 +31,23 @@ const toRequiredNumber = (val: unknown) => {
   if (typeof val === "number") return val;
   return undefined;
 };
+
+const isPolicyPhotoFile = (value: unknown): value is File =>
+  typeof File !== "undefined" && value instanceof File;
+
+const PolicyImplementationPhotosSchema = z
+  .array(z.custom<File>(isPolicyPhotoFile, POLICY_PHOTO_ERROR))
+  .refine((files) => files.length > 0, POLICY_PHOTO_ERROR)
+  .refine((files) => files.length <= MAX_POLICY_PHOTO_COUNT, POLICY_PHOTO_ERROR)
+  .refine(
+    (files) =>
+      files.every(
+        (file) =>
+          POLICY_PHOTO_MIME_TYPES.includes(file.type) &&
+          file.size <= MAX_POLICY_PHOTO_SIZE,
+      ),
+    POLICY_PHOTO_ERROR,
+  );
 
 // Scope 1 schema
 const Scope1ActivitySchema = z.object({
@@ -213,12 +236,12 @@ const ProjectFormStepOneBaseSchema = z.object({
   environmental_policy: z
     .string()
     .trim()
-    .min(1, "กรุณากรอกนโยบายด้านสิ่งแวดล้อม"),
+    .min(1, "กรุณาระบุนโยบายสิ่งแวดล้อม"),
   policy_implementation_suggestion: z
     .string()
     .trim()
-    .min(1, "กรุณากรอกแนวทางการดำเนินนโยบาย"),
-  policy_implementation_photos: z.any().optional(),
+    .min(1, "กรุณาระบุข้อเสนอแนะในการดำเนินนโยบาย"),
+  policy_implementation_photos: PolicyImplementationPhotosSchema,
   policy_implementation_photo_keys: z.array(z.string()).optional(),
   owner_fullname: z.string().min(1, "กรุณากรอกชื่อ-นามสกุล"),
   owner_nickname: z.string().min(1, "กรุณากรอกชื่อเล่น"),
