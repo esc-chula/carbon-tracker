@@ -96,6 +96,20 @@ function ProjectOwnerInformation({ data, children }: TProjectOwnerInformationPro
           {phoneNumberText}
         </Typography>
       </Stack>
+      <Stack direction="row" spacing={2}>
+        <Typography
+          variant="body2"
+          fontWeight={500}
+          color="text.secondary"
+          width={150}
+        >
+          Line ID
+        </Typography>
+
+        <Typography variant="body2" fontWeight={500}>
+          {data?.line_id}
+        </Typography>
+      </Stack>
 
       {children}
     </ContainerWithOutlined>

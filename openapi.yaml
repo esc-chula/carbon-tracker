@@ -1,0 +1,1458 @@
+components:
+  schemas:
+    Activity:
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        unit:
+          type: string
+        value:
+          format: double
+          type: number
+      required:
+        - name
+        - value
+        - unit
+      type: object
+    Attendee:
+      additionalProperties: false
+      properties:
+        date:
+          format: date-time
+          type: string
+        value:
+          format: int64
+          type: integer
+      required:
+        - date
+        - value
+      type: object
+    Building:
+      additionalProperties: false
+      properties:
+        end_time:
+          format: date-time
+          type: string
+        facilities:
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+        meter_value:
+          format: double
+          type: number
+        name:
+          type: string
+        room:
+          type: string
+        start_time:
+          format: date-time
+          type: string
+      required:
+        - name
+        - room
+        - facilities
+      type: object
+    CarbonDetailGenericScope3WithTransportations:
+      additionalProperties: false
+      properties:
+        scope1:
+          $ref: "#/components/schemas/Scope1"
+        scope2:
+          $ref: "#/components/schemas/Scope2"
+        scope3:
+          $ref: "#/components/schemas/Scope3WithTransportations"
+      required:
+        - scope1
+        - scope2
+        - scope3
+      type: object
+    CarbonEmissionByOrganizationItem:
+      additionalProperties: false
+      properties:
+        organization:
+          type: string
+        percent:
+          format: double
+          type: number
+        total:
+          format: double
+          type: number
+      required:
+        - organization
+        - total
+        - percent
+      type: object
+    CarbonEmissionPerPerson:
+      additionalProperties: false
+      properties:
+        scope1:
+          format: double
+          type: number
+        scope2:
+          format: double
+          type: number
+        scope3:
+          format: double
+          type: number
+        total:
+          format: double
+          type: number
+      required:
+        - total
+        - scope1
+        - scope2
+        - scope3
+      type: object
+    CarbonResult:
+      additionalProperties: false
+      properties:
+        scope1:
+          $ref: "#/components/schemas/Scope1Result"
+        scope2:
+          $ref: "#/components/schemas/Scope2Result"
+        scope3:
+          $ref: "#/components/schemas/Scope3Result"
+      required:
+        - scope1
+        - scope2
+        - scope3
+      type: object
+    CreateProjectResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/CreateProjectResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        project_id:
+          type: string
+      required:
+        - project_id
+      type: object
+    Dashboard:
+      additionalProperties: false
+      properties:
+        available_years:
+          items:
+            format: int64
+            type: integer
+          type:
+            - array
+            - "null"
+        carbon_emission_by_organization:
+          items:
+            $ref: "#/components/schemas/CarbonEmissionByOrganizationItem"
+          type:
+            - array
+            - "null"
+        carbon_emission_per_person:
+          $ref: "#/components/schemas/CarbonEmissionPerPerson"
+        current_year:
+          format: int64
+          type: integer
+        heatmap:
+          $ref: "#/components/schemas/Heatmap"
+        total_project:
+          format: int64
+          type: integer
+      required:
+        - current_year
+        - available_years
+        - total_project
+        - carbon_emission_by_organization
+        - carbon_emission_per_person
+        - heatmap
+      type: object
+    ErrorDetail:
+      additionalProperties: false
+      properties:
+        location:
+          description: Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id'
+          type: string
+        message:
+          description: Error message text
+          type: string
+        value:
+          description: The value at the given location
+      type: object
+    ErrorModel:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/ErrorModel.json
+          format: uri
+          readOnly: true
+          type: string
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          examples:
+            - Property foo is required but is missing.
+          type: string
+        errors:
+          description: Optional list of individual error details
+          items:
+            $ref: "#/components/schemas/ErrorDetail"
+          type:
+            - array
+            - "null"
+        instance:
+          description: A URI reference that identifies the specific occurrence of the problem.
+          examples:
+            - https://example.com/error-log/abc123
+          format: uri
+          type: string
+        status:
+          description: HTTP status code
+          examples:
+            - 400
+          format: int64
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type. This value should not change between occurrences of the error.
+          examples:
+            - Bad Request
+          type: string
+        type:
+          default: about:blank
+          description: A URI reference to human-readable documentation for the error.
+          examples:
+            - https://example.com/errors/example
+          format: uri
+          type: string
+      type: object
+    Generator:
+      additionalProperties: false
+      properties:
+        date:
+          format: date-time
+          type: string
+        facilities:
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+        unit:
+          type: string
+        value:
+          format: double
+          type: number
+      required:
+        - facilities
+        - value
+        - unit
+        - date
+      type: object
+    GetCarbonEmissionResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/GetCarbonEmissionResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        carbon_emission:
+          format: double
+          type: number
+        project_id:
+          type: string
+      required:
+        - project_id
+        - carbon_emission
+      type: object
+    GetDashboardResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/GetDashboardResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        dashboard:
+          $ref: "#/components/schemas/Dashboard"
+      required:
+        - dashboard
+      type: object
+    GetEmissionFactorResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/GetEmissionFactorResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        factors:
+          additionalProperties:
+            format: double
+            type: number
+          type: object
+      required:
+        - factors
+      type: object
+    GetOwnerResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/GetOwnerResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        owner:
+          $ref: "#/components/schemas/Owner"
+      required:
+        - owner
+      type: object
+    GetProjectResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/GetProjectResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        project:
+          $ref: "#/components/schemas/ProjectDetail"
+        review:
+          $ref: "#/components/schemas/Review"
+      required:
+        - project
+      type: object
+    Heatmap:
+      additionalProperties: false
+      properties:
+        electricity_usages:
+          items:
+            $ref: "#/components/schemas/HeatmapItem"
+          type:
+            - array
+            - "null"
+        year:
+          format: int64
+          type: integer
+      required:
+        - year
+        - electricity_usages
+      type: object
+    HeatmapItem:
+      additionalProperties: false
+      properties:
+        amount:
+          format: double
+          type: number
+        date:
+          type: string
+        rank:
+          format: int64
+          type: integer
+      required:
+        - date
+        - amount
+        - rank
+      type: object
+    ListProjectsResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/ListProjectsResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        count:
+          description: total projects visible after filters and permissions
+          format: int64
+          type: integer
+        projects:
+          items:
+            $ref: "#/components/schemas/ProjectListItem"
+          type:
+            - array
+            - "null"
+      required:
+        - projects
+        - count
+      type: object
+    Origin:
+      additionalProperties: false
+      properties:
+        district:
+          type: string
+        province:
+          type: string
+      required:
+        - province
+        - district
+      type: object
+    Overnight:
+      additionalProperties: false
+      properties:
+        date:
+          format: date-time
+          type: string
+        value:
+          format: int64
+          type: integer
+      required:
+        - date
+        - value
+      type: object
+    Owner:
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+        fullname:
+          type: string
+        id:
+          type: string
+        is_admin:
+          type: boolean
+        line_id:
+          type: string
+        major:
+          type: string
+        nickname:
+          type: string
+        phone_number:
+          type: string
+        student_id:
+          type: string
+      required:
+        - fullname
+        - nickname
+        - student_id
+        - major
+        - phone_number
+        - email
+        - line_id
+        - is_admin
+      type: object
+    ProjectDetail:
+      additionalProperties: false
+      properties:
+        carbon_detail:
+          $ref: "#/components/schemas/CarbonDetailGenericScope3WithTransportations"
+        carbon_result:
+          $ref: "#/components/schemas/CarbonResult"
+        created_at:
+          format: date-time
+          type: string
+        custom_id:
+          type: string
+        deleted_at:
+          format: date-time
+          type:
+            - string
+            - "null"
+        id:
+          type: string
+        org:
+          type: string
+        org_detail:
+          type: string
+        owner:
+          $ref: "#/components/schemas/Owner"
+        owner_id:
+          type: string
+        status:
+          type: string
+        title:
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+        updated_by:
+          type: string
+        updated_owner_id:
+          type: string
+      required:
+        - owner
+        - updated_by
+        - custom_id
+        - title
+        - org
+        - org_detail
+        - owner_id
+        - status
+        - carbon_detail
+        - carbon_result
+        - created_at
+        - updated_at
+        - updated_owner_id
+        - deleted_at
+      type: object
+    ProjectListItem:
+      additionalProperties: false
+      properties:
+        carbon_result:
+          $ref: "#/components/schemas/CarbonResult"
+        created_at:
+          format: date-time
+          type: string
+        custom_id:
+          type: string
+        deleted_at:
+          format: date-time
+          type:
+            - string
+            - "null"
+        id:
+          type: string
+        org:
+          type: string
+        org_detail:
+          type: string
+        owner:
+          $ref: "#/components/schemas/Owner"
+        owner_id:
+          type: string
+        status:
+          type: string
+        title:
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+        updated_by:
+          type: string
+        updated_owner_id:
+          type: string
+      required:
+        - custom_id
+        - title
+        - org
+        - org_detail
+        - owner_id
+        - owner
+        - status
+        - carbon_result
+        - created_at
+        - updated_at
+        - updated_owner_id
+        - updated_by
+        - deleted_at
+      type: object
+    Review:
+      additionalProperties: false
+      properties:
+        detail:
+          $ref: "#/components/schemas/ReviewDetail"
+        id:
+          type: string
+        note:
+          type: string
+        project_id:
+          type: string
+      required:
+        - project_id
+        - detail
+        - note
+      type: object
+    ReviewCheck:
+      additionalProperties: false
+      properties:
+        passed:
+          type: boolean
+        rejection_notes:
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+      required:
+        - passed
+      type: object
+    ReviewDetail:
+      additionalProperties: false
+      properties:
+        owner:
+          $ref: "#/components/schemas/ReviewCheck"
+        project:
+          $ref: "#/components/schemas/ReviewCheck"
+        scope1:
+          $ref: "#/components/schemas/ReviewCheck"
+        scope2:
+          $ref: "#/components/schemas/ReviewCheck"
+        scope3:
+          $ref: "#/components/schemas/Scope3Review"
+      required:
+        - project
+        - owner
+        - scope1
+        - scope2
+        - scope3
+      type: object
+    ReviewUpsertInput:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/ReviewUpsertInput.json
+          format: uri
+          readOnly: true
+          type: string
+        detail:
+          $ref: "#/components/schemas/ReviewDetail"
+        note:
+          type: string
+      required:
+        - detail
+        - note
+      type: object
+    Scope1:
+      additionalProperties: false
+      properties:
+        activities:
+          items:
+            $ref: "#/components/schemas/Activity"
+          type:
+            - array
+            - "null"
+      required:
+        - activities
+      type: object
+    Scope1Result:
+      additionalProperties: false
+      properties:
+        activity:
+          format: double
+          type: number
+      required:
+        - activity
+      type: object
+    Scope2:
+      additionalProperties: false
+      properties:
+        buildings:
+          items:
+            $ref: "#/components/schemas/Building"
+          type:
+            - array
+            - "null"
+        generators:
+          items:
+            $ref: "#/components/schemas/Generator"
+          type:
+            - array
+            - "null"
+      required:
+        - buildings
+        - generators
+      type: object
+    Scope2Result:
+      additionalProperties: false
+      properties:
+        building:
+          format: double
+          type: number
+        generator:
+          format: double
+          type: number
+      required:
+        - building
+        - generator
+      type: object
+    Scope3Result:
+      additionalProperties: false
+      properties:
+        attendee:
+          format: double
+          type: number
+        overnight:
+          format: double
+          type: number
+        souvenir:
+          format: double
+          type: number
+        transportation:
+          format: double
+          type: number
+        waste:
+          format: double
+          type: number
+      required:
+        - transportation
+        - attendee
+        - overnight
+        - souvenir
+        - waste
+      type: object
+    Scope3Review:
+      additionalProperties: false
+      properties:
+        attendee:
+          $ref: "#/components/schemas/ReviewCheck"
+        overnight:
+          $ref: "#/components/schemas/ReviewCheck"
+        souvenir:
+          $ref: "#/components/schemas/ReviewCheck"
+        waste:
+          $ref: "#/components/schemas/ReviewCheck"
+      required:
+        - attendee
+        - overnight
+        - souvenir
+        - waste
+      type: object
+    Scope3WithTransportations:
+      additionalProperties: false
+      properties:
+        attendee:
+          items:
+            $ref: "#/components/schemas/Attendee"
+          type:
+            - array
+            - "null"
+        overnight:
+          items:
+            $ref: "#/components/schemas/Overnight"
+          type:
+            - array
+            - "null"
+        souvenir:
+          items:
+            $ref: "#/components/schemas/Souvenir"
+          type:
+            - array
+            - "null"
+        transportations:
+          items:
+            $ref: "#/components/schemas/Transportation"
+          type:
+            - array
+            - "null"
+        waste:
+          items:
+            $ref: "#/components/schemas/Waste"
+          type:
+            - array
+            - "null"
+      required:
+        - attendee
+        - overnight
+        - souvenir
+        - waste
+      type: object
+    Souvenir:
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+        unit:
+          type: string
+        value:
+          format: int64
+          type: integer
+      required:
+        - type
+        - value
+        - unit
+      type: object
+    Transportation:
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        origin:
+          $ref: "#/components/schemas/Origin"
+        project_id:
+          type: string
+        type:
+          type: string
+      required:
+        - id
+        - project_id
+        - type
+        - origin
+      type: object
+    UpdateProjectStatusRequestBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/UpdateProjectStatusRequestBody.json
+          format: uri
+          readOnly: true
+          type: string
+        status:
+          type: string
+      required:
+        - status
+      type: object
+    Waste:
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+        unit:
+          type: string
+        value:
+          format: double
+          type: number
+      required:
+        - type
+        - value
+        - unit
+      type: object
+info:
+  title: carbon-tracker-api
+  version: 1.0.0
+openapi: 3.1.0
+paths:
+  /dashboard/:
+    get:
+      description: |-
+        Retrieve the dashboard overview, including:
+        - current_year: current academic year
+        - available_years: academic years present on non-deleted projects (always includes current_year), ascending
+        - Total project count for the selected year
+        - Total carbon emissions grouped by organization, sorted by total carbon emission in descending order (If totals are equal, sort by organization name in ascending order)
+        - Carbon emission per-person (scope 1–3)
+        - Activity heatmap data
+
+        Query param year selects the academic year for totals/heatmap. Defaults to current_year when omitted or 0.
+      operationId: get-dashboard
+      parameters:
+        - description: Academic year for totals and heatmap. Defaults to current_year if omitted or 0.
+          explode: false
+          in: query
+          name: year
+          schema:
+            description: Academic year for totals and heatmap. Defaults to current_year if omitted or 0.
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetDashboardResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get Dashboard
+  /owners/me:
+    get:
+      description: Retrieve the owner details for the current user, based on the Authorization header.
+      operationId: get-owners-me
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetOwnerResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get owner
+  /owners/validate:
+    post:
+      description: |-
+        Verifies the owner's identity using the claims in the provided Authorization token.
+
+        Returns `204 No Content` if valid, or `401 Unauthorized` otherwise.
+      operationId: post-owners-validate
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Validate owner
+  /projects/:
+    get:
+      description: |-
+        Retrieve a list of projects in the current academic year.
+        Authenticated users can access:
+        - Their own projects (any status).
+        - Other users' projects that are not in draft status.
+
+        Projects from a previous academic year are not returned.
+
+        Supports sorting, filtering, searching, and pagination:
+        - 'sort' query param: field to sort by. Prefix with '-' for descending order.
+        - 'filter' query param: comma-separated list of statuses to filter.
+        - 'search' query param: searches 'title' and 'custom_id', matching if input is contained in either field.
+        - Pagination params: 'limit' and 'offset'.
+      operationId: get-projects
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - description: Number of items to skip, used for pagination
+          explode: false
+          in: query
+          name: offset
+          schema:
+            description: Number of items to skip, used for pagination
+            format: int64
+            type: integer
+        - description: Maximum number of items to return
+          explode: false
+          in: query
+          name: limit
+          required: true
+          schema:
+            description: Maximum number of items to return
+            format: int64
+            type: integer
+        - description: Search term applied to 'title' or 'custom_id'
+          explode: false
+          in: query
+          name: search
+          schema:
+            description: Search term applied to 'title' or 'custom_id'
+            type: string
+        - description: Sort field (custom_id,title,status,org,created_at,updated_at,updated_by), prefix with '-' for descending
+          explode: false
+          in: query
+          name: sort
+          schema:
+            description: Sort field (custom_id,title,status,org,created_at,updated_at,updated_by), prefix with '-' for descending
+            type: string
+        - description: Comma-separated statuses to filter on
+          example: pending,draft,fixing
+          explode: false
+          in: query
+          name: status
+          schema:
+            description: Comma-separated statuses to filter on
+            examples:
+              - pending,draft,fixing
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListProjectsResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List projects
+    post:
+      description: Create a new project. Only 'draft' or 'pending' status is allowed on creation.
+      operationId: post-projects
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              carbon_detail:
+                contentType: text/plain
+              custom_id:
+                contentType: text/plain
+              org:
+                contentType: text/plain
+              org_detail:
+                contentType: text/plain
+              owner_fullname:
+                contentType: text/plain
+              owner_line_id:
+                contentType: text/plain
+              owner_major:
+                contentType: text/plain
+              owner_nickname:
+                contentType: text/plain
+              owner_phone_number:
+                contentType: text/plain
+              owner_student_id:
+                contentType: text/plain
+              status:
+                contentType: text/plain
+              title:
+                contentType: text/plain
+              transportations_csv_file:
+                contentType: application/octet-stream
+            schema:
+              properties:
+                carbon_detail:
+                  description: CarbonDetail encoded as JSON
+                  type: string
+                custom_id:
+                  type: string
+                org:
+                  type: string
+                org_detail:
+                  type: string
+                owner_fullname:
+                  type: string
+                owner_line_id:
+                  type: string
+                owner_major:
+                  type: string
+                owner_nickname:
+                  type: string
+                owner_phone_number:
+                  type: string
+                owner_student_id:
+                  type: string
+                status:
+                  type: string
+                title:
+                  type: string
+                transportations_csv_file:
+                  contentEncoding: binary
+                  contentMediaType: application/octet-stream
+                  description: This is optional
+                  format: binary
+                  type: string
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateProjectResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Create project
+  /projects/:id:
+    delete:
+      description: |-
+        Delete a project.
+        - Users can delete owned project.
+        - Admins can delete everyone's project.
+        - Projects from a previous academic year are not accessible.
+      operationId: delete-projects-id
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Delete project
+    get:
+      description: |-
+        Retrieve a specific project in the current academic year.
+        Authenticated users can access their own projects (any status), or other users' projects that are not in draft status.
+        Projects from a previous academic year are not accessible.
+      operationId: get-projects-id
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - explode: false
+          in: query
+          name: include_transportations
+          schema:
+            type: boolean
+        - explode: false
+          in: query
+          name: include_review
+          schema:
+            type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetProjectResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get project
+    patch:
+      description: |-
+        Update an existing project. Only the project owner is allowed.
+
+        Projects from a previous academic year are not accessible.
+
+        **Allowed statuses**
+        - draft
+        - fixing
+      operationId: patch-projects-id
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              carbon_detail:
+                contentType: text/plain
+              custom_id:
+                contentType: text/plain
+              org:
+                contentType: text/plain
+              org_detail:
+                contentType: text/plain
+              owner_fullname:
+                contentType: text/plain
+              owner_line_id:
+                contentType: text/plain
+              owner_major:
+                contentType: text/plain
+              owner_nickname:
+                contentType: text/plain
+              owner_phone_number:
+                contentType: text/plain
+              owner_student_id:
+                contentType: text/plain
+              title:
+                contentType: text/plain
+              transportations_csv_file:
+                contentType: application/octet-stream
+            schema:
+              properties:
+                carbon_detail:
+                  description: CarbonDetail encoded as JSON
+                  type: string
+                custom_id:
+                  type: string
+                org:
+                  type: string
+                org_detail:
+                  type: string
+                owner_fullname:
+                  type: string
+                owner_line_id:
+                  type: string
+                owner_major:
+                  type: string
+                owner_nickname:
+                  type: string
+                owner_phone_number:
+                  type: string
+                owner_student_id:
+                  type: string
+                title:
+                  type: string
+                transportations_csv_file:
+                  contentEncoding: binary
+                  contentMediaType: application/octet-stream
+                  description: This is optional
+                  format: binary
+                  type: string
+              type: object
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Update project
+  /projects/:id/calculate:
+    get:
+      description: |-
+        Get carbon emission of a project in the current academic year.
+        Authenticated users can view emission for their own projects (any status), or other users' projects that are not in draft status.
+        Projects from a previous academic year are not accessible.
+      operationId: get-projects-id-calculate
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCarbonEmissionResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get carbon emission
+  /projects/:id/certificate:
+    get:
+      description: |-
+        Retrieves a PDF certificate containing details of the project's carbon usage.
+        Authenticated users can access their own projects (any status), or other users' projects that are not in draft status.
+        Projects from a previous academic year are not accessible.
+      operationId: list-projects-id-certificate
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                contentEncoding: base64
+                type: string
+          description: OK
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+            Content-Type:
+              schema:
+                type: string
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Generate Certificate
+  /projects/:id/review:
+    put:
+      description: |+
+        Allows an admin to review a project.
+
+        Projects from a previous academic year are not accessible.
+
+        - If all review fields pass, the project status is set to **approved**.
+        - If any field fails, the project status is set to **rejected**.
+        **Allowed status transitions**
+        - pending -> approved
+        - pending -> rejected
+        - rejected -> rejected
+
+        This endpoint will create a new review if one does not exist, or update the existing review (upsert behavior).
+
+      operationId: put-projects-id-review
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewUpsertInput"
+        required: true
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Review project
+  /projects/:id/status:
+    put:
+      description: |-
+        Update the status of a project.
+
+        Projects from a previous academic year are not accessible.
+
+        **Allowed status transitions for owner**
+        - draft -> pending
+        - rejected -> fixing
+        - fixing -> pending
+
+        **Allowed status transitions for admin**
+        - approved -> pending
+      operationId: put-projects-id-status
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectStatusRequestBody"
+        required: true
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Update project status
+  /projects/:id/transportations:
+    get:
+      description: Download transportation file in CSV format. Only admin or owned project is allowed. Projects from a previous academic year are not accessible.
+      operationId: list-projects-id-transportations
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                contentEncoding: base64
+                type: string
+          description: OK
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+            Content-Type:
+              schema:
+                type: string
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Download Transportation File
+  /projects/emissionfactors:
+    get:
+      description: For realtime carbon calculation
+      operationId: get-projects-emissionfactors
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetEmissionFactorResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get carbon emission factor
+  /test/:
+    get:
+      operationId: list-test
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                contentEncoding: base64
+                type: string
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Test page

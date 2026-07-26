@@ -55,6 +55,7 @@ type ProjectFormValues = {
   owner_student_id: string;
   owner_major: string;
   owner_phone_number: string;
+  owner_line_id: string;
   transportations_csv_file?: File;
   scope1_activities?: Array<Scope1ActivityForm>;
   scope2_entries?: Array<Scope2EntryForm>;
