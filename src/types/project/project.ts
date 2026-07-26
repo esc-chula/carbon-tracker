@@ -15,6 +15,38 @@ export type CarbonDetail = {
   };
 };
 
+export type ProjectInfo = {
+  environmental_policy: string;
+  policy_implementation_suggestion: string;
+  policy_implementation_photos?: PolicyImplementationPhoto[] | null;
+};
+
+export type PolicyImplementationPhoto = {
+  storage_key: string;
+  filename: string;
+  mime_type: string;
+  url?: string;
+};
+
+export type CarbonInput = {
+  energy: {
+    buildings: Scope2Building[] | null;
+    generators: Scope2Generator[] | null;
+  };
+  food_beverage: {
+    activities: Scope1Activity[] | null;
+  };
+  other: {
+    attendees: Scope3Attendee[] | null;
+    internal_vehicles: Scope1Activity[] | null;
+    overnight_on_campus: Scope3Overnight[] | null;
+    overnight_off_campus: Scope3Overnight[] | null;
+    souvenirs: Scope3Souvenir[] | null;
+    transportations?: Scope3Transportation[] | null;
+    waste: Scope3Waste[] | null;
+  };
+};
+
 type ISODateTime = string;
 
 // --- Scope 1
