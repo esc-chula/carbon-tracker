@@ -1,7 +1,7 @@
 import type { TProjectStatus } from "./list-project";
 
 export type TCreateProjectRequest = {
-  carbon_detail: string;
+  carbon_input: string;
   custom_id: string;
   org: string;
   org_detail: string;
@@ -10,6 +10,8 @@ export type TCreateProjectRequest = {
   owner_nickname: string;
   owner_phone_number: string;
   owner_student_id: string;
+  policy_implementation_photos: File[];
+  project_info: string;
   status: TProjectStatus;
   title: string;
   transportations_csv_file?: File;
