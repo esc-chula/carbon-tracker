@@ -13,7 +13,7 @@ async function postCreateProject(
 ): Promise<TCreateProjectResponse> {
   const formData = new FormData();
 
-  formData.append("carbon_detail", payload.carbon_detail);
+  formData.append("carbon_input", payload.carbon_input);
   formData.append("custom_id", payload.custom_id);
   formData.append("org", payload.org);
   formData.append("org_detail", payload.org_detail);
@@ -22,8 +22,13 @@ async function postCreateProject(
   formData.append("owner_nickname", payload.owner_nickname);
   formData.append("owner_phone_number", payload.owner_phone_number);
   formData.append("owner_student_id", payload.owner_student_id);
+  formData.append("project_info", payload.project_info);
   formData.append("status", payload.status);
   formData.append("title", payload.title);
+
+  payload.policy_implementation_photos.forEach((file) => {
+    formData.append("policy_implementation_photos", file);
+  });
 
   if (payload.transportations_csv_file) {
     formData.append(
