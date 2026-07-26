@@ -40,6 +40,15 @@ function projectToFormValues({
   values.owner_major = owner?.major ?? values.owner_major;
   values.owner_phone_number = owner?.phone_number ?? values.owner_phone_number;
   values.owner_student_id = owner?.student_id ?? values.owner_student_id;
+  values.environmental_policy =
+    project.project_info?.environmental_policy ?? values.environmental_policy;
+  values.policy_implementation_suggestion =
+    project.project_info?.policy_implementation_suggestion ??
+    values.policy_implementation_suggestion;
+  values.policy_implementation_photo_keys =
+    project.project_info?.policy_implementation_photos?.map(
+      (photo) => photo.storage_key,
+    ) ?? values.policy_implementation_photo_keys;
 
   const resolvedOrg = values.org?.trim();
   if (resolvedOrg === "กวศ.") {
@@ -60,9 +69,9 @@ function projectToFormValues({
     values.otherUnderProject = "";
   }
 
-  const carbonDetail = project.carbon_detail;
+  const carbonInput = project.carbon_input;
 
-  const scope1Activities = carbonDetail.scope1?.activities ?? [];
+  const scope1Activities = carbonInput.food_beverage?.activities ?? [];
   if (scope1Activities?.length) {
     values.scope1_activities = scope1Activities.map((activity) => ({
       name: activity?.name ?? "",
@@ -73,7 +82,7 @@ function projectToFormValues({
 
   const scope2Entries: NonNullable<ProjectFormValues["scope2_entries"]> = [];
 
-  const buildings = carbonDetail.scope2?.buildings ?? [];
+  const buildings = carbonInput.energy?.buildings ?? [];
   buildings?.forEach((building) => {
     const meterValue = building?.meter_value ?? 0;
     const isMeter = meterValue !== 0;
@@ -93,7 +102,7 @@ function projectToFormValues({
     });
   });
 
-  const generators = carbonDetail.scope2?.generators ?? [];
+  const generators = carbonInput.energy?.generators ?? [];
   generators?.forEach((generator) => {
     scope2Entries.push({
       kind: "generator",
@@ -114,7 +123,7 @@ function projectToFormValues({
     values.scope2_entries = scope2Entries;
   }
 
-  const attendee = carbonDetail.scope3?.attendee ?? [];
+  const attendee = carbonInput.other?.attendees ?? [];
   if (attendee?.length) {
     values.scope3_attendee = attendee.map((item) => ({
       date: item?.date ?? "",
@@ -122,15 +131,32 @@ function projectToFormValues({
     }));
   }
 
-  const overnight = carbonDetail.scope3?.overnight ?? [];
-  if (overnight?.length) {
-    values.scope3_overnight = overnight.map((item) => ({
+  const internalVehicles = carbonInput.other?.internal_vehicles ?? [];
+  if (internalVehicles?.length) {
+    values.scope3_internal_vehicles = internalVehicles.map((item) => ({
+      distance_km: item?.distance_km ?? undefined,
+      people_count: item?.people_count ?? undefined,
+      vehicle_type: item?.vehicle_type ?? "",
+    }));
+  }
+
+  const overnightOnCampus = carbonInput.other?.overnight_on_campus ?? [];
+  if (overnightOnCampus?.length) {
+    values.scope3_overnight_on_campus = overnightOnCampus.map((item) => ({
       date: item?.date ?? "",
       value: item?.value ?? undefined,
     }));
   }
 
-  const souvenir = carbonDetail.scope3?.souvenir ?? [];
+  const overnightOffCampus = carbonInput.other?.overnight_off_campus ?? [];
+  if (overnightOffCampus?.length) {
+    values.scope3_overnight_off_campus = overnightOffCampus.map((item) => ({
+      date: item?.date ?? "",
+      value: item?.value ?? undefined,
+    }));
+  }
+
+  const souvenir = carbonInput.other?.souvenirs ?? [];
   if (souvenir?.length) {
     values.scope3_souvenir = souvenir.map((item) => ({
       type: item?.type ?? "",
@@ -139,7 +165,7 @@ function projectToFormValues({
     }));
   }
 
-  const waste = carbonDetail.scope3?.waste ?? [];
+  const waste = carbonInput.other?.waste ?? [];
   if (waste?.length) {
     values.scope3_waste = waste.map((item) => ({
       type: item?.type ?? "",
