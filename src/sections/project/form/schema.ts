@@ -210,6 +210,16 @@ const ProjectFormStepOneBaseSchema = z.object({
   title: z.string().min(1, "กรุณากรอกชื่อโครงการ"),
   org: z.string().min(1, "กรุณาเลือกประเภทโครงการ"),
   org_detail: z.string().optional(),
+  environmental_policy: z
+    .string()
+    .trim()
+    .min(1, "กรุณากรอกนโยบายด้านสิ่งแวดล้อม"),
+  policy_implementation_suggestion: z
+    .string()
+    .trim()
+    .min(1, "กรุณากรอกแนวทางการดำเนินนโยบาย"),
+  policy_implementation_photos: z.any().optional(),
+  policy_implementation_photo_keys: z.array(z.string()).optional(),
   owner_fullname: z.string().min(1, "กรุณากรอกชื่อ-นามสกุล"),
   owner_nickname: z.string().min(1, "กรุณากรอกชื่อเล่น"),
   owner_student_id: z.string().min(1, "กรุณากรอกรหัสนิสิต"),
@@ -261,7 +271,10 @@ const ProjectFormStepTwoSchema = z.object({
   scope1_activities: z.array(Scope1ActivitySchema).optional(),
   scope2_entries: z.array(Scope2EntrySchema).optional(),
   scope3_attendee: z.array(Scope3AttendeeSchema),
+  scope3_internal_vehicles: z.array(Scope1ActivitySchema).optional(),
   scope3_overnight: z.array(Scope3OvernightSchema).optional(),
+  scope3_overnight_on_campus: z.array(Scope3OvernightSchema).optional(),
+  scope3_overnight_off_campus: z.array(Scope3OvernightSchema).optional(),
   scope3_souvenir: z.array(Scope3SouvenirSchema).optional(),
   scope3_waste: z.array(Scope3WasteSchema).optional(),
   transportations_csv_file: z.any().optional(),
@@ -322,6 +335,10 @@ const defaultValues: ProjectFormValues = {
   owner_student_id: "",
   owner_major: "",
   owner_phone_number: "",
+  environmental_policy: "",
+  policy_implementation_suggestion: "",
+  policy_implementation_photos: [],
+  policy_implementation_photo_keys: [],
   scope1_activities: [{ name: "", value: undefined, unit: "" }],
   scope2_entries: [
     {
@@ -339,7 +356,10 @@ const defaultValues: ProjectFormValues = {
     },
   ],
   scope3_attendee: [{ date: undefined, value: undefined }],
+  scope3_internal_vehicles: [{ name: "", value: undefined, unit: "" }],
   scope3_overnight: [{ date: undefined, value: undefined }],
+  scope3_overnight_on_campus: [{ date: undefined, value: undefined }],
+  scope3_overnight_off_campus: [{ date: undefined, value: undefined }],
   scope3_souvenir: [{ type: "", value: undefined, unit: "" }],
   scope3_waste: [{ type: "", value: undefined, unit: "" }],
   field: "",

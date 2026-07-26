@@ -55,11 +55,19 @@ type ProjectFormValues = {
   owner_student_id: string;
   owner_major: string;
   owner_phone_number: string;
+  environmental_policy: string;
+  policy_implementation_suggestion: string;
+  policy_implementation_photos?: File[];
+  policy_implementation_photo_keys?: string[];
   transportations_csv_file?: File;
   scope1_activities?: Array<Scope1ActivityForm>;
   scope2_entries?: Array<Scope2EntryForm>;
   scope3_attendee: Array<Scope3AttendeeForm>;
+  scope3_internal_vehicles?: Array<Scope1ActivityForm>;
+  /** @deprecated Use scope3_overnight_on_campus or scope3_overnight_off_campus. */
   scope3_overnight?: Array<Scope3OvernightForm>;
+  scope3_overnight_on_campus?: Array<Scope3OvernightForm>;
+  scope3_overnight_off_campus?: Array<Scope3OvernightForm>;
   scope3_souvenir?: Array<Scope3SouvenirForm>;
   scope3_waste?: Array<Scope3WasteForm>;
 
