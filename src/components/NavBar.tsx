@@ -1,22 +1,26 @@
 "use client";
 
 import { useAuth } from "@/sections/login/context/auth-provider";
+import { dashboardKeys } from "@/services/dashboard/query/dashboard-query";
 import theme from "@/styles/theme/theme";
-import { Dashboard } from "@mui/icons-material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
   AppBar,
   Box,
   Button,
   Divider,
+  FormControl,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
+  Select,
   Stack,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 // ---------------------------------------------------------------------------------
@@ -25,9 +29,15 @@ export default function NavBar() {
   // --------------------------- Hook ---------------------------
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, signOutAll } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  const dashboard = useQuery({
+    ...dashboardKeys.overviewOptions({}),
+    enabled: !!user,
+  });
 
   // --------------------------- Function ---------------------------
 
@@ -39,9 +49,20 @@ export default function NavBar() {
     setAnchorEl(null);
   };
 
+  const handleYearChange = (year: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("year", year);
+    router.push(`/dashboard?${params.toString()}`);
+  };
+
   // --------------------------- Value ---------------------------
 
   const redColor = "#B71931";
+  const currentYear = dashboard.data?.dashboard.current_year;
+  const selectedAcademicYear =
+    searchParams.get("year") ?? String(currentYear ?? "");
+  const availableYears = dashboard.data?.dashboard.available_years ?? [];
+  const sortedAvailableYears = [...availableYears].sort((a, b) => b - a);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -97,6 +118,43 @@ export default function NavBar() {
 
             {user && (
               <>
+                <FormControl size="small" sx={{ minWidth: 160 }}>
+                  <Select
+                    value={selectedAcademicYear}
+                    IconComponent={KeyboardArrowDownIcon}
+                    disabled={!sortedAvailableYears.length}
+                    onChange={(event) => handleYearChange(event.target.value)}
+                    MenuProps={{
+                      slotProps: {
+                        paper: {
+                          sx: {
+                            borderRadius: 2,
+                          },
+                        },
+                      },
+                    }}
+                    sx={{
+                      minWidth: 180,
+                      height: 40,
+                      borderRadius: 2,
+                      border: "2px solid #E5E8EB",
+                      fontWeight: 400,
+                      "& fieldset": {
+                        border: "none",
+                      },
+                      "& .MuiSelect-icon": {
+                        color: "#637381",
+                      },
+                    }}
+                  >
+                    {sortedAvailableYears.map((year) => (
+                      <MenuItem key={year} value={String(year)}>
+                        ปีการศึกษา {year + 543}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
                 <Button
                   color="inherit"
                   startIcon={
