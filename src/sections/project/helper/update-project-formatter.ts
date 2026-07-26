@@ -12,10 +12,13 @@ function UpdateProjectFormatter(
 
   return {
     id,
-    carbon_detail: formatted.carbon_detail,
+    carbon_input: formatted.carbon_input,
     custom_id: formatted.custom_id,
     org: formatted.org,
     org_detail: formatted.org_detail,
+    policy_implementation_photo_keys: data.policy_implementation_photo_keys,
+    policy_implementation_photos: formatted.policy_implementation_photos,
+    project_info: formatted.project_info,
     title: formatted.title,
     transportations_csv_file: formatted.transportations_csv_file ?? null,
   };
