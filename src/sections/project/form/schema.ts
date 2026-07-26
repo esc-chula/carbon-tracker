@@ -206,6 +206,23 @@ const Scope3OvernightSchema = z.object({
   ),
 });
 
+const Scope3InternalVehicleSchema = z.object({
+  vehicle_type: z.string().min(1, "กรุณาเลือกประเภทยานพาหนะ"),
+  distance_km: z.preprocess(
+    toRequiredNumber,
+    z
+      .number({ required_error: "กรุณาระบุระยะทาง" })
+      .positive("กรุณากรอกค่าไม่ติดลบ"),
+  ),
+  people_count: z.preprocess(
+    toRequiredNumber,
+    z
+      .number({ required_error: "กรุณาระบุจำนวนคน" })
+      .int("กรุณากรอกจำนวนเต็ม")
+      .positive("กรุณากรอกค่าไม่ติดลบ"),
+  ),
+});
+
 const Scope3SouvenirSchema = z.object({
   type: z.string().min(1, "กรุณาเลือกประเภทของแจก"),
   value: z.preprocess(
@@ -294,7 +311,7 @@ const ProjectFormStepTwoSchema = z.object({
   scope1_activities: z.array(Scope1ActivitySchema).optional(),
   scope2_entries: z.array(Scope2EntrySchema).optional(),
   scope3_attendee: z.array(Scope3AttendeeSchema),
-  scope3_internal_vehicles: z.array(Scope1ActivitySchema).optional(),
+  scope3_internal_vehicles: z.array(Scope3InternalVehicleSchema).optional(),
   scope3_overnight: z.array(Scope3OvernightSchema).optional(),
   scope3_overnight_on_campus: z.array(Scope3OvernightSchema).optional(),
   scope3_overnight_off_campus: z.array(Scope3OvernightSchema).optional(),
@@ -342,6 +359,7 @@ export {
   Scope1ActivitySchema,
   Scope2EntrySchema,
   Scope3AttendeeSchema,
+  Scope3InternalVehicleSchema,
   Scope3OvernightSchema,
   Scope3SouvenirSchema,
   Scope3WasteSchema,
@@ -379,7 +397,9 @@ const defaultValues: ProjectFormValues = {
     },
   ],
   scope3_attendee: [{ date: undefined, value: undefined }],
-  scope3_internal_vehicles: [{ name: "", value: undefined, unit: "" }],
+  scope3_internal_vehicles: [
+    { vehicle_type: "", distance_km: undefined, people_count: undefined },
+  ],
   scope3_overnight: [{ date: undefined, value: undefined }],
   scope3_overnight_on_campus: [{ date: undefined, value: undefined }],
   scope3_overnight_off_campus: [{ date: undefined, value: undefined }],

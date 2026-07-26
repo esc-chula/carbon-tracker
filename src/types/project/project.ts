@@ -38,7 +38,7 @@ export type CarbonInput = {
   };
   other: {
     attendees: Scope3Attendee[] | null;
-    internal_vehicles: Scope1Activity[] | null;
+    internal_vehicles: InternalVehicle[] | null;
     overnight_on_campus: Scope3Overnight[] | null;
     overnight_off_campus: Scope3Overnight[] | null;
     souvenirs: Scope3Souvenir[] | null;
@@ -81,6 +81,12 @@ export type Scope3Attendee = {
 export type Scope3Overnight = {
   date: ISODateTime;
   value: number;
+};
+
+export type InternalVehicle = {
+  distance_km: number;
+  people_count: number;
+  vehicle_type: string;
 };
 
 export type Scope3Souvenir = {

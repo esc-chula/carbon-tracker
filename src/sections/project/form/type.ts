@@ -32,6 +32,12 @@ type Scope3OvernightForm = {
   value?: number | undefined;
 };
 
+type Scope3InternalVehicleForm = {
+  distance_km?: number;
+  people_count?: number;
+  vehicle_type?: string;
+};
+
 type Scope3SouvenirForm = {
   type?: string;
   value?: number;
@@ -63,7 +69,7 @@ type ProjectFormValues = {
   scope1_activities?: Array<Scope1ActivityForm>;
   scope2_entries?: Array<Scope2EntryForm>;
   scope3_attendee: Array<Scope3AttendeeForm>;
-  scope3_internal_vehicles?: Array<Scope1ActivityForm>;
+  scope3_internal_vehicles?: Array<Scope3InternalVehicleForm>;
   /** @deprecated Use scope3_overnight_on_campus or scope3_overnight_off_campus. */
   scope3_overnight?: Array<Scope3OvernightForm>;
   scope3_overnight_on_campus?: Array<Scope3OvernightForm>;
@@ -81,6 +87,7 @@ export type {
   Scope1ActivityForm,
   Scope2EntryForm,
   Scope3AttendeeForm,
+  Scope3InternalVehicleForm,
   Scope3OvernightForm,
   Scope3SouvenirForm,
   Scope3WasteForm,
