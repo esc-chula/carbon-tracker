@@ -11,7 +11,13 @@ import {
 async function patchUpdateProject(
   payload: TUpdateProjectRequest,
 ): Promise<TUpdateProjectResponse> {
-  const { id, transportations_csv_file, ...fields } = payload;
+  const {
+    id,
+    policy_implementation_photo_keys,
+    policy_implementation_photos,
+    transportations_csv_file,
+    ...fields
+  } = payload;
 
   const formData = new FormData();
 
@@ -24,6 +30,14 @@ async function patchUpdateProject(
   if (transportations_csv_file) {
     formData.append("transportations_csv_file", transportations_csv_file);
   }
+
+  policy_implementation_photo_keys?.forEach((key) => {
+    formData.append("policy_implementation_photo_keys", key);
+  });
+
+  policy_implementation_photos?.forEach((file) => {
+    formData.append("policy_implementation_photos", file);
+  });
 
   await ky.patch(`projects/${id}`, {
     body: formData,
