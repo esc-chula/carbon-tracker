@@ -1,5 +1,10 @@
 import type { TOwner } from "../user/get-owner";
-import type { CarbonDetail, Scope3Transportation } from "./project";
+import type {
+  CarbonDetail,
+  CarbonInput,
+  ProjectInfo,
+  Scope3Transportation,
+} from "./project";
 import type { TReviewProjectDetail } from "./review-project";
 
 export type TGetProjectRequest = {
@@ -21,6 +26,29 @@ export type CarbonResult = {
     transportation: number;
     waste: number;
   };
+};
+
+export type CarbonResultV2 = {
+  energy: {
+    buildings: number;
+    generators: number;
+  };
+  food_beverage: {
+    activities: number;
+  };
+  other: {
+    attendees: number;
+    internal_vehicles: number;
+    overnight_off_campus: number;
+    overnight_on_campus: number;
+    souvenirs: number;
+    transportations: number;
+    waste: number;
+  };
+  scope1: number;
+  scope2: number;
+  scope3: number;
+  total: number;
 };
 
 export function totalCarbonResult(carbon_result: CarbonResult): number {
@@ -65,6 +93,9 @@ export type TGetProjectResponse = {
     updated_by: string;
     updated_owner_id: string;
     deleted_at: string | null;
+    project_info: ProjectInfo;
+    carbon_input: CarbonInput;
+    /** @deprecated Use carbon_input. Kept until detail/result screens migrate to V2. */
     carbon_detail: ProjectCarbonDetail;
     carbon_result: CarbonResult;
   };
