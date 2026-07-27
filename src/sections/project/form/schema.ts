@@ -1,6 +1,12 @@
 import type { ProjectFormValues } from "./type";
 import { z } from "zod";
 
+const POLICY_PHOTO_ERROR =
+  "กรุณาอัปโหลดรูปภาพ PNG หรือ JPG (max. 3MB) สูงสุด 4 รูป";
+const MAX_POLICY_PHOTO_SIZE = 3 * 1024 * 1024;
+const MAX_POLICY_PHOTO_COUNT = 4;
+const POLICY_PHOTO_MIME_TYPES = ["image/png", "image/jpeg"];
+
 /** Helpers to parse numbers coming from <input type="number" /> */
 const toOptionalNumber = (val: unknown) => {
   if (val === "" || val == null) return undefined;
@@ -25,6 +31,23 @@ const toRequiredNumber = (val: unknown) => {
   if (typeof val === "number") return val;
   return undefined;
 };
+
+const isPolicyPhotoFile = (value: unknown): value is File =>
+  typeof File !== "undefined" && value instanceof File;
+
+const PolicyImplementationPhotosSchema = z
+  .array(z.custom<File>(isPolicyPhotoFile, POLICY_PHOTO_ERROR))
+  .refine((files) => files.length > 0, POLICY_PHOTO_ERROR)
+  .refine((files) => files.length <= MAX_POLICY_PHOTO_COUNT, POLICY_PHOTO_ERROR)
+  .refine(
+    (files) =>
+      files.every(
+        (file) =>
+          POLICY_PHOTO_MIME_TYPES.includes(file.type) &&
+          file.size <= MAX_POLICY_PHOTO_SIZE,
+      ),
+    POLICY_PHOTO_ERROR,
+  );
 
 // Scope 1 schema
 const Scope1ActivitySchema = z.object({
@@ -183,6 +206,23 @@ const Scope3OvernightSchema = z.object({
   ),
 });
 
+const Scope3InternalVehicleSchema = z.object({
+  vehicle_type: z.string().min(1, "กรุณาเลือกประเภทยานพาหนะ"),
+  distance_km: z.preprocess(
+    toRequiredNumber,
+    z
+      .number({ required_error: "กรุณาระบุระยะทาง" })
+      .positive("กรุณากรอกค่าไม่ติดลบ"),
+  ),
+  people_count: z.preprocess(
+    toRequiredNumber,
+    z
+      .number({ required_error: "กรุณาระบุจำนวนคน" })
+      .int("กรุณากรอกจำนวนเต็ม")
+      .positive("กรุณากรอกค่าไม่ติดลบ"),
+  ),
+});
+
 const Scope3SouvenirSchema = z.object({
   type: z.string().min(1, "กรุณาเลือกประเภทของแจก"),
   value: z.preprocess(
@@ -210,6 +250,16 @@ const ProjectFormStepOneBaseSchema = z.object({
   title: z.string().min(1, "กรุณากรอกชื่อโครงการ"),
   org: z.string().min(1, "กรุณาเลือกประเภทโครงการ"),
   org_detail: z.string().optional(),
+  environmental_policy: z
+    .string()
+    .trim()
+    .min(1, "กรุณาระบุนโยบายสิ่งแวดล้อม"),
+  policy_implementation_suggestion: z
+    .string()
+    .trim()
+    .min(1, "กรุณาระบุข้อเสนอแนะในการดำเนินนโยบาย"),
+  policy_implementation_photos: PolicyImplementationPhotosSchema,
+  policy_implementation_photo_keys: z.array(z.string()).optional(),
   owner_fullname: z.string().min(1, "กรุณากรอกชื่อ-นามสกุล"),
   owner_nickname: z.string().min(1, "กรุณากรอกชื่อเล่น"),
   owner_student_id: z.string().min(1, "กรุณากรอกรหัสนิสิต"),
@@ -262,7 +312,10 @@ const ProjectFormStepTwoSchema = z.object({
   scope1_activities: z.array(Scope1ActivitySchema).optional(),
   scope2_entries: z.array(Scope2EntrySchema).optional(),
   scope3_attendee: z.array(Scope3AttendeeSchema),
+  scope3_internal_vehicles: z.array(Scope3InternalVehicleSchema).optional(),
   scope3_overnight: z.array(Scope3OvernightSchema).optional(),
+  scope3_overnight_on_campus: z.array(Scope3OvernightSchema).optional(),
+  scope3_overnight_off_campus: z.array(Scope3OvernightSchema).optional(),
   scope3_souvenir: z.array(Scope3SouvenirSchema).optional(),
   scope3_waste: z.array(Scope3WasteSchema).optional(),
   transportations_csv_file: z.any().optional(),
@@ -307,6 +360,7 @@ export {
   Scope1ActivitySchema,
   Scope2EntrySchema,
   Scope3AttendeeSchema,
+  Scope3InternalVehicleSchema,
   Scope3OvernightSchema,
   Scope3SouvenirSchema,
   Scope3WasteSchema,
@@ -323,6 +377,10 @@ const defaultValues: ProjectFormValues = {
   owner_student_id: "",
   owner_major: "",
   owner_phone_number: "",
+  environmental_policy: "",
+  policy_implementation_suggestion: "",
+  policy_implementation_photos: [],
+  policy_implementation_photo_keys: [],
   owner_line_id: "",
   scope1_activities: [{ name: "", value: undefined, unit: "" }],
   scope2_entries: [
@@ -341,7 +399,12 @@ const defaultValues: ProjectFormValues = {
     },
   ],
   scope3_attendee: [{ date: undefined, value: undefined }],
+  scope3_internal_vehicles: [
+    { vehicle_type: "", distance_km: undefined, people_count: undefined },
+  ],
   scope3_overnight: [{ date: undefined, value: undefined }],
+  scope3_overnight_on_campus: [{ date: undefined, value: undefined }],
+  scope3_overnight_off_campus: [{ date: undefined, value: undefined }],
   scope3_souvenir: [{ type: "", value: undefined, unit: "" }],
   scope3_waste: [{ type: "", value: undefined, unit: "" }],
   field: "",

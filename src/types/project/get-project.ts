@@ -5,7 +5,10 @@ import type {
   ProjectInfo,
   Scope3Transportation,
 } from "./project";
-import type { TReviewProjectDetail } from "./review-project";
+import type {
+  TReviewProjectDetail,
+  TReviewProjectDetailV2,
+} from "./review-project";
 
 export type TGetProjectRequest = {
   id: string;
@@ -75,6 +78,13 @@ export type TProjectReview = {
   project_id: string;
   note: string;
   detail: TReviewProjectDetail;
+};
+
+export type TProjectReviewV2 = {
+  id: string;
+  project_id: string;
+  note: string;
+  detail: TReviewProjectDetailV2;
 };
 
 export type TGetProjectResponse = {
