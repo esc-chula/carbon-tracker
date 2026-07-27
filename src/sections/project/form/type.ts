@@ -33,9 +33,9 @@ type Scope3OvernightForm = {
 };
 
 type Scope3InternalVehicleForm = {
+  vehicle_type?: string;
   distance_km?: number;
   people_count?: number;
-  vehicle_type?: string;
 };
 
 type Scope3SouvenirForm = {

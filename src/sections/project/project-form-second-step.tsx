@@ -13,6 +13,7 @@ import type {
   Scope1ActivityForm,
   Scope2EntryForm,
   Scope3AttendeeForm,
+  Scope3InternalVehicleForm,
   Scope3OvernightForm,
   Scope3SouvenirForm,
   Scope3WasteForm,
@@ -40,6 +41,7 @@ import {
   energyUnitOptions,
   equipmentOptions,
   giftUnitOptions,
+  internalVehicleOptions,
   roomOptions,
   roomOptionsExcludeMeterOnly,
   wasteOptions,
@@ -60,6 +62,7 @@ type TProjectFormSecondStepProps = {
   scope1Activities: Scope1ActivityForm[];
   scope2Entries: Scope2EntryForm[];
   scope3Attendee: Scope3AttendeeForm[];
+  scope3InternalVehicles: Scope3InternalVehicleForm[];
   scope3Overnight: Scope3OvernightForm[];
   scope3Souvenir: Scope3SouvenirForm[];
   scope3Waste: Scope3WasteForm[];
@@ -78,6 +81,8 @@ type TProjectFormSecondStepProps = {
   appendScope2Entry: (value: Scope2EntryForm) => void;
   removeScope3Attendee: (index: number) => void;
   appendScope3Attendee: (value: Scope3AttendeeForm) => void;
+  removeScope3InternalVehicle: (index: number) => void;
+  appendScope3InternalVehicle: (value: Scope3InternalVehicleForm) => void;
   removeScope3Overnight: (index: number) => void;
   appendScope3Overnight: (value: Scope3OvernightForm) => void;
   removeScope3Souvenir: (index: number) => void;
@@ -123,6 +128,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     scope1Activities,
     scope2Entries,
     scope3Attendee,
+    scope3InternalVehicles,
     scope3Overnight,
     scope3Souvenir,
     scope3Waste,
@@ -141,6 +147,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     appendScope2Entry,
     removeScope3Attendee,
     appendScope3Attendee,
+    removeScope3InternalVehicle,
+    appendScope3InternalVehicle,
     removeScope3Overnight,
     appendScope3Overnight,
     removeScope3Souvenir,
@@ -426,12 +434,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const renderFirstScope = (
     <StyledStack>
       <Stack direction="row" spacing={1.5}>
-        <ProjectCarbonDetail carbon={carbonSummary.scope1} />
-
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" fontWeight={700}>
-            Scope 1 : <br />
-            ปริมาณการปล่อยก๊าซเรือนกระจกทางตรง
+            การปล่อยก๊าซเรือนกระจกจากอาหารและเครื่องดื่ม
           </Typography>
           <Typography variant="caption" color={greyColor}>
             สามารถประมาณได้จากบิลงบประมาณจบโครงการ
@@ -508,12 +513,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const renderSecondScope = (
     <StyledStack>
       <Stack direction="row" spacing={1.5}>
-        <ProjectCarbonDetail carbon={carbonSummary.scope2} />
-
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" fontWeight={700}>
-            Scope 2 : <br />
-            ปริมาณการปล่อยก๊าซเรือนกระจกทางอ้อมจากการใช้พลังงาน
+            การปล่อยก๊าซเรือนกระจกจากการใช้พลังงาน
           </Typography>
           <Typography variant="caption" color={greyColor}>
             สามารถประมาณได้จากบิลงบประมาณจบโครงการ
@@ -763,33 +765,12 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const renderThirdScope = (
     <StyledStack>
       <Stack direction="row" spacing={1.5} alignItems="center">
-        <ProjectCarbonDetail carbon={carbonSummary.scope3} />
-
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" fontWeight={700}>
-            Scope 3 : อื่นๆ
-          </Typography>
-          <Typography variant="caption" color={greyColor}>
-            การเดินทางของผู้เข้าร่วมและ staff
+            การปล่อยก๊าซเรือนกระจกอื่น ๆ
           </Typography>
         </Stack>
       </Stack>
-
-      <Field.CSVUploadField control={control} name="transportations_csv_file" />
-
-      {!file && (
-        <Button
-          component="a"
-          href={
-            "https://docs.google.com/spreadsheets/d/1mQA58HG3fzmBJHN607rujnrMdw3uK41ZPqmvMRu04dU/edit?usp=sharing"
-          }
-          target="_blank"
-          variant="contained"
-          sx={{ alignSelf: "start" }}
-        >
-          ดูตัวอย่าง CSV Template
-        </Button>
-      )}
 
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
@@ -855,6 +836,122 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           เพิ่มวันที่
         </StyledAddButton>
       </StyledStack>
+
+      <StyledStack sx={{ borderRadius: 2 }}>
+        <Typography variant="body2" fontWeight={700}>
+          การเดินทางของผู้เข้าร่วมและ staff
+          <Typography component="span" color="red">
+            *
+          </Typography>
+        </Typography>
+
+        <Field.CSVUploadField
+          control={control}
+          name="transportations_csv_file"
+        />
+
+        {!file && (
+          <Button
+            component="a"
+            href={
+              "https://docs.google.com/spreadsheets/d/1mQA58HG3fzmBJHN607rujnrMdw3uK41ZPqmvMRu04dU/edit?usp=sharing"
+            }
+            target="_blank"
+            variant="contained"
+            sx={{ alignSelf: "start" }}
+          >
+            ดูตัวอย่าง CSV Template
+          </Button>
+        )}
+      </StyledStack>
+
+      <StyledStack sx={{ borderRadius: 2 }}>
+        <Typography variant="body2" fontWeight={700}>
+          การใช้รถภายในโครงการ
+        </Typography>
+        <Grid container spacing={2} alignItems="start">
+          {scope3InternalVehicles?.map((field, index) => {
+            const vehicleType = watch(
+              `scope3_internal_vehicles.${index}.vehicle_type`,
+            );
+            const distanceKm = watch(
+              `scope3_internal_vehicles.${index}.distance_km`,
+            );
+
+            return (
+              <Fragment key={index}>
+                <Grid size={{ xs: 4 }}>
+                  <Field.CustomAutoComplete
+                    name={`scope3_internal_vehicles.${index}.vehicle_type`}
+                    label="เลือกประเภทยานพาหนะ"
+                    options={internalVehicleOptions}
+                    helperText={
+                      errors.scope3_internal_vehicles?.[index]?.vehicle_type
+                        ?.message
+                    }
+                  />
+                </Grid>
+                <Grid size={{ xs: 3.75 }}>
+                  <Field.Text
+                    type="number"
+                    name={`scope3_internal_vehicles.${index}.people_count`}
+                    label="จำนวนคน"
+                    slotProps={{ htmlInput: { min: 0, step: 1 } }}
+                    error={
+                      !!errors.scope3_internal_vehicles?.[index]?.people_count
+                    }
+                    helperText={
+                      errors.scope3_internal_vehicles?.[index]?.people_count
+                        ?.message
+                    }
+                    disabled={!distanceKm}
+                  />
+                </Grid>
+                <Grid size={{ xs: 3.75 }}>
+                  <Field.Text
+                    type="number"
+                    name={`scope3_internal_vehicles.${index}.distance_km`}
+                    label="ระยะทาง (กิโลเมตร)"
+                    slotProps={{ htmlInput: { min: 0 } }}
+                    error={
+                      !!errors.scope3_internal_vehicles?.[index]?.distance_km
+                    }
+                    helperText={
+                      errors.scope3_internal_vehicles?.[index]?.distance_km
+                        ?.message
+                    }
+                    disabled={!vehicleType}
+                  />
+                </Grid>
+                <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
+                  <IconButton
+                    onClick={() => removeScope3InternalVehicle(index)}
+                  >
+                    <SvgColor
+                      src="/assets/icons/ic-trash.svg"
+                      color={redColor}
+                    />
+                  </IconButton>
+                </Grid>
+              </Fragment>
+            );
+          })}
+        </Grid>
+        <StyledAddButton
+          variant="outlined"
+          startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
+          onClick={() =>
+            appendScope3InternalVehicle({
+              vehicle_type: "",
+              distance_km: undefined,
+              people_count: undefined,
+            })
+          }
+        >
+          เพิ่มประเภทยานพาหนะ
+        </StyledAddButton>
+      </StyledStack>
+
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
           การพักแรมของผู้เข้าร่วมและ staff ตลอดทั้งโครงการ

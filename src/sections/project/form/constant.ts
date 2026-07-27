@@ -235,6 +235,21 @@ const energyUnitOptions = [
   { label: "ปริมาณน้ำมันที่ใช้ (ลิตร)", value: "ปริมาณน้ำมันที่ใช้ (ลิตร)" },
 ];
 
+const internalVehicleOptions = [
+  { value: "รถยนต์ส่วนบุคคล", label: "รถยนต์ส่วนบุคคล" },
+  { value: "รถกระบะส่วนบุคคล", label: "รถกระบะส่วนบุคคล" },
+  { value: "แท็กซี่", label: "แท็กซี่" },
+  { value: "รถยนต์ไฟฟ้าส่วนบุคคล", label: "รถยนต์ไฟฟ้าส่วนบุคคล" },
+  { value: "รถตู้ส่วนบุคคล", label: "รถตู้ส่วนบุคคล" },
+  { value: "จักรยานยนต์", label: "จักรยานยนต์" },
+  { value: "เที่ยวบินในประเทศ", label: "เที่ยวบินในประเทศ" },
+  { value: "รถตู้ประจำทาง", label: "รถตู้ประจำทาง" },
+  { value: "รถโดยสารประจำทาง", label: "รถโดยสารประจำทาง" },
+  { value: "รถไฟดีเซลราง", label: "รถไฟดีเซลราง" },
+  { value: "เรือสาธารณะ", label: "เรือสาธารณะ" },
+  { value: "รถไฟฟ้า", label: "รถไฟฟ้า" },
+];
+
 const giftUnitOptions = [
   { value: "กระดาษ", label: "กระดาษ" },
   { value: "พลาสติก", label: "พลาสติก" },
@@ -265,6 +280,7 @@ export {
   equipmentOptions,
   fieldOptions,
   giftUnitOptions,
+  internalVehicleOptions,
   roomOptions,
   roomOptionsMeterOnly,
   roomOptionsExcludeMeterOnly,

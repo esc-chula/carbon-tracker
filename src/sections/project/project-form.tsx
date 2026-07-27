@@ -112,6 +112,15 @@ function ProjectForm({
   });
 
   const {
+    fields: scope3InternalVehicles,
+    append: appendScope3InternalVehicle,
+    remove: removeScope3InternalVehicle,
+  } = useFieldArray({
+    control,
+    name: "scope3_internal_vehicles",
+  });
+
+  const {
     fields: scope3Overnight,
     append: appendScope3Overnight,
     remove: removeScope3Overnight,
@@ -291,6 +300,7 @@ function ProjectForm({
           scope1Activities={scope1Activities}
           scope2Entries={scope2Entries}
           scope3Attendee={scope3Attendee}
+          scope3InternalVehicles={scope3InternalVehicles}
           scope3Overnight={scope3Overnight}
           scope3Souvenir={scope3Souvenir}
           scope3Waste={scope3Waste}
@@ -309,6 +319,8 @@ function ProjectForm({
           appendScope2Entry={appendScope2Entry}
           removeScope3Attendee={removeScope3Attendee}
           appendScope3Attendee={appendScope3Attendee}
+          removeScope3InternalVehicle={removeScope3InternalVehicle}
+          appendScope3InternalVehicle={appendScope3InternalVehicle}
           removeScope3Overnight={removeScope3Overnight}
           appendScope3Overnight={appendScope3Overnight}
           removeScope3Souvenir={removeScope3Souvenir}
