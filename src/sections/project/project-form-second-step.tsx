@@ -64,6 +64,8 @@ type TProjectFormSecondStepProps = {
   scope3Attendee: Scope3AttendeeForm[];
   scope3InternalVehicles: Scope3InternalVehicleForm[];
   scope3Overnight: Scope3OvernightForm[];
+  scope3OvernightOnCampus: Scope3OvernightForm[];
+  scope3OvernightOffCampus: Scope3OvernightForm[];
   scope3Souvenir: Scope3SouvenirForm[];
   scope3Waste: Scope3WasteForm[];
   errors: FieldErrors<ProjectFormValues>;
@@ -85,6 +87,10 @@ type TProjectFormSecondStepProps = {
   appendScope3InternalVehicle: (value: Scope3InternalVehicleForm) => void;
   removeScope3Overnight: (index: number) => void;
   appendScope3Overnight: (value: Scope3OvernightForm) => void;
+  removeScope3OvernightOnCampus: (index: number) => void;
+  appendScope3OvernightOnCampus: (value: Scope3OvernightForm) => void;
+  removeScope3OvernightOffCampus: (index: number) => void;
+  appendScope3OvernightOffCampus: (value: Scope3OvernightForm) => void;
   removeScope3Souvenir: (index: number) => void;
   appendScope3Souvenir: (value: Scope3SouvenirForm) => void;
   removeScope3Waste: (index: number) => void;
@@ -130,6 +136,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     scope3Attendee,
     scope3InternalVehicles,
     scope3Overnight,
+    scope3OvernightOnCampus,
+    scope3OvernightOffCampus,
     scope3Souvenir,
     scope3Waste,
     errors,
@@ -151,6 +159,10 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     appendScope3InternalVehicle,
     removeScope3Overnight,
     appendScope3Overnight,
+    removeScope3OvernightOnCampus,
+    appendScope3OvernightOnCampus,
+    removeScope3OvernightOffCampus,
+    appendScope3OvernightOffCampus,
     removeScope3Souvenir,
     appendScope3Souvenir,
     removeScope3Waste,
@@ -954,33 +966,41 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
-          การพักแรมของผู้เข้าร่วมและ staff ตลอดทั้งโครงการ
+          การพักแรมของผู้เข้าร่วมและ staff ภายในมหาวิทยาลัย
         </Typography>
         <Grid container spacing={2} alignItems="start">
-          {scope3Overnight?.map((field, index) => {
-            const date = watch(`scope3_overnight.${index}.date`);
+          {scope3OvernightOnCampus?.map((field, index) => {
+            const date = watch(`scope3_overnight_on_campus.${index}.date`);
 
             return (
               <Fragment key={index}>
                 <Grid size={{ xs: 3 }}>
                   <RHFDateTimePicker
                     mode="date"
-                    name={`scope3_overnight.${index}.date`}
+                    name={`scope3_overnight_on_campus.${index}.date`}
                     label="เลือกวันที่พักแรม"
-                    helperText={errors.scope3_overnight?.[index]?.date?.message}
+                    helperText={
+                      errors.scope3_overnight_on_campus?.[index]?.date?.message
+                    }
                   />
                 </Grid>
                 <Grid size={{ xs: 8.5 }}>
                   <Field.Text
                     type="number"
-                    name={`scope3_overnight.${index}.value`}
+                    name={`scope3_overnight_on_campus.${index}.value`}
                     label="จำนวนคน"
                     slotProps={{ htmlInput: { min: 0 } }}
+                    error={!!errors.scope3_overnight_on_campus?.[index]?.value}
+                    helperText={
+                      errors.scope3_overnight_on_campus?.[index]?.value?.message
+                    }
                     disabled={!date}
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                  <IconButton onClick={() => removeScope3Overnight(index)}>
+                  <IconButton
+                    onClick={() => removeScope3OvernightOnCampus(index)}
+                  >
                     <SvgColor
                       src="/assets/icons/ic-trash.svg"
                       color={redColor}
@@ -995,7 +1015,68 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           variant="outlined"
           startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
           onClick={() =>
-            appendScope3Overnight({
+            appendScope3OvernightOnCampus({
+              date: undefined,
+              value: undefined,
+            })
+          }
+        >
+          เพิ่มวันที่พักแรม
+        </StyledAddButton>
+      </StyledStack>
+      <StyledStack sx={{ borderRadius: 2 }}>
+        <Typography variant="body2" fontWeight={700}>
+          การพักแรมของผู้เข้าร่วมและ staff ภายนอกมหาวิทยาลัย
+        </Typography>
+        <Grid container spacing={2} alignItems="start">
+          {scope3OvernightOffCampus?.map((field, index) => {
+            const date = watch(`scope3_overnight_off_campus.${index}.date`);
+
+            return (
+              <Fragment key={index}>
+                <Grid size={{ xs: 3 }}>
+                  <RHFDateTimePicker
+                    mode="date"
+                    name={`scope3_overnight_off_campus.${index}.date`}
+                    label="เลือกวันที่พักแรม"
+                    helperText={
+                      errors.scope3_overnight_off_campus?.[index]?.date?.message
+                    }
+                  />
+                </Grid>
+                <Grid size={{ xs: 8.5 }}>
+                  <Field.Text
+                    type="number"
+                    name={`scope3_overnight_off_campus.${index}.value`}
+                    label="จำนวนคน"
+                    slotProps={{ htmlInput: { min: 0 } }}
+                    error={!!errors.scope3_overnight_off_campus?.[index]?.value}
+                    helperText={
+                      errors.scope3_overnight_off_campus?.[index]?.value
+                        ?.message
+                    }
+                    disabled={!date}
+                  />
+                </Grid>
+                <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
+                  <IconButton
+                    onClick={() => removeScope3OvernightOffCampus(index)}
+                  >
+                    <SvgColor
+                      src="/assets/icons/ic-trash.svg"
+                      color={redColor}
+                    />
+                  </IconButton>
+                </Grid>
+              </Fragment>
+            );
+          })}
+        </Grid>
+        <StyledAddButton
+          variant="outlined"
+          startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
+          onClick={() =>
+            appendScope3OvernightOffCampus({
               date: undefined,
               value: undefined,
             })

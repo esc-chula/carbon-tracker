@@ -245,11 +245,7 @@ const Scope3WasteSchema = z.object({
   unit: z.string().min(1, "กรุณาเลือกหน่วย"),
 });
 
-const ProjectFormStepOneBaseSchema = z.object({
-  custom_id: z.string().min(1, "กรุณากรอกรหัสโครงการ"),
-  title: z.string().min(1, "กรุณากรอกชื่อโครงการ"),
-  org: z.string().min(1, "กรุณาเลือกประเภทโครงการ"),
-  org_detail: z.string().optional(),
+const ProjectInfoSchema = z.object({
   environmental_policy: z
     .string()
     .trim()
@@ -260,6 +256,13 @@ const ProjectFormStepOneBaseSchema = z.object({
     .min(1, "กรุณาระบุข้อเสนอแนะในการดำเนินนโยบาย"),
   policy_implementation_photos: PolicyImplementationPhotosSchema,
   policy_implementation_photo_keys: z.array(z.string()).optional(),
+});
+
+const ProjectFormStepOneBaseSchema = z.object({
+  custom_id: z.string().min(1, "กรุณากรอกรหัสโครงการ"),
+  title: z.string().min(1, "กรุณากรอกชื่อโครงการ"),
+  org: z.string().min(1, "กรุณาเลือกประเภทโครงการ"),
+  org_detail: z.string().optional(),
   owner_fullname: z.string().min(1, "กรุณากรอกชื่อ-นามสกุล"),
   owner_nickname: z.string().min(1, "กรุณากรอกชื่อเล่น"),
   owner_student_id: z.string().min(1, "กรุณากรอกรหัสนิสิต"),
@@ -321,9 +324,9 @@ const ProjectFormStepTwoSchema = z.object({
   transportations_csv_file: z.any().optional(),
 });
 
-const ProjectFormSchema = ProjectFormStepOneBaseSchema.merge(
-  ProjectFormStepTwoSchema,
-).superRefine((data, ctx) => {
+const ProjectFormSchema = ProjectFormStepOneBaseSchema.merge(ProjectInfoSchema)
+  .merge(ProjectFormStepTwoSchema)
+  .superRefine((data, ctx) => {
   const org = data.org?.trim();
   if (!org) return;
 
@@ -354,6 +357,7 @@ const ProjectFormSchema = ProjectFormStepOneBaseSchema.merge(
 
 // Export schemas
 export {
+  ProjectInfoSchema,
   ProjectFormSchema,
   ProjectFormStepOneSchema,
   ProjectFormStepTwoSchema,

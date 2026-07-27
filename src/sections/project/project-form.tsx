@@ -130,6 +130,24 @@ function ProjectForm({
   });
 
   const {
+    fields: scope3OvernightOnCampus,
+    append: appendScope3OvernightOnCampus,
+    remove: removeScope3OvernightOnCampus,
+  } = useFieldArray({
+    control,
+    name: "scope3_overnight_on_campus",
+  });
+
+  const {
+    fields: scope3OvernightOffCampus,
+    append: appendScope3OvernightOffCampus,
+    remove: removeScope3OvernightOffCampus,
+  } = useFieldArray({
+    control,
+    name: "scope3_overnight_off_campus",
+  });
+
+  const {
     fields: scope3Souvenir,
     append: appendScope3Souvenir,
     remove: removeScope3Souvenir,
@@ -302,6 +320,8 @@ function ProjectForm({
           scope3Attendee={scope3Attendee}
           scope3InternalVehicles={scope3InternalVehicles}
           scope3Overnight={scope3Overnight}
+          scope3OvernightOnCampus={scope3OvernightOnCampus}
+          scope3OvernightOffCampus={scope3OvernightOffCampus}
           scope3Souvenir={scope3Souvenir}
           scope3Waste={scope3Waste}
           errors={errors}
@@ -323,6 +343,10 @@ function ProjectForm({
           appendScope3InternalVehicle={appendScope3InternalVehicle}
           removeScope3Overnight={removeScope3Overnight}
           appendScope3Overnight={appendScope3Overnight}
+          removeScope3OvernightOnCampus={removeScope3OvernightOnCampus}
+          appendScope3OvernightOnCampus={appendScope3OvernightOnCampus}
+          removeScope3OvernightOffCampus={removeScope3OvernightOffCampus}
+          appendScope3OvernightOffCampus={appendScope3OvernightOffCampus}
           removeScope3Souvenir={removeScope3Souvenir}
           appendScope3Souvenir={appendScope3Souvenir}
           removeScope3Waste={removeScope3Waste}
