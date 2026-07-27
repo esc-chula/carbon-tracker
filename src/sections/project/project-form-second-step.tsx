@@ -856,6 +856,10 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             *
           </Typography>
         </Typography>
+        <Typography variant="caption" color={greyColor}>
+          การเดินทางของผู้เข้าร่วมและ staff มาที่คณะวิศวกรรมศาสตร์
+          จุฬาลงกรณ์มหาวิทยาลัย
+        </Typography>
 
         <Field.CSVUploadField
           control={control}
@@ -974,7 +978,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
             return (
               <Fragment key={index}>
-                <Grid size={{ xs: 3 }}>
+                <Grid size={{ xs: 4 }}>
                   <RHFDateTimePicker
                     mode="date"
                     name={`scope3_overnight_on_campus.${index}.date`}
@@ -984,7 +988,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     }
                   />
                 </Grid>
-                <Grid size={{ xs: 8.5 }}>
+                <Grid size={{ xs: 7.5 }}>
                   <Field.Text
                     type="number"
                     name={`scope3_overnight_on_campus.${index}.value`}
@@ -1034,7 +1038,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
             return (
               <Fragment key={index}>
-                <Grid size={{ xs: 3 }}>
+                <Grid size={{ xs: 4 }}>
                   <RHFDateTimePicker
                     mode="date"
                     name={`scope3_overnight_off_campus.${index}.date`}
@@ -1044,7 +1048,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                     }
                   />
                 </Grid>
-                <Grid size={{ xs: 8.5 }}>
+                <Grid size={{ xs: 7.5 }}>
                   <Field.Text
                     type="number"
                     name={`scope3_overnight_off_campus.${index}.value`}
@@ -1087,7 +1091,10 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
       </StyledStack>
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
-          ของแจกผู้เข้าร่วมและ staff
+          ของแจกและทรัพยากรที่ใช้ในการจัดกิจกรรม
+        </Typography>
+        <Typography variant="caption" color={greyColor}>
+          หมายเหตุ: เสื้อ 1 ตัว = ผ้า 0.15 กิโล
         </Typography>
         <Grid container spacing={2} alignItems="start">
           {scope3Souvenir?.map((field, index) => {
@@ -1099,7 +1106,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <Grid size={{ xs: 7.5 }}>
                   <Field.CustomAutoComplete
                     name={`scope3_souvenir.${index}.type`}
-                    label="เลือกประเภทของแจก"
+                    label="เลือกประเภทเอกสาร"
                     options={giftUnitOptions}
                     helperText={fieldErrorMessage(
                       errors.scope3_souvenir?.[index]?.type,
@@ -1232,6 +1239,75 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     </StyledStack>
   );
 
+  const renderPolicyInfo = (
+    <StyledStack>
+      <Stack spacing={1.5}>
+        <Typography variant="subtitle1" fontWeight={700}>
+          การดำเนินนโยบายสิ่งแวดล้อม
+          <Typography component="span" color="red">
+            *
+          </Typography>
+        </Typography>
+        <Typography variant="caption" color={greyColor}>
+          สรุปแนวทางที่โครงการได้นำมาใช้และผลจากการดำเนินงาน
+        </Typography>
+      </Stack>
+
+      <Grid container spacing={2} alignItems="start">
+        <Grid size={{ xs: 12 }}>
+          <Stack gap={2}>
+            <Typography variant="body2" fontWeight={700}>
+              นโยบายสิ่งแวดล้อม
+              <Typography component="span" color="red">
+                *
+              </Typography>
+            </Typography>
+            <Field.Text
+              name="environmental_policy"
+              label="ระบุมาตรการ นโยบาย หรือแนวทางที่โครงการเลือกใช้เพื่อช่วยลดมลพิษ ขยะ หรือการใช้พลังงาน"
+              multiline
+              rows={3}
+              required
+            />
+          </Stack>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <Stack gap={2}>
+            <Typography variant="body2" fontWeight={700}>
+              ข้อเสนอแนะในการดำเนินนโยบาย
+              <Typography component="span" color="red">
+                *
+              </Typography>
+            </Typography>
+            <Field.Text
+              name="policy_implementation_suggestion"
+              label="ระบุผลการดำเนินงาน อุปสรรคที่พบ และแนวทางแก้ไข เพื่อเป็นข้อมูลประโยชน์ในการจัดทำแนวทางสำหรับโครงการอื่น ๆ ต่อไป"
+              multiline
+              rows={3}
+              required
+            />
+          </Stack>
+        </Grid>
+      </Grid>
+
+      <Stack gap={2}>
+        <Typography variant="body2" fontWeight={700}>
+          รูปภาพการดำเนินการตามนโยบาย
+          <Typography component="span" color="red">
+            *
+          </Typography>
+        </Typography>
+        <Typography variant="caption" color={greyColor}>
+          อัปโหลดรูปภาพหลักฐาน เช่น รูปถ่ายการชั่งน้ำหนักขยะ/วัสดุ, ภาพบรรยากาศการเก็บข้อมูล หรือภาพกิจกรรมรณรงค์ลดผลกระทบสิ่งแวดล้อมในโครงการ
+        </Typography>
+        <Field.PolicyPhotoUploadField
+          control={control}
+          name="policy_implementation_photos"
+        />
+      </Stack>
+    </StyledStack>
+  );
+
   return (
     <>
       {step === 2 && (
@@ -1260,6 +1336,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             {renderSecondScope}
 
             {renderThirdScope}
+
+            {renderPolicyInfo}
 
             <ProjectCarbonDetail carbon={carbonSummary.total} all />
 
