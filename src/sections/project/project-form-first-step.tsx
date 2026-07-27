@@ -164,21 +164,12 @@ export function ProjectFormFirstStep({
                     required
                   />
                 </Grid>
-                <Grid size={{ xs: 2 }}>
+                <Grid size={{ xs: 4 }}>
                   <Field.Text
                     name="owner_nickname"
                     label="ชื่อเล่น"
                     error={!!errors.owner_nickname}
                     helperText={errors.owner_nickname?.message}
-                    required
-                  />
-                </Grid>
-                <Grid size={{ xs: 2 }}>
-                  <Field.Phone
-                    name="owner_student_id"
-                    label="รหัสนิสิต"
-                    error={!!errors.owner_student_id}
-                    helperText={errors?.owner_student_id?.message}
                     required
                   />
                 </Grid>
@@ -193,10 +184,28 @@ export function ProjectFormFirstStep({
                 </Grid>
                 <Grid size={{ xs: 3 }}>
                   <Field.Phone
+                    name="owner_student_id"
+                    label="รหัสนิสิต"
+                    error={!!errors.owner_student_id}
+                    helperText={errors?.owner_student_id?.message}
+                    required
+                  />
+                </Grid> 
+                <Grid size={{ xs: 5 }}>
+                  <Field.Phone
                     name="owner_phone_number"
                     label="เบอร์โทรศัพท์"
                     error={!!errors.owner_phone_number}
                     helperText={errors.owner_phone_number?.message}
+                    required
+                  />
+                </Grid>
+                <Grid size={{ xs: 7 }}>
+                  <Field.Text
+                    name="owner_line_id"
+                    label="Line ID"
+                    error={!!errors.owner_line_id}
+                    helperText={errors.owner_line_id?.message}
                     required
                   />
                 </Grid>

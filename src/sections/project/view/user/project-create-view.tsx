@@ -39,6 +39,7 @@ function ProjectCreateView() {
     owner_major,
     owner_student_id,
     owner_phone_number,
+    owner_line_id,
     ...other
   } = defaultValues;
 
@@ -49,6 +50,7 @@ function ProjectCreateView() {
     owner_major: owner.data?.owner.major ?? owner_major,
     owner_student_id: owner.data?.owner.student_id ?? owner_student_id,
     owner_phone_number: owner.data?.owner.phone_number ?? owner_phone_number,
+    owner_line_id: owner.data?.owner.line_id ?? owner_line_id,
   };
 
   const handleSubmit = async (

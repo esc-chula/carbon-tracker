@@ -65,6 +65,7 @@ type ProjectFormValues = {
   policy_implementation_suggestion: string;
   policy_implementation_photos?: File[];
   policy_implementation_photo_keys?: string[];
+  owner_line_id: string;
   transportations_csv_file?: File;
   scope1_activities?: Array<Scope1ActivityForm>;
   scope2_entries?: Array<Scope2EntryForm>;

@@ -229,6 +229,7 @@ function ProjectForm({
       "owner_student_id",
       "owner_major",
       "owner_phone_number",
+      "owner_line_id",
       "field",
       "clubName",
       "otherUnderProject",

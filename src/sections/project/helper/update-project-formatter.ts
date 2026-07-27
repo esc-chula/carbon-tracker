@@ -19,6 +19,12 @@ function UpdateProjectFormatter(
     policy_implementation_photo_keys: data.policy_implementation_photo_keys,
     policy_implementation_photos: formatted.policy_implementation_photos,
     project_info: formatted.project_info,
+    owner_fullname: formatted.owner_fullname,
+    owner_line_id: formatted.owner_line_id,
+    owner_major: formatted.owner_major,
+    owner_nickname: formatted.owner_nickname,
+    owner_phone_number: formatted.owner_phone_number,
+    owner_student_id: formatted.owner_student_id,
     title: formatted.title,
     transportations_csv_file: formatted.transportations_csv_file ?? null,
   };

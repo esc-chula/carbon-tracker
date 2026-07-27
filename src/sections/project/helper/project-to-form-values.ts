@@ -23,6 +23,7 @@ function projectToFormValues({
       values.owner_nickname = fallbackOwner.nickname;
       values.owner_major = fallbackOwner.major;
       values.owner_phone_number = fallbackOwner.phone_number;
+      values.owner_line_id = fallbackOwner.line_id;
       values.owner_student_id = fallbackOwner.student_id;
     }
     return values;
@@ -39,6 +40,7 @@ function projectToFormValues({
   values.owner_nickname = owner?.nickname ?? values.owner_nickname;
   values.owner_major = owner?.major ?? values.owner_major;
   values.owner_phone_number = owner?.phone_number ?? values.owner_phone_number;
+  values.owner_line_id = owner?.line_id ?? values.owner_line_id;
   values.owner_student_id = owner?.student_id ?? values.owner_student_id;
   values.environmental_policy =
     project.project_info?.environmental_policy ?? values.environmental_policy;
