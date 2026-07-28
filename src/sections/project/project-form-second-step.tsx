@@ -440,6 +440,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
   const file = watch("transportations_csv_file");
   const status = watch("status");
+  const policyImplementationExistingPhotos =
+    watch("policy_implementation_existing_photos") ?? [];
 
   // --------------------------- Render ---------------------------F
 
@@ -1302,6 +1304,23 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         <Field.PolicyPhotoUploadField
           control={control}
           name="policy_implementation_photos"
+          existingPhotos={policyImplementationExistingPhotos}
+          onRemoveExistingPhoto={(storageKey) => {
+            setValue(
+              "policy_implementation_existing_photos",
+              policyImplementationExistingPhotos.filter(
+                (photo) => photo.storage_key !== storageKey,
+              ),
+              { shouldDirty: true, shouldValidate: true },
+            );
+            setValue(
+              "policy_implementation_photo_keys",
+              (watch("policy_implementation_photo_keys") ?? []).filter(
+                (key) => key !== storageKey,
+              ),
+              { shouldDirty: true, shouldValidate: true },
+            );
+          }}
         />
       </Stack>
     </StyledStack>

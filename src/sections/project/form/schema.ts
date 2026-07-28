@@ -37,7 +37,6 @@ const isPolicyPhotoFile = (value: unknown): value is File =>
 
 const PolicyImplementationPhotosSchema = z
   .array(z.custom<File>(isPolicyPhotoFile, POLICY_PHOTO_ERROR))
-  .refine((files) => files.length > 0, POLICY_PHOTO_ERROR)
   .refine((files) => files.length <= MAX_POLICY_PHOTO_COUNT, POLICY_PHOTO_ERROR)
   .refine(
     (files) =>
@@ -246,14 +245,12 @@ const Scope3WasteSchema = z.object({
 });
 
 const ProjectInfoSchema = z.object({
-  environmental_policy: z
-    .string()
-    .trim()
-    .min(1, "กรุณาระบุนโยบายสิ่งแวดล้อม"),
+  environmental_policy: z.string().trim().min(1, "กรุณาระบุนโยบายสิ่งแวดล้อม"),
   policy_implementation_suggestion: z
     .string()
     .trim()
     .min(1, "กรุณาระบุข้อเสนอแนะในการดำเนินนโยบาย"),
+  policy_implementation_existing_photos: z.array(z.any()).optional(),
   policy_implementation_photos: PolicyImplementationPhotosSchema,
   policy_implementation_photo_keys: z.array(z.string()).optional(),
 });
@@ -327,33 +324,48 @@ const ProjectFormStepTwoSchema = z.object({
 const ProjectFormSchema = ProjectFormStepOneBaseSchema.merge(ProjectInfoSchema)
   .merge(ProjectFormStepTwoSchema)
   .superRefine((data, ctx) => {
-  const org = data.org?.trim();
-  if (!org) return;
+    const photoCount =
+      data.policy_implementation_photos.length +
+      (data.policy_implementation_photo_keys?.length ?? 0);
 
-  if (org === "กวศ." && !data.field?.trim()) {
-    ctx.addIssue({
-      path: ["field"],
-      code: z.ZodIssueCode.custom,
-      message: "กรุณากรอกฝ่าย",
-    });
-  }
+    if (photoCount < 1 || photoCount > MAX_POLICY_PHOTO_COUNT) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["policy_implementation_photos"],
+        message: POLICY_PHOTO_ERROR,
+      });
+    }
 
-  if (org === "ชมรม" && !data.clubName?.trim()) {
-    ctx.addIssue({
-      path: ["clubName"],
-      code: z.ZodIssueCode.custom,
-      message: "กรุณากรอกชื่อชมรม",
-    });
-  }
+    const org = data.org?.trim();
+    if (!org) return;
 
-  if ((org === "other" || org === "อื่นๆ") && !data.otherUnderProject?.trim()) {
-    ctx.addIssue({
-      path: ["otherUnderProject"],
-      code: z.ZodIssueCode.custom,
-      message: "กรุณาระบุ",
-    });
-  }
-});
+    if (org === "กวศ." && !data.field?.trim()) {
+      ctx.addIssue({
+        path: ["field"],
+        code: z.ZodIssueCode.custom,
+        message: "กรุณากรอกฝ่าย",
+      });
+    }
+
+    if (org === "ชมรม" && !data.clubName?.trim()) {
+      ctx.addIssue({
+        path: ["clubName"],
+        code: z.ZodIssueCode.custom,
+        message: "กรุณากรอกชื่อชมรม",
+      });
+    }
+
+    if (
+      (org === "other" || org === "อื่นๆ") &&
+      !data.otherUnderProject?.trim()
+    ) {
+      ctx.addIssue({
+        path: ["otherUnderProject"],
+        code: z.ZodIssueCode.custom,
+        message: "กรุณาระบุ",
+      });
+    }
+  });
 
 // Export schemas
 export {
@@ -383,6 +395,7 @@ const defaultValues: ProjectFormValues = {
   owner_phone_number: "",
   environmental_policy: "",
   policy_implementation_suggestion: "",
+  policy_implementation_existing_photos: [],
   policy_implementation_photos: [],
   policy_implementation_photo_keys: [],
   owner_line_id: "",

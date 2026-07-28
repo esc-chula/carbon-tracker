@@ -24,6 +24,7 @@ import {
   type FieldValues,
   type RegisterOptions,
 } from "react-hook-form";
+import type { PolicyImplementationPhoto } from "@/types/project/project";
 import { SvgColor } from "../svg/svg-color";
 
 interface UploadAreaProps {
@@ -65,6 +66,8 @@ export type PolicyPhotoUploadFieldProps<TFieldValues extends FieldValues> = {
   label?: string;
   helperText?: string;
   disabled?: boolean;
+  existingPhotos?: PolicyImplementationPhoto[];
+  onRemoveExistingPhoto?: (storageKey: string) => void;
 };
 
 export default function PolicyPhotoUploadField<
@@ -78,6 +81,8 @@ export default function PolicyPhotoUploadField<
   label = "เลือกไฟล์รูปภาพที่คุณต้องการ",
   helperText = "กรุณาอัปโหลดรูปภาพ PNG หรือ JPG (max. 3MB) สูงสุด 4 รูป",
   disabled,
+  existingPhotos = [],
+  onRemoveExistingPhoto,
 }: PolicyPhotoUploadFieldProps<TFieldValues>): JSX.Element {
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const [selectionError, setSelectionError] = useState<string | null>(null);
@@ -96,9 +101,11 @@ export default function PolicyPhotoUploadField<
     /\.(png|jpe?g)$/i.test(file.name);
 
   const validatePhotos = (files: File[]): string | true => {
-    if (!files.length)
+    const photoCount = existingPhotos.length + files.length;
+
+    if (!photoCount)
       return "กรุณาอัปโหลดรูปภาพ PNG หรือ JPG (max. 3MB) สูงสุด 4 รูป";
-    if (files.length > maxFiles)
+    if (photoCount > maxFiles)
       return "กรุณาอัปโหลดรูปภาพ PNG หรือ JPG (max. 3MB) สูงสุด 4 รูป";
 
     const isValid = files.every(
@@ -127,7 +134,7 @@ export default function PolicyPhotoUploadField<
               (file) => typeof File !== "undefined" && file instanceof File,
             )
           : [];
-        const hasFiles = files.length > 0;
+        const hasFiles = existingPhotos.length > 0 || files.length > 0;
 
         const addFiles = (incomingFileList: FileList | File[]) => {
           if (disabled) return;
@@ -191,7 +198,7 @@ export default function PolicyPhotoUploadField<
         return (
           <Stack sx={{ width: 1, alignItems: "center" }}>
             <Box sx={{ width: 1, maxWidth: 1040, p: 3 }}>
-              {files.length < maxFiles && (
+              {existingPhotos.length + files.length < maxFiles && (
                 <UploadArea
                   elevation={0}
                   isDragOver={isDragOver}
@@ -267,8 +274,67 @@ export default function PolicyPhotoUploadField<
               {hasFiles && (
                 <Stack
                   spacing={1.5}
-                  sx={{ mt: files.length < maxFiles ? 2 : 0 }}
+                  sx={{
+                    mt: existingPhotos.length + files.length < maxFiles ? 2 : 0,
+                  }}
                 >
+                  {existingPhotos.map((photo) => (
+                    <Box
+                      key={photo.storage_key}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 5,
+                        borderRadius: 1,
+                        px: 1,
+                        py: 0.5,
+                        width: "max-content",
+                        maxWidth: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                      >
+                        <Box
+                          component="img"
+                          src={photo.url || "/assets/icons/ic-file.svg"}
+                          width={32}
+                          height={32}
+                          sx={{
+                            borderRadius: 0.5,
+                            objectFit: "cover",
+                          }}
+                        />
+                        <Stack>
+                          <Typography variant="body2">
+                            {photo.filename}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {photo.mime_type}
+                          </Typography>
+                        </Stack>
+                      </Box>
+
+                      {!disabled && (
+                        <IconButton
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            onRemoveExistingPhoto?.(photo.storage_key);
+                          }}
+                          size="small"
+                          disabled={disabled}
+                        >
+                          <SvgColor
+                            src="/assets/icons/ic-trash.svg"
+                            color="#B71931"
+                          />
+                        </IconButton>
+                      )}
+                    </Box>
+                  ))}
+
                   {files.map((file, index) => (
                     <Box
                       key={`${file.name}-${file.size}-${index}`}
