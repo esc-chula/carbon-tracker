@@ -6,9 +6,18 @@ import { Stack, Typography } from "@mui/material";
 type TProjectCarbonDetailProps = {
   carbon: number;
   all?: boolean;
+  scopes?: {
+    scope1: number;
+    scope2: number;
+    scope3: number;
+  };
 };
 
-function ProjectCarbonDetail({ carbon, all }: TProjectCarbonDetailProps) {
+function ProjectCarbonDetail({
+  carbon,
+  all,
+  scopes,
+}: TProjectCarbonDetailProps) {
   if (all) {
     return (
       <Stack
@@ -20,6 +29,77 @@ function ProjectCarbonDetail({ carbon, all }: TProjectCarbonDetailProps) {
           alignItems: "center",
         }}
       >
+        {scopes && (
+          <Stack spacing={1} sx={{ width: 1 }}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              spacing={2}
+            >
+              <Typography variant="h3" fontSize={16}>
+                Scope 1 : ปริมาณการปล่อยก๊าซเรือนกระจกทางตรง
+              </Typography>
+              <Typography variant="h3" fontSize={20}>
+                <Typography component="span" variant="inherit" color="#6B1B1F">
+                  <CountingAnimation
+                    to={scopes.scope1}
+                    duration={1000}
+                    decimals={2}
+                  />
+                </Typography>{" "}
+                <Typography component="span" variant="inherit">
+                  kgCO₂
+                </Typography>
+              </Typography>
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              spacing={2}
+            >
+              <Typography variant="h3" fontSize={16}>
+                Scope 2 : ปริมาณการปล่อยก๊าซเรือนกระจกทางอ้อมจากการใช้พลังงาน
+              </Typography>
+              <Typography variant="h3" fontSize={20}>
+                <Typography component="span" variant="inherit" color="#6B1B1F">
+                  <CountingAnimation
+                    to={scopes.scope2}
+                    duration={1000}
+                    decimals={2}
+                  />
+                </Typography>{" "}
+                <Typography component="span" variant="inherit">
+                  kgCO₂
+                </Typography>
+              </Typography>
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              spacing={2}
+            >
+              <Typography variant="h3" fontSize={16}>
+                Scope 3 : อื่นๆ
+              </Typography>
+              <Typography variant="h3" fontSize={20}>
+                <Typography component="span" variant="inherit" color="#6B1B1F">
+                  <CountingAnimation
+                    to={scopes.scope3}
+                    duration={1000}
+                    decimals={2}
+                  />
+                </Typography>{" "}
+                <Typography component="span" variant="inherit">
+                  kgCO₂
+                </Typography>
+              </Typography>
+            </Stack>
+          </Stack>
+        )}
+
         <Typography variant="h3" fontSize={16}>
           โครงการนี้ปล่อยแก๊สเรือนกระจกไป
         </Typography>

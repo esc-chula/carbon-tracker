@@ -1298,7 +1298,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           </Typography>
         </Typography>
         <Typography variant="caption" color={greyColor}>
-          อัปโหลดรูปภาพหลักฐาน เช่น รูปถ่ายการชั่งน้ำหนักขยะ/วัสดุ, ภาพบรรยากาศการเก็บข้อมูล หรือภาพกิจกรรมรณรงค์ลดผลกระทบสิ่งแวดล้อมในโครงการ
+          อัปโหลดรูปภาพหลักฐาน เช่น รูปถ่ายการชั่งน้ำหนักขยะ/วัสดุ,
+          ภาพบรรยากาศการเก็บข้อมูล
+          หรือภาพกิจกรรมรณรงค์ลดผลกระทบสิ่งแวดล้อมในโครงการ
         </Typography>
         <Field.PolicyPhotoUploadField
           control={control}
@@ -1339,7 +1341,15 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
             {renderPolicyInfo}
 
-            <ProjectCarbonDetail carbon={carbonSummary.total} all />
+            <ProjectCarbonDetail
+              carbon={carbonSummary.total}
+              scopes={{
+                scope1: carbonSummary.scope1,
+                scope2: carbonSummary.scope2,
+                scope3: carbonSummary.scope3,
+              }}
+              all
+            />
 
             <Stack
               direction="row"
