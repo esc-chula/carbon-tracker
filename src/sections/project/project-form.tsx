@@ -112,12 +112,39 @@ function ProjectForm({
   });
 
   const {
+    fields: scope3InternalVehicles,
+    append: appendScope3InternalVehicle,
+    remove: removeScope3InternalVehicle,
+  } = useFieldArray({
+    control,
+    name: "scope3_internal_vehicles",
+  });
+
+  const {
     fields: scope3Overnight,
     append: appendScope3Overnight,
     remove: removeScope3Overnight,
   } = useFieldArray({
     control,
     name: "scope3_overnight",
+  });
+
+  const {
+    fields: scope3OvernightOnCampus,
+    append: appendScope3OvernightOnCampus,
+    remove: removeScope3OvernightOnCampus,
+  } = useFieldArray({
+    control,
+    name: "scope3_overnight_on_campus",
+  });
+
+  const {
+    fields: scope3OvernightOffCampus,
+    append: appendScope3OvernightOffCampus,
+    remove: removeScope3OvernightOffCampus,
+  } = useFieldArray({
+    control,
+    name: "scope3_overnight_off_campus",
   });
 
   const {
@@ -291,7 +318,10 @@ function ProjectForm({
           scope1Activities={scope1Activities}
           scope2Entries={scope2Entries}
           scope3Attendee={scope3Attendee}
+          scope3InternalVehicles={scope3InternalVehicles}
           scope3Overnight={scope3Overnight}
+          scope3OvernightOnCampus={scope3OvernightOnCampus}
+          scope3OvernightOffCampus={scope3OvernightOffCampus}
           scope3Souvenir={scope3Souvenir}
           scope3Waste={scope3Waste}
           errors={errors}
@@ -309,8 +339,14 @@ function ProjectForm({
           appendScope2Entry={appendScope2Entry}
           removeScope3Attendee={removeScope3Attendee}
           appendScope3Attendee={appendScope3Attendee}
+          removeScope3InternalVehicle={removeScope3InternalVehicle}
+          appendScope3InternalVehicle={appendScope3InternalVehicle}
           removeScope3Overnight={removeScope3Overnight}
           appendScope3Overnight={appendScope3Overnight}
+          removeScope3OvernightOnCampus={removeScope3OvernightOnCampus}
+          appendScope3OvernightOnCampus={appendScope3OvernightOnCampus}
+          removeScope3OvernightOffCampus={removeScope3OvernightOffCampus}
+          appendScope3OvernightOffCampus={appendScope3OvernightOffCampus}
           removeScope3Souvenir={removeScope3Souvenir}
           appendScope3Souvenir={appendScope3Souvenir}
           removeScope3Waste={removeScope3Waste}

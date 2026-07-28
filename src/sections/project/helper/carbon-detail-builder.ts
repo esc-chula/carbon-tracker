@@ -138,7 +138,6 @@ function buildCarbonInput(data: ProjectFormValues): CarbonInput {
           unit: item.unit ?? "",
           value: item.value ?? 0,
         })) ?? [],
-      transportations: [],
       waste:
         data.scope3_waste?.map((item) => ({
           type: item.type ?? "",

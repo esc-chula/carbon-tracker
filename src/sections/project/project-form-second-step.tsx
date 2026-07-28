@@ -13,6 +13,7 @@ import type {
   Scope1ActivityForm,
   Scope2EntryForm,
   Scope3AttendeeForm,
+  Scope3InternalVehicleForm,
   Scope3OvernightForm,
   Scope3SouvenirForm,
   Scope3WasteForm,
@@ -40,6 +41,7 @@ import {
   energyUnitOptions,
   equipmentOptions,
   giftUnitOptions,
+  internalVehicleOptions,
   roomOptions,
   roomOptionsExcludeMeterOnly,
   wasteOptions,
@@ -60,7 +62,10 @@ type TProjectFormSecondStepProps = {
   scope1Activities: Scope1ActivityForm[];
   scope2Entries: Scope2EntryForm[];
   scope3Attendee: Scope3AttendeeForm[];
+  scope3InternalVehicles: Scope3InternalVehicleForm[];
   scope3Overnight: Scope3OvernightForm[];
+  scope3OvernightOnCampus: Scope3OvernightForm[];
+  scope3OvernightOffCampus: Scope3OvernightForm[];
   scope3Souvenir: Scope3SouvenirForm[];
   scope3Waste: Scope3WasteForm[];
   errors: FieldErrors<ProjectFormValues>;
@@ -78,8 +83,14 @@ type TProjectFormSecondStepProps = {
   appendScope2Entry: (value: Scope2EntryForm) => void;
   removeScope3Attendee: (index: number) => void;
   appendScope3Attendee: (value: Scope3AttendeeForm) => void;
+  removeScope3InternalVehicle: (index: number) => void;
+  appendScope3InternalVehicle: (value: Scope3InternalVehicleForm) => void;
   removeScope3Overnight: (index: number) => void;
   appendScope3Overnight: (value: Scope3OvernightForm) => void;
+  removeScope3OvernightOnCampus: (index: number) => void;
+  appendScope3OvernightOnCampus: (value: Scope3OvernightForm) => void;
+  removeScope3OvernightOffCampus: (index: number) => void;
+  appendScope3OvernightOffCampus: (value: Scope3OvernightForm) => void;
   removeScope3Souvenir: (index: number) => void;
   appendScope3Souvenir: (value: Scope3SouvenirForm) => void;
   removeScope3Waste: (index: number) => void;
@@ -123,7 +134,10 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     scope1Activities,
     scope2Entries,
     scope3Attendee,
+    scope3InternalVehicles,
     scope3Overnight,
+    scope3OvernightOnCampus,
+    scope3OvernightOffCampus,
     scope3Souvenir,
     scope3Waste,
     errors,
@@ -141,8 +155,14 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     appendScope2Entry,
     removeScope3Attendee,
     appendScope3Attendee,
+    removeScope3InternalVehicle,
+    appendScope3InternalVehicle,
     removeScope3Overnight,
     appendScope3Overnight,
+    removeScope3OvernightOnCampus,
+    appendScope3OvernightOnCampus,
+    removeScope3OvernightOffCampus,
+    appendScope3OvernightOffCampus,
     removeScope3Souvenir,
     appendScope3Souvenir,
     removeScope3Waste,
@@ -420,18 +440,17 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
   const file = watch("transportations_csv_file");
   const status = watch("status");
+  const policyImplementationExistingPhotos =
+    watch("policy_implementation_existing_photos") ?? [];
 
   // --------------------------- Render ---------------------------F
 
   const renderFirstScope = (
     <StyledStack>
       <Stack direction="row" spacing={1.5}>
-        <ProjectCarbonDetail carbon={carbonSummary.scope1} />
-
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" fontWeight={700}>
-            Scope 1 : <br />
-            ปริมาณการปล่อยก๊าซเรือนกระจกทางตรง
+            การปล่อยก๊าซเรือนกระจกจากอาหารและเครื่องดื่ม
           </Typography>
           <Typography variant="caption" color={greyColor}>
             สามารถประมาณได้จากบิลงบประมาณจบโครงการ
@@ -508,12 +527,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const renderSecondScope = (
     <StyledStack>
       <Stack direction="row" spacing={1.5}>
-        <ProjectCarbonDetail carbon={carbonSummary.scope2} />
-
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" fontWeight={700}>
-            Scope 2 : <br />
-            ปริมาณการปล่อยก๊าซเรือนกระจกทางอ้อมจากการใช้พลังงาน
+            การปล่อยก๊าซเรือนกระจกจากการใช้พลังงาน
           </Typography>
           <Typography variant="caption" color={greyColor}>
             สามารถประมาณได้จากบิลงบประมาณจบโครงการ
@@ -763,33 +779,12 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
   const renderThirdScope = (
     <StyledStack>
       <Stack direction="row" spacing={1.5} alignItems="center">
-        <ProjectCarbonDetail carbon={carbonSummary.scope3} />
-
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" fontWeight={700}>
-            Scope 3 : อื่นๆ
-          </Typography>
-          <Typography variant="caption" color={greyColor}>
-            การเดินทางของผู้เข้าร่วมและ staff
+            การปล่อยก๊าซเรือนกระจกอื่น ๆ
           </Typography>
         </Stack>
       </Stack>
-
-      <Field.CSVUploadField control={control} name="transportations_csv_file" />
-
-      {!file && (
-        <Button
-          component="a"
-          href={
-            "https://docs.google.com/spreadsheets/d/1mQA58HG3fzmBJHN607rujnrMdw3uK41ZPqmvMRu04dU/edit?usp=sharing"
-          }
-          target="_blank"
-          variant="contained"
-          sx={{ alignSelf: "start" }}
-        >
-          ดูตัวอย่าง CSV Template
-        </Button>
-      )}
 
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
@@ -855,35 +850,98 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           เพิ่มวันที่
         </StyledAddButton>
       </StyledStack>
+
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
-          การพักแรมของผู้เข้าร่วมและ staff ตลอดทั้งโครงการ
+          การเดินทางของผู้เข้าร่วมและ staff
+          <Typography component="span" color="red">
+            *
+          </Typography>
+        </Typography>
+        <Typography variant="caption" color={greyColor}>
+          การเดินทางของผู้เข้าร่วมและ staff มาที่คณะวิศวกรรมศาสตร์
+          จุฬาลงกรณ์มหาวิทยาลัย
+        </Typography>
+
+        <Field.CSVUploadField
+          control={control}
+          name="transportations_csv_file"
+        />
+
+        {!file && (
+          <Button
+            component="a"
+            href={
+              "https://docs.google.com/spreadsheets/d/1mQA58HG3fzmBJHN607rujnrMdw3uK41ZPqmvMRu04dU/edit?usp=sharing"
+            }
+            target="_blank"
+            variant="contained"
+            sx={{ alignSelf: "start" }}
+          >
+            ดูตัวอย่าง CSV Template
+          </Button>
+        )}
+      </StyledStack>
+
+      <StyledStack sx={{ borderRadius: 2 }}>
+        <Typography variant="body2" fontWeight={700}>
+          การใช้รถภายในโครงการ
         </Typography>
         <Grid container spacing={2} alignItems="start">
-          {scope3Overnight?.map((field, index) => {
-            const date = watch(`scope3_overnight.${index}.date`);
+          {scope3InternalVehicles?.map((field, index) => {
+            const vehicleType = watch(
+              `scope3_internal_vehicles.${index}.vehicle_type`,
+            );
 
             return (
               <Fragment key={index}>
-                <Grid size={{ xs: 3 }}>
-                  <RHFDateTimePicker
-                    mode="date"
-                    name={`scope3_overnight.${index}.date`}
-                    label="เลือกวันที่พักแรม"
-                    helperText={errors.scope3_overnight?.[index]?.date?.message}
+                <Grid size={{ xs: 4 }}>
+                  <Field.CustomAutoComplete
+                    name={`scope3_internal_vehicles.${index}.vehicle_type`}
+                    label="เลือกประเภทยานพาหนะ"
+                    options={internalVehicleOptions}
+                    helperText={
+                      errors.scope3_internal_vehicles?.[index]?.vehicle_type
+                        ?.message
+                    }
                   />
                 </Grid>
-                <Grid size={{ xs: 8.5 }}>
+                <Grid size={{ xs: 3.75 }}>
                   <Field.Text
                     type="number"
-                    name={`scope3_overnight.${index}.value`}
+                    name={`scope3_internal_vehicles.${index}.people_count`}
                     label="จำนวนคน"
+                    slotProps={{ htmlInput: { min: 0, step: 1 } }}
+                    error={
+                      !!errors.scope3_internal_vehicles?.[index]?.people_count
+                    }
+                    helperText={
+                      errors.scope3_internal_vehicles?.[index]?.people_count
+                        ?.message
+                    }
+                    disabled={!vehicleType}
+                  />
+                </Grid>
+                <Grid size={{ xs: 3.75 }}>
+                  <Field.Text
+                    type="number"
+                    name={`scope3_internal_vehicles.${index}.distance_km`}
+                    label="ระยะทาง (กิโลเมตร)"
                     slotProps={{ htmlInput: { min: 0 } }}
-                    disabled={!date}
+                    error={
+                      !!errors.scope3_internal_vehicles?.[index]?.distance_km
+                    }
+                    helperText={
+                      errors.scope3_internal_vehicles?.[index]?.distance_km
+                        ?.message
+                    }
+                    disabled={!vehicleType}
                   />
                 </Grid>
                 <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
-                  <IconButton onClick={() => removeScope3Overnight(index)}>
+                  <IconButton
+                    onClick={() => removeScope3InternalVehicle(index)}
+                  >
                     <SvgColor
                       src="/assets/icons/ic-trash.svg"
                       color={redColor}
@@ -898,7 +956,69 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
           variant="outlined"
           startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
           onClick={() =>
-            appendScope3Overnight({
+            appendScope3InternalVehicle({
+              vehicle_type: "",
+              distance_km: undefined,
+              people_count: undefined,
+            })
+          }
+        >
+          เพิ่มประเภทยานพาหนะ
+        </StyledAddButton>
+      </StyledStack>
+
+      <StyledStack sx={{ borderRadius: 2 }}>
+        <Typography variant="body2" fontWeight={700}>
+          การพักแรมของผู้เข้าร่วมและ staff ภายในมหาวิทยาลัย
+        </Typography>
+        <Grid container spacing={2} alignItems="start">
+          {scope3OvernightOnCampus?.map((field, index) => {
+            const date = watch(`scope3_overnight_on_campus.${index}.date`);
+
+            return (
+              <Fragment key={index}>
+                <Grid size={{ xs: 4 }}>
+                  <RHFDateTimePicker
+                    mode="date"
+                    name={`scope3_overnight_on_campus.${index}.date`}
+                    label="เลือกวันที่พักแรม"
+                    helperText={
+                      errors.scope3_overnight_on_campus?.[index]?.date?.message
+                    }
+                  />
+                </Grid>
+                <Grid size={{ xs: 7.5 }}>
+                  <Field.Text
+                    type="number"
+                    name={`scope3_overnight_on_campus.${index}.value`}
+                    label="จำนวนคน"
+                    slotProps={{ htmlInput: { min: 0 } }}
+                    error={!!errors.scope3_overnight_on_campus?.[index]?.value}
+                    helperText={
+                      errors.scope3_overnight_on_campus?.[index]?.value?.message
+                    }
+                    disabled={!date}
+                  />
+                </Grid>
+                <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
+                  <IconButton
+                    onClick={() => removeScope3OvernightOnCampus(index)}
+                  >
+                    <SvgColor
+                      src="/assets/icons/ic-trash.svg"
+                      color={redColor}
+                    />
+                  </IconButton>
+                </Grid>
+              </Fragment>
+            );
+          })}
+        </Grid>
+        <StyledAddButton
+          variant="outlined"
+          startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
+          onClick={() =>
+            appendScope3OvernightOnCampus({
               date: undefined,
               value: undefined,
             })
@@ -909,7 +1029,71 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
       </StyledStack>
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
-          ของแจกผู้เข้าร่วมและ staff
+          การพักแรมของผู้เข้าร่วมและ staff ภายนอกมหาวิทยาลัย
+        </Typography>
+        <Grid container spacing={2} alignItems="start">
+          {scope3OvernightOffCampus?.map((field, index) => {
+            const date = watch(`scope3_overnight_off_campus.${index}.date`);
+
+            return (
+              <Fragment key={index}>
+                <Grid size={{ xs: 4 }}>
+                  <RHFDateTimePicker
+                    mode="date"
+                    name={`scope3_overnight_off_campus.${index}.date`}
+                    label="เลือกวันที่พักแรม"
+                    helperText={
+                      errors.scope3_overnight_off_campus?.[index]?.date?.message
+                    }
+                  />
+                </Grid>
+                <Grid size={{ xs: 7.5 }}>
+                  <Field.Text
+                    type="number"
+                    name={`scope3_overnight_off_campus.${index}.value`}
+                    label="จำนวนคน"
+                    slotProps={{ htmlInput: { min: 0 } }}
+                    error={!!errors.scope3_overnight_off_campus?.[index]?.value}
+                    helperText={
+                      errors.scope3_overnight_off_campus?.[index]?.value
+                        ?.message
+                    }
+                    disabled={!date}
+                  />
+                </Grid>
+                <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
+                  <IconButton
+                    onClick={() => removeScope3OvernightOffCampus(index)}
+                  >
+                    <SvgColor
+                      src="/assets/icons/ic-trash.svg"
+                      color={redColor}
+                    />
+                  </IconButton>
+                </Grid>
+              </Fragment>
+            );
+          })}
+        </Grid>
+        <StyledAddButton
+          variant="outlined"
+          startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
+          onClick={() =>
+            appendScope3OvernightOffCampus({
+              date: undefined,
+              value: undefined,
+            })
+          }
+        >
+          เพิ่มวันที่พักแรม
+        </StyledAddButton>
+      </StyledStack>
+      <StyledStack sx={{ borderRadius: 2 }}>
+        <Typography variant="body2" fontWeight={700}>
+          ของแจกและทรัพยากรที่ใช้ในการจัดกิจกรรม
+        </Typography>
+        <Typography variant="caption" color={greyColor}>
+          หมายเหตุ: เสื้อ 1 ตัว = ผ้า 0.15 กิโล
         </Typography>
         <Grid container spacing={2} alignItems="start">
           {scope3Souvenir?.map((field, index) => {
@@ -921,7 +1105,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 <Grid size={{ xs: 7.5 }}>
                   <Field.CustomAutoComplete
                     name={`scope3_souvenir.${index}.type`}
-                    label="เลือกประเภทของแจก"
+                    label="เลือกประเภทเอกสาร"
                     options={giftUnitOptions}
                     helperText={fieldErrorMessage(
                       errors.scope3_souvenir?.[index]?.type,
@@ -1054,6 +1238,94 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     </StyledStack>
   );
 
+  const renderPolicyInfo = (
+    <StyledStack>
+      <Stack spacing={1.5}>
+        <Typography variant="subtitle1" fontWeight={700}>
+          การดำเนินนโยบายสิ่งแวดล้อม
+          <Typography component="span" color="red">
+            *
+          </Typography>
+        </Typography>
+        <Typography variant="caption" color={greyColor}>
+          สรุปแนวทางที่โครงการได้นำมาใช้และผลจากการดำเนินงาน
+        </Typography>
+      </Stack>
+
+      <Grid container spacing={2} alignItems="start">
+        <Grid size={{ xs: 12 }}>
+          <Stack gap={2}>
+            <Typography variant="body2" fontWeight={700}>
+              นโยบายสิ่งแวดล้อม
+              <Typography component="span" color="red">
+                *
+              </Typography>
+            </Typography>
+            <Field.Text
+              name="environmental_policy"
+              label="ระบุมาตรการ นโยบาย หรือแนวทางที่โครงการเลือกใช้เพื่อช่วยลดมลพิษ ขยะ หรือการใช้พลังงาน"
+              multiline
+              rows={3}
+              required
+            />
+          </Stack>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <Stack gap={2}>
+            <Typography variant="body2" fontWeight={700}>
+              ข้อเสนอแนะในการดำเนินนโยบาย
+              <Typography component="span" color="red">
+                *
+              </Typography>
+            </Typography>
+            <Field.Text
+              name="policy_implementation_suggestion"
+              label="ระบุผลการดำเนินงาน อุปสรรคที่พบ และแนวทางแก้ไข เพื่อเป็นข้อมูลประโยชน์ในการจัดทำแนวทางสำหรับโครงการอื่น ๆ ต่อไป"
+              multiline
+              rows={3}
+              required
+            />
+          </Stack>
+        </Grid>
+      </Grid>
+
+      <Stack gap={2}>
+        <Typography variant="body2" fontWeight={700}>
+          รูปภาพการดำเนินการตามนโยบาย
+          <Typography component="span" color="red">
+            *
+          </Typography>
+        </Typography>
+        <Typography variant="caption" color={greyColor}>
+          อัปโหลดรูปภาพหลักฐาน เช่น รูปถ่ายการชั่งน้ำหนักขยะ/วัสดุ,
+          ภาพบรรยากาศการเก็บข้อมูล
+          หรือภาพกิจกรรมรณรงค์ลดผลกระทบสิ่งแวดล้อมในโครงการ
+        </Typography>
+        <Field.PolicyPhotoUploadField
+          control={control}
+          name="policy_implementation_photos"
+          existingPhotos={policyImplementationExistingPhotos}
+          onRemoveExistingPhoto={(storageKey) => {
+            setValue(
+              "policy_implementation_existing_photos",
+              policyImplementationExistingPhotos.filter(
+                (photo) => photo.storage_key !== storageKey,
+              ),
+              { shouldDirty: true, shouldValidate: true },
+            );
+            setValue(
+              "policy_implementation_photo_keys",
+              (watch("policy_implementation_photo_keys") ?? []).filter(
+                (key) => key !== storageKey,
+              ),
+              { shouldDirty: true, shouldValidate: true },
+            );
+          }}
+        />
+      </Stack>
+    </StyledStack>
+  );
+
   return (
     <>
       {step === 2 && (
@@ -1083,7 +1355,17 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
             {renderThirdScope}
 
-            <ProjectCarbonDetail carbon={carbonSummary.total} all />
+            {renderPolicyInfo}
+
+            <ProjectCarbonDetail
+              carbon={carbonSummary.total}
+              scopes={{
+                scope1: carbonSummary.scope1,
+                scope2: carbonSummary.scope2,
+                scope3: carbonSummary.scope3,
+              }}
+              all
+            />
 
             <Stack
               direction="row"

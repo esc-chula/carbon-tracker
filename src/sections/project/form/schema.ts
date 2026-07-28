@@ -37,7 +37,6 @@ const isPolicyPhotoFile = (value: unknown): value is File =>
 
 const PolicyImplementationPhotosSchema = z
   .array(z.custom<File>(isPolicyPhotoFile, POLICY_PHOTO_ERROR))
-  .refine((files) => files.length > 0, POLICY_PHOTO_ERROR)
   .refine((files) => files.length <= MAX_POLICY_PHOTO_COUNT, POLICY_PHOTO_ERROR)
   .refine(
     (files) =>
@@ -207,7 +206,7 @@ const Scope3OvernightSchema = z.object({
 });
 
 const Scope3InternalVehicleSchema = z.object({
-  vehicle_type: z.string().min(1, "กรุณาเลือกประเภทยานพาหนะ"),
+  vehicle_type: z.string().min(1, "กรุณาระบุประเภทพาหนะ"),
   distance_km: z.preprocess(
     toRequiredNumber,
     z
@@ -245,21 +244,22 @@ const Scope3WasteSchema = z.object({
   unit: z.string().min(1, "กรุณาเลือกหน่วย"),
 });
 
+const ProjectInfoSchema = z.object({
+  environmental_policy: z.string().trim().min(1, "กรุณาระบุนโยบายสิ่งแวดล้อม"),
+  policy_implementation_suggestion: z
+    .string()
+    .trim()
+    .min(1, "กรุณาระบุข้อเสนอแนะในการดำเนินนโยบาย"),
+  policy_implementation_existing_photos: z.array(z.any()).optional(),
+  policy_implementation_photos: PolicyImplementationPhotosSchema,
+  policy_implementation_photo_keys: z.array(z.string()).optional(),
+});
+
 const ProjectFormStepOneBaseSchema = z.object({
   custom_id: z.string().min(1, "กรุณากรอกรหัสโครงการ"),
   title: z.string().min(1, "กรุณากรอกชื่อโครงการ"),
   org: z.string().min(1, "กรุณาเลือกประเภทโครงการ"),
   org_detail: z.string().optional(),
-  environmental_policy: z
-    .string()
-    .trim()
-    .min(1, "กรุณาระบุนโยบายสิ่งแวดล้อม"),
-  policy_implementation_suggestion: z
-    .string()
-    .trim()
-    .min(1, "กรุณาระบุข้อเสนอแนะในการดำเนินนโยบาย"),
-  policy_implementation_photos: PolicyImplementationPhotosSchema,
-  policy_implementation_photo_keys: z.array(z.string()).optional(),
   owner_fullname: z.string().min(1, "กรุณากรอกชื่อ-นามสกุล"),
   owner_nickname: z.string().min(1, "กรุณากรอกชื่อเล่น"),
   owner_student_id: z.string().min(1, "กรุณากรอกรหัสนิสิต"),
@@ -321,39 +321,55 @@ const ProjectFormStepTwoSchema = z.object({
   transportations_csv_file: z.any().optional(),
 });
 
-const ProjectFormSchema = ProjectFormStepOneBaseSchema.merge(
-  ProjectFormStepTwoSchema,
-).superRefine((data, ctx) => {
-  const org = data.org?.trim();
-  if (!org) return;
+const ProjectFormSchema = ProjectFormStepOneBaseSchema.merge(ProjectInfoSchema)
+  .merge(ProjectFormStepTwoSchema)
+  .superRefine((data, ctx) => {
+    const photoCount =
+      data.policy_implementation_photos.length +
+      (data.policy_implementation_photo_keys?.length ?? 0);
 
-  if (org === "กวศ." && !data.field?.trim()) {
-    ctx.addIssue({
-      path: ["field"],
-      code: z.ZodIssueCode.custom,
-      message: "กรุณากรอกฝ่าย",
-    });
-  }
+    if (photoCount < 1 || photoCount > MAX_POLICY_PHOTO_COUNT) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["policy_implementation_photos"],
+        message: POLICY_PHOTO_ERROR,
+      });
+    }
 
-  if (org === "ชมรม" && !data.clubName?.trim()) {
-    ctx.addIssue({
-      path: ["clubName"],
-      code: z.ZodIssueCode.custom,
-      message: "กรุณากรอกชื่อชมรม",
-    });
-  }
+    const org = data.org?.trim();
+    if (!org) return;
 
-  if ((org === "other" || org === "อื่นๆ") && !data.otherUnderProject?.trim()) {
-    ctx.addIssue({
-      path: ["otherUnderProject"],
-      code: z.ZodIssueCode.custom,
-      message: "กรุณาระบุ",
-    });
-  }
-});
+    if (org === "กวศ." && !data.field?.trim()) {
+      ctx.addIssue({
+        path: ["field"],
+        code: z.ZodIssueCode.custom,
+        message: "กรุณากรอกฝ่าย",
+      });
+    }
+
+    if (org === "ชมรม" && !data.clubName?.trim()) {
+      ctx.addIssue({
+        path: ["clubName"],
+        code: z.ZodIssueCode.custom,
+        message: "กรุณากรอกชื่อชมรม",
+      });
+    }
+
+    if (
+      (org === "other" || org === "อื่นๆ") &&
+      !data.otherUnderProject?.trim()
+    ) {
+      ctx.addIssue({
+        path: ["otherUnderProject"],
+        code: z.ZodIssueCode.custom,
+        message: "กรุณาระบุ",
+      });
+    }
+  });
 
 // Export schemas
 export {
+  ProjectInfoSchema,
   ProjectFormSchema,
   ProjectFormStepOneSchema,
   ProjectFormStepTwoSchema,
@@ -379,6 +395,7 @@ const defaultValues: ProjectFormValues = {
   owner_phone_number: "",
   environmental_policy: "",
   policy_implementation_suggestion: "",
+  policy_implementation_existing_photos: [],
   policy_implementation_photos: [],
   policy_implementation_photo_keys: [],
   owner_line_id: "",
@@ -402,7 +419,7 @@ const defaultValues: ProjectFormValues = {
   scope3_internal_vehicles: [
     { vehicle_type: "", distance_km: undefined, people_count: undefined },
   ],
-  scope3_overnight: [{ date: undefined, value: undefined }],
+  scope3_overnight: [],
   scope3_overnight_on_campus: [{ date: undefined, value: undefined }],
   scope3_overnight_off_campus: [{ date: undefined, value: undefined }],
   scope3_souvenir: [{ type: "", value: undefined, unit: "" }],

@@ -47,6 +47,9 @@ function projectToFormValues({
   values.policy_implementation_suggestion =
     project.project_info?.policy_implementation_suggestion ??
     values.policy_implementation_suggestion;
+  values.policy_implementation_existing_photos =
+    project.project_info?.policy_implementation_photos ??
+    values.policy_implementation_existing_photos;
   values.policy_implementation_photo_keys =
     project.project_info?.policy_implementation_photos?.map(
       (photo) => photo.storage_key,

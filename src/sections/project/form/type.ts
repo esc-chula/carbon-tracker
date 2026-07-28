@@ -1,4 +1,5 @@
 import type { TProjectStatus } from "@/types/project/list-project";
+import type { PolicyImplementationPhoto } from "@/types/project/project";
 
 type Scope1ActivityForm = {
   name?: string;
@@ -33,9 +34,9 @@ type Scope3OvernightForm = {
 };
 
 type Scope3InternalVehicleForm = {
+  vehicle_type?: string;
   distance_km?: number;
   people_count?: number;
-  vehicle_type?: string;
 };
 
 type Scope3SouvenirForm = {
@@ -63,6 +64,7 @@ type ProjectFormValues = {
   owner_phone_number: string;
   environmental_policy: string;
   policy_implementation_suggestion: string;
+  policy_implementation_existing_photos?: PolicyImplementationPhoto[];
   policy_implementation_photos?: File[];
   policy_implementation_photo_keys?: string[];
   owner_line_id: string;
