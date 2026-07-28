@@ -26,12 +26,6 @@ import {
 } from "react-hook-form";
 import { SvgColor } from "../svg/svg-color";
 
-const POLICY_PHOTO_ERROR =
-  "กรุณาอัปโหลดรูปภาพ PNG หรือ JPG (max. 3MB) สูงสุด 4 รูป";
-const MAX_POLICY_PHOTO_SIZE = 3 * 1024 * 1024;
-const MAX_POLICY_PHOTO_COUNT = 4;
-const POLICY_PHOTO_MIME_TYPES = ["image/png", "image/jpeg"];
-
 interface UploadAreaProps {
   isDragOver: boolean;
 }
@@ -79,10 +73,10 @@ export default function PolicyPhotoUploadField<
   name,
   control,
   rules,
-  maxFiles = MAX_POLICY_PHOTO_COUNT,
-  maxSizeBytes = MAX_POLICY_PHOTO_SIZE,
+  maxFiles = 4,
+  maxSizeBytes = 3 * 1024 * 1024,
   label = "เลือกไฟล์รูปภาพที่คุณต้องการ",
-  helperText = POLICY_PHOTO_ERROR,
+  helperText = "กรุณาอัปโหลดรูปภาพ PNG หรือ JPG (max. 3MB) สูงสุด 4 รูป",
   disabled,
 }: PolicyPhotoUploadFieldProps<TFieldValues>): JSX.Element {
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
@@ -98,18 +92,22 @@ export default function PolicyPhotoUploadField<
   };
 
   const isPhotoFile = (file: File) =>
-    POLICY_PHOTO_MIME_TYPES.includes(file.type) &&
+    ["image/png", "image/jpeg"].includes(file.type) &&
     /\.(png|jpe?g)$/i.test(file.name);
 
   const validatePhotos = (files: File[]): string | true => {
-    if (!files.length) return POLICY_PHOTO_ERROR;
-    if (files.length > maxFiles) return POLICY_PHOTO_ERROR;
+    if (!files.length)
+      return "กรุณาอัปโหลดรูปภาพ PNG หรือ JPG (max. 3MB) สูงสุด 4 รูป";
+    if (files.length > maxFiles)
+      return "กรุณาอัปโหลดรูปภาพ PNG หรือ JPG (max. 3MB) สูงสุด 4 รูป";
 
     const isValid = files.every(
       (file) => isPhotoFile(file) && file.size <= maxSizeBytes,
     );
 
-    return isValid ? true : POLICY_PHOTO_ERROR;
+    return isValid
+      ? true
+      : "กรุณาอัปโหลดรูปภาพ PNG หรือ JPG (max. 3MB) สูงสุด 4 รูป";
   };
 
   return (
