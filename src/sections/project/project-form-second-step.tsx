@@ -890,9 +890,6 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             const vehicleType = watch(
               `scope3_internal_vehicles.${index}.vehicle_type`,
             );
-            const distanceKm = watch(
-              `scope3_internal_vehicles.${index}.distance_km`,
-            );
 
             return (
               <Fragment key={index}>
@@ -920,7 +917,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                       errors.scope3_internal_vehicles?.[index]?.people_count
                         ?.message
                     }
-                    disabled={!distanceKm}
+                    disabled={!vehicleType}
                   />
                 </Grid>
                 <Grid size={{ xs: 3.75 }}>

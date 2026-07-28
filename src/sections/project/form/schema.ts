@@ -406,7 +406,7 @@ const defaultValues: ProjectFormValues = {
   scope3_internal_vehicles: [
     { vehicle_type: "", distance_km: undefined, people_count: undefined },
   ],
-  scope3_overnight: [{ date: undefined, value: undefined }],
+  scope3_overnight: [],
   scope3_overnight_on_campus: [{ date: undefined, value: undefined }],
   scope3_overnight_off_campus: [{ date: undefined, value: undefined }],
   scope3_souvenir: [{ type: "", value: undefined, unit: "" }],
