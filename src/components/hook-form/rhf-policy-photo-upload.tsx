@@ -189,7 +189,7 @@ export default function PolicyPhotoUploadField<
           };
 
         return (
-          <Stack sx={{ width: 1, alignItems: hasFiles ? "start" : "center" }}>
+          <Stack sx={{ width: 1, alignItems: "center" }}>
             <Box sx={{ width: 1, maxWidth: 1040, p: 3 }}>
               {files.length < maxFiles && (
                 <UploadArea
@@ -224,7 +224,9 @@ export default function PolicyPhotoUploadField<
                       <Typography
                         variant="body2"
                         fontWeight={500}
-                        sx={{ color: (theme) => theme.palette.text.secondary }}
+                        sx={{
+                          color: (theme) => theme.palette.text.secondary,
+                        }}
                       >
                         ลากมาวางที่นี่จากคอมพิวเตอร์ของคุณ
                       </Typography>
