@@ -260,8 +260,7 @@ const giftUnitOptions = [
 ];
 
 const wasteOptions = [
-  { value: "ขวดพลาสติก (PET)", label: "ขวดพลาสติก (PET)" },
-  { value: "ขวดพลาสติก (HDPE)", label: "ขวดพลาสติก (HDPE) [ขวดขุ่น]" },
+  { value: "ขวดพลาสติก", label: "ขวดพลาสติก" },
   { value: "อะลูมิเนียม (กระป๋อง)", label: "อะลูมิเนียม (กระป๋อง)" },
   { value: "เศษอาหาร", label: "เศษอาหาร" },
   { value: "ขยะรีไซเคิลพลัส", label: "ขยะรีไซเคิลพลัส" },
