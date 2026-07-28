@@ -207,7 +207,7 @@ const Scope3OvernightSchema = z.object({
 });
 
 const Scope3InternalVehicleSchema = z.object({
-  vehicle_type: z.string().min(1, "กรุณาเลือกประเภทยานพาหนะ"),
+  vehicle_type: z.string().min(1, "กรุณาระบุประเภทพาหนะ"),
   distance_km: z.preprocess(
     toRequiredNumber,
     z
