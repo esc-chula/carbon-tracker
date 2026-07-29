@@ -9,8 +9,9 @@ import CSVUploadField from "@/components/hook-form/rhf-upload";
 import { showError } from "@/components/toast/toast";
 import { transFormDate } from "@/helper/formatter/date-formatter";
 import { fetchGetProjectTransportationsCsv } from "@/services/project/query/project-query";
-import type { TGetProjectResponse } from "@/types/project/get-project";
 import type {
+  CarbonInput,
+  InternalVehicle,
   Scope3Attendee,
   Scope3Overnight,
   Scope3Souvenir,
@@ -26,8 +27,8 @@ import { ownersQueryKeys } from "@/services/user/query/user-query";
 import ProjectCarbonDetail from "../project-carbon-detail";
 
 type TProjectThirdScopeInformationProps = {
-  data: TGetProjectResponse["project"]["carbon_detail"]["scope3"] | undefined;
-  carbon: TGetProjectResponse["project"]["carbon_result"]["scope3"];
+  data: CarbonInput["other"] | undefined;
+  carbon: number;
   projectId?: string;
   ownerId: string;
   attendeeChildren?: ReactNode;
@@ -138,14 +139,13 @@ function ProjectThirdScopeInformation({
   }, [projectId]);
 
   // --------------------------- Values ---------------------------
-
   const attendeeColumns: DisplayColumn<Scope3Attendee>[] = [
     { id: "date", label: "วันที่", width: 250 },
     { id: "value", label: "จำนวนคน", width: 250 },
   ];
 
   const attendeeRows: Scope3Attendee[] =
-    data?.attendee?.map((attendee) => ({
+    data?.attendees?.map((attendee) => ({
       date: transFormDate(attendee.date),
       value: attendee.value,
     })) ?? [];
@@ -155,8 +155,27 @@ function ProjectThirdScopeInformation({
     { id: "value", label: "จำนวนคน", width: 250 },
   ];
 
-  const overnightRows: Scope3Overnight[] =
-    data?.overnight?.map((overnight) => ({
+  const internalVehicleColumns: DisplayColumn<InternalVehicle>[] = [
+    { id: "vehicle_type", label: "ประเภทยานพาหนะ", width: 410 },
+    { id: "people_count", label: "จำนวนคน", width: 220 },
+    { id: "distance_km", label: "ระยะทาง (กิโลเมตร)", width: 250 },
+  ];
+
+  const internalVehicleRows: InternalVehicle[] =
+    data?.internal_vehicles?.map((vehicle) => ({
+      vehicle_type: vehicle.vehicle_type,
+      people_count: vehicle.people_count,
+      distance_km: vehicle.distance_km,
+    })) ?? [];
+
+  const overnightOnCampusRows: Scope3Overnight[] =
+    data?.overnight_on_campus?.map((overnight) => ({
+      date: transFormDate(overnight.date),
+      value: overnight.value,
+    })) ?? [];
+
+  const overnightOffCampusRows: Scope3Overnight[] =
+    data?.overnight_off_campus?.map((overnight) => ({
       date: transFormDate(overnight.date),
       value: overnight.value,
     })) ?? [];
@@ -168,7 +187,7 @@ function ProjectThirdScopeInformation({
   ];
 
   const souvenirRows: Scope3Souvenir[] =
-    data?.souvenir?.map((souvenir) => ({
+    data?.souvenirs?.map((souvenir) => ({
       type: souvenir.type,
       unit: souvenir.unit === "kg" ? "กิโลกรัม" : souvenir.unit,
       value: souvenir.value,
@@ -187,21 +206,14 @@ function ProjectThirdScopeInformation({
       value: waste.value,
     })) ?? [];
 
-  const carbonUsage =
-    carbon.attendee +
-    carbon.overnight +
-    carbon.souvenir +
-    carbon.transportation +
-    carbon.waste;
-
   return (
     <ContainerWithOutlined>
       <Stack direction="row" spacing={1.5} alignItems="center">
-        <ProjectCarbonDetail carbon={carbonUsage} />
+        <ProjectCarbonDetail carbon={carbon} />
 
         <Stack spacing={1.5}>
           <Typography variant="h5" fontSize={16}>
-            Scope 3 : อื่นๆ
+            การปล่อยก๊าซเรือนกระจกอื่น ๆ
           </Typography>
           <Typography variant="caption" color="text.secondary">
             การเดินทางของผู้เข้าร่วมและ staff
@@ -242,13 +254,39 @@ function ProjectThirdScopeInformation({
         </Typography>
 
         <TableCustom
-          rows={overnightRows}
+          rows={overnightOnCampusRows}
           columns={overnightColumns}
           showIndex
           indexHeader="รายการที่"
         />
 
         {overnightChildren}
+      </ContainerWithOutlined>
+
+      <ContainerWithOutlined borderRadius={2}>
+        <Typography variant="h5" fontSize={14}>
+          การใช้รถภายในโครงการ
+        </Typography>
+
+        <TableCustom
+          rows={internalVehicleRows}
+          columns={internalVehicleColumns}
+          showIndex
+          indexHeader="รายการที่"
+        />
+      </ContainerWithOutlined>
+
+      <ContainerWithOutlined borderRadius={2}>
+        <Typography variant="h5" fontSize={14}>
+          การพักแรมของผู้เข้าร่วมและ staff ภายนอกมหาวิทยาลัย
+        </Typography>
+
+        <TableCustom
+          rows={overnightOffCampusRows}
+          columns={overnightColumns}
+          showIndex
+          indexHeader="รายการที่"
+        />
       </ContainerWithOutlined>
 
       <ContainerWithOutlined borderRadius={2}>

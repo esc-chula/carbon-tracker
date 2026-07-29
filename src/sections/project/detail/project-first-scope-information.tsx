@@ -3,7 +3,6 @@ import {
   TableCustom,
   type DisplayColumn,
 } from "@/components/table/table-custom";
-import type { TGetProjectResponse } from "@/types/project/get-project";
 import type { Scope1Activity } from "@/types/project/project";
 import { ActivityNameMapper, ActivityUnitMapper } from "../helper/value-mapper";
 import { Stack, Typography } from "@mui/material";
@@ -13,8 +12,8 @@ import ProjectCarbonDetail from "../project-carbon-detail";
 // ---------------------------------------------------------------------------------
 
 type TProjectFirstScopeInformationProps = {
-  data: TGetProjectResponse["project"]["carbon_detail"]["scope1"]["activities"];
-  carbon: TGetProjectResponse["project"]["carbon_result"]["scope1"];
+  data: Scope1Activity[] | null | undefined;
+  carbon: number;
   children?: ReactNode;
 };
 
@@ -24,7 +23,6 @@ function ProjectFirstScopeInformation({
   children,
 }: TProjectFirstScopeInformationProps) {
   // --------------------------- Values ---------------------------
-
   const columns: DisplayColumn<Scope1Activity>[] = [
     { id: "name", label: "ประเภททรัพยากร", width: 410 },
     { id: "value", label: "ปริมาณ", width: 220 },
@@ -41,12 +39,11 @@ function ProjectFirstScopeInformation({
   return (
     <ContainerWithOutlined>
       <Stack direction="row" spacing={1.5}>
-        <ProjectCarbonDetail carbon={carbon.activity} />
+        <ProjectCarbonDetail carbon={carbon} />
 
         <Stack spacing={1.5}>
           <Typography variant="h5" fontSize={16}>
-            Scope 1 : <br />
-            ปริมาณการปล่อยก๊าซเรือนกระจกทางตรง
+            การปล่อยก๊าซเรือนกระจกจากอาหารและเครื่องดื่ม
           </Typography>
           <Typography variant="caption" color="text.secondary">
             สามารถประมาณได้จากบิลงบประมาณจบโครงการ

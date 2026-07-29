@@ -4,11 +4,11 @@ import {
   type DisplayColumn,
 } from "@/components/table/table-custom";
 import { transFormDateToThai } from "@/helper/formatter/date-formatter";
-import type { TGetProjectResponse } from "@/types/project/get-project";
 import { Box, Stack, Typography } from "@mui/material";
 import type { ReactNode } from "react";
 import { FacilityMapper } from "../helper/value-mapper";
 import ProjectCarbonDetail from "../project-carbon-detail";
+import type { CarbonInput } from "@/types/project/project";
 
 // ---------------------------------------------------------------------------------
 
@@ -22,8 +22,8 @@ type Scope2Building = {
 };
 
 type TProjectSecondScopeInformationProps = {
-  data: TGetProjectResponse["project"]["carbon_detail"]["scope2"];
-  carbon: TGetProjectResponse["project"]["carbon_result"]["scope2"];
+  data: CarbonInput["energy"] | undefined;
+  carbon: number;
   children?: ReactNode;
 };
 
@@ -77,18 +77,16 @@ function ProjectSecondScopeInformation({
         meter_value: building.meter_value,
       })) ?? [];
 
-  const generatorUsage = data.generators?.reduce((sum, c) => sum + c.value, 0);
-
-  const carbonUsage = carbon.building + carbon.generator;
+  const generatorUsage =
+    data?.generators?.reduce((sum, c) => sum + c.value, 0) ?? 0;
 
   return (
     <ContainerWithOutlined>
       <Stack direction="row" spacing={1.5}>
-        <ProjectCarbonDetail carbon={carbonUsage} />
+        <ProjectCarbonDetail carbon={carbon} />
         <Stack spacing={1.5}>
           <Typography variant="h5" fontSize={16}>
-            Scope 2 : <br />
-            ปริมาณการปล่อยก๊าซเรือนกระจกทางอ้อมจากการใช้พลังงาน
+            การปล่อยก๊าซเรือนกระจกจากการใช้พลังงาน
           </Typography>
           <Typography variant="caption" color="text.secondary">
             สามารถประมาณได้จากบิลงบประมาณจบโครงการ

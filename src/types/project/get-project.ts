@@ -54,17 +54,20 @@ export type CarbonResultV2 = {
   total: number;
 };
 
-export function totalCarbonResult(carbon_result: CarbonResult): number {
-  return (
-    carbon_result.scope1.activity +
-    carbon_result.scope2.building +
-    carbon_result.scope2.generator +
-    carbon_result.scope3.attendee +
-    carbon_result.scope3.overnight +
-    carbon_result.scope3.souvenir +
-    carbon_result.scope3.transportation +
-    carbon_result.scope3.waste
-  );
+export function totalCarbonResult(carbon_result: CarbonResultV2): number {
+  return carbon_result.total;
+}
+
+export function scope1CarbonResult(carbon_result: CarbonResultV2): number {
+  return carbon_result.scope1;
+}
+
+export function scope2CarbonResult(carbon_result: CarbonResultV2): number {
+  return carbon_result.scope2;
+}
+
+export function scope3CarbonResult(carbon_result: CarbonResultV2): number {
+  return carbon_result.scope3;
 }
 
 type ProjectCarbonDetail = CarbonDetail & {
@@ -107,7 +110,7 @@ export type TGetProjectResponse = {
     carbon_input: CarbonInput;
     /** @deprecated Use carbon_input. Kept until detail/result screens migrate to V2. */
     carbon_detail: ProjectCarbonDetail;
-    carbon_result: CarbonResult;
+    carbon_result: CarbonResultV2;
   };
   review?: TProjectReview | null;
 };

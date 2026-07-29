@@ -10,7 +10,12 @@ import {
   projectsQueryKeys,
 } from "@/services/project/query/project-query";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
-import { totalCarbonResult } from "@/types/project/get-project";
+import {
+  scope1CarbonResult,
+  scope2CarbonResult,
+  scope3CarbonResult,
+  totalCarbonResult,
+} from "@/types/project/get-project";
 import {
   Box,
   Button,
@@ -119,6 +124,9 @@ function ProjectView() {
 
   const carbonResult = project.data?.project.carbon_result;
   const carbonUsageAll = carbonResult ? totalCarbonResult(carbonResult) : 0;
+  const carbonUsageScope1 = carbonResult ? scope1CarbonResult(carbonResult) : 0;
+  const carbonUsageScope2 = carbonResult ? scope2CarbonResult(carbonResult) : 0;
+  const carbonUsageScope3 = carbonResult ? scope3CarbonResult(carbonResult) : 0;
 
   // --------------------------- Render ---------------------------
 
@@ -153,26 +161,21 @@ function ProjectView() {
 
           <ProjectFirstScopeInformation
             data={
-              project.data?.project?.carbon_detail?.scope1?.activities ?? []
+              project.data?.project?.carbon_input?.food_beverage?.activities
             }
-            carbon={project.data?.project.carbon_result.scope1}
+            carbon={carbonUsageScope1}
           />
 
           <ProjectSecondScopeInformation
-            data={
-              project.data?.project.carbon_detail.scope2 ?? {
-                buildings: null,
-                generators: null,
-              }
-            }
-            carbon={project.data?.project.carbon_result.scope2}
+            data={project.data?.project.carbon_input.energy}
+            carbon={carbonUsageScope2}
           />
 
           <ProjectThirdScopeInformation
-            data={project.data?.project?.carbon_detail?.scope3}
+            data={project.data?.project?.carbon_input?.other}
             projectId={project.data?.project.id}
             ownerId={project.data.project.owner_id}
-            carbon={project.data?.project.carbon_result.scope3}
+            carbon={carbonUsageScope3}
           >
             <ProjectCarbonDetail carbon={carbonUsageAll} all />
           </ProjectThirdScopeInformation>

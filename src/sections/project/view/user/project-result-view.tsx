@@ -22,7 +22,12 @@ import { useUpdateProjectStatusMutation } from "@/services/project/mutation";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
 import { canModifyProject } from "@/helper/project-permissions";
 import ProjectCarbonDetail from "../../project-carbon-detail";
-import { totalCarbonResult } from "@/types/project/get-project";
+import {
+  scope1CarbonResult,
+  scope2CarbonResult,
+  scope3CarbonResult,
+  totalCarbonResult,
+} from "@/types/project/get-project";
 
 type Params = {
   id: string;
@@ -85,6 +90,9 @@ function ProjectResultView() {
 
   const carbonResult = project.data?.project.carbon_result;
   const carbonUsageAll = carbonResult ? totalCarbonResult(carbonResult) : 0;
+  const carbonUsageScope1 = carbonResult ? scope1CarbonResult(carbonResult) : 0;
+  const carbonUsageScope2 = carbonResult ? scope2CarbonResult(carbonResult) : 0;
+  const carbonUsageScope3 = carbonResult ? scope3CarbonResult(carbonResult) : 0;
 
   // --------------------------- Render ---------------------------
 
@@ -150,28 +158,23 @@ function ProjectResultView() {
         </ProjectOwnerInformation>
 
         <ProjectFirstScopeInformation
-          data={project.data?.project?.carbon_detail?.scope1?.activities ?? []}
-          carbon={project.data?.project.carbon_result.scope1}
+          data={project.data?.project?.carbon_input?.food_beverage?.activities}
+          carbon={carbonUsageScope1}
         >
           {renderReviewStatus(project.data.review?.detail?.scope1)}
         </ProjectFirstScopeInformation>
 
         <ProjectSecondScopeInformation
-          data={
-            project.data?.project.carbon_detail.scope2 ?? {
-              buildings: null,
-              generators: null,
-            }
-          }
-          carbon={project.data?.project.carbon_result.scope2}
+          data={project.data?.project.carbon_input.energy}
+          carbon={carbonUsageScope2}
         >
           {renderReviewStatus(project.data.review?.detail?.scope2)}
         </ProjectSecondScopeInformation>
 
         <ProjectThirdScopeInformation
-          data={project.data?.project?.carbon_detail?.scope3}
+          data={project.data?.project?.carbon_input?.other}
           projectId={project.data?.project.id}
-          carbon={project.data?.project.carbon_result.scope3}
+          carbon={carbonUsageScope3}
           ownerId={project.data.project.owner_id}
           attendeeChildren={renderReviewStatus(
             project.data.review?.detail?.scope3?.attendee,
