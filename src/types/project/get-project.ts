@@ -112,5 +112,5 @@ export type TGetProjectResponse = {
     carbon_detail: ProjectCarbonDetail;
     carbon_result: CarbonResultV2;
   };
-  review?: TProjectReview | null;
+  review?: TProjectReviewV2 | null;
 };
