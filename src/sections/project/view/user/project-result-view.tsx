@@ -87,6 +87,7 @@ function ProjectResultView() {
   };
 
   const ownerData = project.data?.project.owner;
+  const projectInfo = project.data?.project.project_info;
 
   const carbonResult = project.data?.project.carbon_result;
   const carbonUsageAll = carbonResult ? totalCarbonResult(carbonResult) : 0;
@@ -156,6 +157,57 @@ function ProjectResultView() {
         <ProjectOwnerInformation data={ownerData}>
           {renderReviewStatus(project.data.review?.detail?.owner)}
         </ProjectOwnerInformation>
+
+        {projectInfo && (
+          <ContainerWithOutlined>
+            <Typography variant="h3" fontSize={16}>
+              การดำเนินนโยบายสิ่งแวดล้อม
+            </Typography>
+
+            <Stack spacing={1}>
+              <Typography variant="body2" fontWeight={700}>
+                นโยบายสิ่งแวดล้อม
+              </Typography>
+              <Typography variant="body2" fontWeight={500}>
+                {projectInfo.environmental_policy}
+              </Typography>
+            </Stack>
+
+            <Stack spacing={1}>
+              <Typography variant="body2" fontWeight={700}>
+                ข้อเสนอแนะในการดำเนินนโยบาย
+              </Typography>
+              <Typography variant="body2" fontWeight={500}>
+                {projectInfo.policy_implementation_suggestion}
+              </Typography>
+            </Stack>
+
+            {!!projectInfo.policy_implementation_photos?.length && (
+              <Stack spacing={1}>
+                <Typography variant="body2" fontWeight={700}>
+                  รูปภาพการดำเนินการตามนโยบาย
+                </Typography>
+                <Stack direction="row" spacing={2} flexWrap="wrap">
+                  {projectInfo.policy_implementation_photos.map((photo) => (
+                    <Box
+                      key={photo.storage_key}
+                      component="img"
+                      src={photo.url || "/assets/icons/ic-file.svg"}
+                      alt={photo.filename}
+                      sx={{
+                        width: 120,
+                        height: 120,
+                        borderRadius: 1,
+                        objectFit: "cover",
+                        border: "1px solid #DBE0E4",
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </Stack>
+            )}
+          </ContainerWithOutlined>
+        )}
 
         <ProjectFirstScopeInformation
           data={project.data?.project?.carbon_input?.food_beverage?.activities}
