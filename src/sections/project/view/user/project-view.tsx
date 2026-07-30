@@ -10,7 +10,6 @@ import {
   projectsQueryKeys,
 } from "@/services/project/query/project-query";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
-import ContainerWithOutlined from "@/components/container/container-with-outlined";
 import {
   scope1CarbonResult,
   scope2CarbonResult,
@@ -34,6 +33,7 @@ import ProjectSecondScopeInformation from "../../detail/project-second-scope-inf
 import ProjectThirdScopeInformation from "../../detail/project-third-scope-information";
 import ProjectCarbonDetail from "../../project-carbon-detail";
 import ProjectRejectDetailButton from "../../project-reject-detail-button";
+import ProjectPolicyInformation from "../../detail/project-policy-information";
 
 type Params = {
   id: string;
@@ -161,57 +161,6 @@ function ProjectView() {
 
           <ProjectOwnerInformation data={ownerData} />
 
-          {projectInfo && (
-            <ContainerWithOutlined>
-              <Typography variant="h3" fontSize={16}>
-                การดำเนินนโยบายสิ่งแวดล้อม
-              </Typography>
-
-              <Stack spacing={1}>
-                <Typography variant="body2" fontWeight={700}>
-                  นโยบายสิ่งแวดล้อม
-                </Typography>
-                <Typography variant="body2" fontWeight={500}>
-                  {projectInfo.environmental_policy}
-                </Typography>
-              </Stack>
-
-              <Stack spacing={1}>
-                <Typography variant="body2" fontWeight={700}>
-                  ข้อเสนอแนะในการดำเนินนโยบาย
-                </Typography>
-                <Typography variant="body2" fontWeight={500}>
-                  {projectInfo.policy_implementation_suggestion}
-                </Typography>
-              </Stack>
-
-              {!!projectInfo.policy_implementation_photos?.length && (
-                <Stack spacing={1}>
-                  <Typography variant="body2" fontWeight={700}>
-                    รูปภาพการดำเนินการตามนโยบาย
-                  </Typography>
-                  <Stack direction="row" spacing={2} flexWrap="wrap">
-                    {projectInfo.policy_implementation_photos.map((photo) => (
-                      <Box
-                        key={photo.storage_key}
-                        component="img"
-                        src={photo.url || "/assets/icons/ic-file.svg"}
-                        alt={photo.filename}
-                        sx={{
-                          width: 120,
-                          height: 120,
-                          borderRadius: 1,
-                          objectFit: "cover",
-                          border: "1px solid #DBE0E4",
-                        }}
-                      />
-                    ))}
-                  </Stack>
-                </Stack>
-              )}
-            </ContainerWithOutlined>
-          )}
-
           <ProjectFirstScopeInformation
             data={
               project.data?.project?.carbon_input?.food_beverage?.activities
@@ -232,6 +181,8 @@ function ProjectView() {
           >
             <ProjectCarbonDetail carbon={carbonUsageAll} all />
           </ProjectThirdScopeInformation>
+
+          {projectInfo && <ProjectPolicyInformation data={projectInfo} />}
 
           <Stack
             direction="row"
