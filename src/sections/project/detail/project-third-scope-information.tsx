@@ -217,24 +217,27 @@ function ProjectThirdScopeInformation({
           <Typography variant="h5" fontSize={16}>
             การปล่อยก๊าซเรือนกระจกอื่น ๆ
           </Typography>
-          <Typography variant="caption" color="text.secondary">
-            การเดินทางของผู้เข้าร่วมและ staff
-          </Typography>
         </Stack>
       </Stack>
 
-      {canDownloadCsv && (
-        <Stack spacing={2}>
-          <CSVUploadField
-            name="transportations_csv_file"
-            control={control}
-            disabled
-            onDownload={handleDownloadCsv}
-          />
 
-          {transportationChildren}
-        </Stack>
-      )}
+      <ContainerWithOutlined borderRadius={2}>
+        <Typography variant="h5" fontSize={14}>
+            การเดินทางของผู้เข้าร่วมและ staff
+        </Typography>
+          {canDownloadCsv && (
+            <Stack spacing={2}>
+              <CSVUploadField
+                name="transportations_csv_file"
+                control={control}
+                disabled
+                onDownload={handleDownloadCsv}
+              />
+
+              {transportationChildren}
+            </Stack>
+          )}
+      </ContainerWithOutlined>
 
       <ContainerWithOutlined borderRadius={2}>
         <Typography variant="h5" fontSize={14}>
@@ -256,21 +259,6 @@ function ProjectThirdScopeInformation({
 
       <ContainerWithOutlined borderRadius={2}>
         <Typography variant="h5" fontSize={14}>
-          การพักแรมของผู้เข้าร่วมและ staff ตลอดทั้งโครงการ
-        </Typography>
-
-        <TableCustom
-          rows={overnightOnCampusRows}
-          columns={overnightColumns}
-          showIndex
-          indexHeader="รายการที่"
-        />
-
-        {overnightChildren}
-      </ContainerWithOutlined>
-
-      <ContainerWithOutlined borderRadius={2}>
-        <Typography variant="h5" fontSize={14}>
           การใช้รถภายในโครงการ
         </Typography>
 
@@ -282,6 +270,21 @@ function ProjectThirdScopeInformation({
         />
 
         {internalVehicleChildren}
+      </ContainerWithOutlined>
+
+      <ContainerWithOutlined borderRadius={2}>
+        <Typography variant="h5" fontSize={14}>
+          การพักแรมของผู้เข้าร่วมและ staff ภายในมหาวิทยาลัย
+        </Typography>
+
+        <TableCustom
+          rows={overnightOnCampusRows}
+          columns={overnightColumns}
+          showIndex
+          indexHeader="รายการที่"
+        />
+
+        {overnightChildren}
       </ContainerWithOutlined>
 
       <ContainerWithOutlined borderRadius={2}>
@@ -301,7 +304,7 @@ function ProjectThirdScopeInformation({
 
       <ContainerWithOutlined borderRadius={2}>
         <Typography variant="h5" fontSize={14}>
-          ของแจกผู้เข้าร่วมและ staff
+          ของแจกและทรัพยากรที่ใช้ในการจัดกิจกรรม
         </Typography>
 
         <TableCustom
