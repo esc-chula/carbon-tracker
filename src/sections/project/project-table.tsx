@@ -41,7 +41,6 @@ import { useDeleteProjectMutation } from "@/services/project/mutation";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
 import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
 import { useBoolean } from "@/hooks/use-boolean";
-import { totalCarbonResult } from "@/types/project/get-project";
 import { canModifyProject } from "@/helper/project-permissions";
 import {
   getMajorAbbr,
@@ -275,7 +274,7 @@ export default function ProjectTable({
                       {getMajorAbbr(row.owner.major)}
                     </StyledTableCell>
                     <StyledTableCell>
-                      {totalCarbonResult(row.carbon_result).toFixed(2)} kgCO₂
+                      {row.carbon_result.total.toFixed(2)} kgCO₂
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <ProjectPopoverMenu>

@@ -22,12 +22,6 @@ import { useUpdateProjectStatusMutation } from "@/services/project/mutation";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
 import { canModifyProject } from "@/helper/project-permissions";
 import ProjectCarbonDetail from "../../project-carbon-detail";
-import {
-  scope1CarbonResult,
-  scope2CarbonResult,
-  scope3CarbonResult,
-  totalCarbonResult,
-} from "@/types/project/get-project";
 import ProjectPolicyInformation from "../../detail/project-policy-information";
 
 type Params = {
@@ -91,10 +85,10 @@ function ProjectResultView() {
   const projectInfo = project.data?.project.project_info;
 
   const carbonResult = project.data?.project.carbon_result;
-  const carbonUsageAll = carbonResult ? totalCarbonResult(carbonResult) : 0;
-  const carbonUsageScope1 = carbonResult ? scope1CarbonResult(carbonResult) : 0;
-  const carbonUsageScope2 = carbonResult ? scope2CarbonResult(carbonResult) : 0;
-  const carbonUsageScope3 = carbonResult ? scope3CarbonResult(carbonResult) : 0;
+  const carbonUsageAll = carbonResult?.total ?? 0;
+  const carbonUsageScope1 = carbonResult?.scope1 ?? 0;
+  const carbonUsageScope2 = carbonResult?.scope2 ?? 0;
+  const carbonUsageScope3 = carbonResult?.scope3 ?? 0;
 
   // --------------------------- Render ---------------------------
 
