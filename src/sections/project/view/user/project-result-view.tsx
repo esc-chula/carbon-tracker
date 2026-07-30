@@ -200,14 +200,22 @@ function ProjectResultView() {
             project.data.review?.detail?.other?.waste,
           )}
         >
-          <ProjectCarbonDetail carbon={carbonUsageAll} all />
-        </ProjectThirdScopeInformation>
+          {projectInfo && (
+            <ProjectPolicyInformation data={projectInfo}>
+              {renderReviewStatus(project.data.review?.detail?.project_info)}
+            </ProjectPolicyInformation>
+          )}
 
-        {projectInfo && (
-          <ProjectPolicyInformation data={projectInfo}>
-            {renderReviewStatus(project.data.review?.detail?.project_info)}
-          </ProjectPolicyInformation>
-        )}
+          <ProjectCarbonDetail
+            carbon={carbonUsageAll}
+            all
+            scopes={{
+              scope1: carbonUsageScope1,
+              scope2: carbonUsageScope2,
+              scope3: carbonUsageScope3,
+            }}
+          />
+        </ProjectThirdScopeInformation>
 
         {project.data.review?.note && (
           <ContainerWithOutlined>

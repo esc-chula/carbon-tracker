@@ -7,7 +7,6 @@ import { transFormDateToThai } from "@/helper/formatter/date-formatter";
 import { Box, Stack, Typography } from "@mui/material";
 import type { ReactNode } from "react";
 import { FacilityMapper } from "../helper/value-mapper";
-import ProjectCarbonDetail from "../project-carbon-detail";
 import type { CarbonInput } from "@/types/project/project";
 
 // ---------------------------------------------------------------------------------
@@ -23,13 +22,12 @@ type Scope2Building = {
 
 type TProjectSecondScopeInformationProps = {
   data: CarbonInput["energy"] | undefined;
-  carbon: number;
+  carbon?: number;
   children?: ReactNode;
 };
 
 function ProjectSecondScopeInformation({
   data,
-  carbon,
   children,
 }: TProjectSecondScopeInformationProps) {
   // --------------------------- Values ---------------------------
@@ -83,7 +81,6 @@ function ProjectSecondScopeInformation({
   return (
     <ContainerWithOutlined>
       <Stack direction="row" spacing={1.5}>
-        <ProjectCarbonDetail carbon={carbon} />
         <Stack spacing={1.5}>
           <Typography variant="h5" fontSize={16}>
             การปล่อยก๊าซเรือนกระจกจากการใช้พลังงาน

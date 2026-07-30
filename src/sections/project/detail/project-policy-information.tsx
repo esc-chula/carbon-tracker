@@ -1,21 +1,67 @@
 "use client";
 
 import ContainerWithOutlined from "@/components/container/container-with-outlined";
-import { SvgColor } from "@/components/svg/svg-color";
 import type {
   PolicyImplementationPhoto,
   ProjectInfo,
 } from "@/types/project/project";
 import { Box, Stack, Typography } from "@mui/material";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 type ProjectPolicyInformationProps = {
   data: ProjectInfo;
   children?: ReactNode;
 };
 
+function formatFileSize(bytes?: number | null): string {
+  if (bytes === undefined) return "Loading...";
+  if (bytes === null) return "Unknown size";
+  if (bytes === 0) return "0 Bytes";
+
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const index = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, index)).toFixed(2))} ${sizes[index]}`;
+}
+
 function PolicyPhotoFileRow({ photo }: { photo: PolicyImplementationPhoto }) {
   const canDownload = Boolean(photo.url);
+  const metadataSize = photo.size ?? photo.size_bytes;
+  const [fileSize, setFileSize] = useState<number | null | undefined>(
+    metadataSize,
+  );
+
+  useEffect(() => {
+    if (metadataSize !== undefined || !photo.url) return;
+
+    let ignore = false;
+
+    async function fetchPhotoSize() {
+      try {
+        const response = await fetch(photo.url as string);
+        if (!response.ok) {
+          throw new Error("Failed to fetch policy photo");
+        }
+
+        const blob = await response.blob();
+
+        if (!ignore) {
+          setFileSize(blob.size);
+        }
+      } catch {
+        if (!ignore) {
+          setFileSize(null);
+        }
+      }
+    }
+
+    void fetchPhotoSize();
+
+    return () => {
+      ignore = true;
+    };
+  }, [metadataSize, photo.url]);
 
   const handleDownload = () => {
     if (!photo.url) return;
@@ -73,13 +119,21 @@ function PolicyPhotoFileRow({ photo }: { photo: PolicyImplementationPhoto }) {
           <Typography variant="body2" noWrap>
             {photo.filename}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {photo.mime_type}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              {formatFileSize(fileSize)}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              •
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Complete
+            </Typography>
+          </Box>
         </Stack>
       </Box>
 
-      <SvgColor src="/assets/icons/ic-check.svg" />
+      <Box component="img" src="/assets/icons/ic-check.svg" />
     </Box>
   );
 }
@@ -94,27 +148,41 @@ function ProjectPolicyInformation({
         การดำเนินนโยบายสิ่งแวดล้อม
       </Typography>
 
-      <Stack spacing={1}>
-        <Typography variant="body2" fontWeight={700}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "1fr 3fr" },
+          gap: { xs: 1, md: 3 },
+          alignItems: "start",
+        }}
+      >
+        <Typography variant="body2" fontWeight={500} color="#637381">
           นโยบายสิ่งแวดล้อม
         </Typography>
         <Typography variant="body2" fontWeight={500}>
           {data.environmental_policy}
         </Typography>
-      </Stack>
+      </Box>
 
-      <Stack spacing={1}>
-        <Typography variant="body2" fontWeight={700}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "1fr 3fr" },
+          gap: { xs: 1, md: 3 },
+          alignItems: "start",
+        }}
+      >
+        <Typography variant="body2" fontWeight={500} color="#637381">
           ข้อเสนอแนะในการดำเนินนโยบาย
         </Typography>
         <Typography variant="body2" fontWeight={500}>
           {data.policy_implementation_suggestion}
         </Typography>
-      </Stack>
+      </Box>
 
       {!!data.policy_implementation_photos?.length && (
         <Stack spacing={1}>
-          <Typography variant="body2" fontWeight={700}>
+          <Typography variant="body2" fontWeight={500} color="#637381">
             รูปภาพการดำเนินการตามนโยบาย
           </Typography>
 

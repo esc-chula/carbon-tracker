@@ -607,20 +607,28 @@ function ProjectReviewView() {
                 removeOtherWasteRejectionNote,
               )}
             >
-              <ProjectCarbonDetail carbon={carbonUsageAll} all />
-            </ProjectThirdScopeInformation>
+              {projectInfo && (
+                <ProjectPolicyInformation data={projectInfo}>
+                  {renderReviewSection(
+                    "detail.project_info.passed",
+                    errors.detail?.project_info?.passed?.message,
+                    projectInfoRejectionNotes,
+                    appendProjectInfoRejectionNote,
+                    removeProjectInfoRejectionNote,
+                  )}
+                </ProjectPolicyInformation>
+              )}
 
-            {projectInfo && (
-              <ProjectPolicyInformation data={projectInfo}>
-                {renderReviewSection(
-                  "detail.project_info.passed",
-                  errors.detail?.project_info?.passed?.message,
-                  projectInfoRejectionNotes,
-                  appendProjectInfoRejectionNote,
-                  removeProjectInfoRejectionNote,
-                )}
-              </ProjectPolicyInformation>
-            )}
+              <ProjectCarbonDetail
+                carbon={carbonUsageAll}
+                all
+                scopes={{
+                  scope1: carbonUsageScope1,
+                  scope2: carbonUsageScope2,
+                  scope3: carbonUsageScope3,
+                }}
+              />
+            </ProjectThirdScopeInformation>
           </Stack>
 
           <Stack sx={{ padding: "0px 24px" }}>

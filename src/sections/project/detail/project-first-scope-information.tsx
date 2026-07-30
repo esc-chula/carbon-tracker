@@ -7,19 +7,17 @@ import type { Scope1Activity } from "@/types/project/project";
 import { ActivityNameMapper, ActivityUnitMapper } from "../helper/value-mapper";
 import { Stack, Typography } from "@mui/material";
 import type { ReactNode } from "react";
-import ProjectCarbonDetail from "../project-carbon-detail";
 
 // ---------------------------------------------------------------------------------
 
 type TProjectFirstScopeInformationProps = {
   data: Scope1Activity[] | null | undefined;
-  carbon: number;
+  carbon?: number;
   children?: ReactNode;
 };
 
 function ProjectFirstScopeInformation({
   data,
-  carbon,
   children,
 }: TProjectFirstScopeInformationProps) {
   // --------------------------- Values ---------------------------
@@ -39,8 +37,6 @@ function ProjectFirstScopeInformation({
   return (
     <ContainerWithOutlined>
       <Stack direction="row" spacing={1.5}>
-        <ProjectCarbonDetail carbon={carbon} />
-
         <Stack spacing={1.5}>
           <Typography variant="h5" fontSize={16}>
             การปล่อยก๊าซเรือนกระจกจากอาหารและเครื่องดื่ม

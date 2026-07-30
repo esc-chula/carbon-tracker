@@ -24,11 +24,10 @@ import { HTTPError } from "ky";
 import { useForm } from "react-hook-form";
 import { canModifyProject } from "@/helper/project-permissions";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
-import ProjectCarbonDetail from "../project-carbon-detail";
 
 type TProjectThirdScopeInformationProps = {
   data: CarbonInput["other"] | undefined;
-  carbon: number;
+  carbon?: number;
   projectId?: string;
   ownerId: string;
   transportationChildren?: ReactNode;
@@ -48,7 +47,6 @@ type Scope3CsvFormValues = {
 function ProjectThirdScopeInformation({
   data,
   projectId,
-  carbon,
   ownerId,
   transportationChildren,
   attendeeChildren,
@@ -215,8 +213,6 @@ function ProjectThirdScopeInformation({
   return (
     <ContainerWithOutlined>
       <Stack direction="row" spacing={1.5} alignItems="center">
-        <ProjectCarbonDetail carbon={carbon} />
-
         <Stack spacing={1.5}>
           <Typography variant="h5" fontSize={16}>
             การปล่อยก๊าซเรือนกระจกอื่น ๆ

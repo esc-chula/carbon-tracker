@@ -179,10 +179,18 @@ function ProjectView() {
             ownerId={project.data.project.owner_id}
             carbon={carbonUsageScope3}
           >
-            <ProjectCarbonDetail carbon={carbonUsageAll} all />
-          </ProjectThirdScopeInformation>
+            {projectInfo && <ProjectPolicyInformation data={projectInfo} />}
 
-          {projectInfo && <ProjectPolicyInformation data={projectInfo} />}
+            <ProjectCarbonDetail
+              carbon={carbonUsageAll}
+              all
+              scopes={{
+                scope1: carbonUsageScope1,
+                scope2: carbonUsageScope2,
+                scope3: carbonUsageScope3,
+              }}
+            />
+          </ProjectThirdScopeInformation>
 
           <Stack
             direction="row"
