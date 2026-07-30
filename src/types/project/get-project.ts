@@ -5,10 +5,7 @@ import type {
   ProjectInfo,
   Scope3Transportation,
 } from "./project";
-import type {
-  TReviewProjectDetail,
-  TReviewProjectDetailV2,
-} from "./review-project";
+import type { TReviewProjectDetailV2 } from "./review-project";
 
 export type TGetProjectRequest = {
   id: string;
@@ -54,30 +51,10 @@ export type CarbonResultV2 = {
   total: number;
 };
 
-export function totalCarbonResult(carbon_result: CarbonResult): number {
-  return (
-    carbon_result.scope1.activity +
-    carbon_result.scope2.building +
-    carbon_result.scope2.generator +
-    carbon_result.scope3.attendee +
-    carbon_result.scope3.overnight +
-    carbon_result.scope3.souvenir +
-    carbon_result.scope3.transportation +
-    carbon_result.scope3.waste
-  );
-}
-
 type ProjectCarbonDetail = CarbonDetail & {
   scope3: CarbonDetail["scope3"] & {
     transportations?: Scope3Transportation[] | null;
   };
-};
-
-export type TProjectReview = {
-  id?: string;
-  project_id: string;
-  note: string;
-  detail: TReviewProjectDetail;
 };
 
 export type TProjectReviewV2 = {
@@ -107,7 +84,7 @@ export type TGetProjectResponse = {
     carbon_input: CarbonInput;
     /** @deprecated Use carbon_input. Kept until detail/result screens migrate to V2. */
     carbon_detail: ProjectCarbonDetail;
-    carbon_result: CarbonResult;
+    carbon_result: CarbonResultV2;
   };
-  review?: TProjectReview | null;
+  review?: TProjectReviewV2 | null;
 };

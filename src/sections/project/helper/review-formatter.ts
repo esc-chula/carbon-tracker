@@ -41,13 +41,23 @@ function buildReviewProjectPayload({
     detail: {
       owner: mapReviewCheck(values.detail.owner),
       project: mapReviewCheck(values.detail.project),
-      scope1: mapReviewCheck(values.detail.scope1),
-      scope2: mapReviewCheck(values.detail.scope2),
-      scope3: {
-        attendee: mapReviewCheck(values.detail.scope3.attendee),
-        overnight: mapReviewCheck(values.detail.scope3.overnight),
-        souvenir: mapReviewCheck(values.detail.scope3.souvenir),
-        waste: mapReviewCheck(values.detail.scope3.waste),
+      project_info: mapReviewCheck(values.detail.project_info),
+      food_beverage: mapReviewCheck(values.detail.food_beverage),
+      energy: mapReviewCheck(values.detail.energy),
+      other: {
+        attendees: mapReviewCheck(values.detail.other.attendees),
+        internal_vehicles: mapReviewCheck(
+          values.detail.other.internal_vehicles,
+        ),
+        overnight_on_campus: mapReviewCheck(
+          values.detail.other.overnight_on_campus,
+        ),
+        overnight_off_campus: mapReviewCheck(
+          values.detail.other.overnight_off_campus,
+        ),
+        souvenirs: mapReviewCheck(values.detail.other.souvenirs),
+        waste: mapReviewCheck(values.detail.other.waste),
+        transportations: mapReviewCheck(values.detail.other.transportations),
       },
     },
   };

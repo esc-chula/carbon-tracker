@@ -7,11 +7,14 @@ export type ReviewCheckForm = {
   rejection_notes: ReviewRejectionNoteForm[];
 };
 
-export type ReviewScope3Form = {
-  attendee: ReviewCheckForm;
-  overnight: ReviewCheckForm;
-  souvenir: ReviewCheckForm;
+export type ReviewOtherForm = {
+  attendees: ReviewCheckForm;
+  internal_vehicles: ReviewCheckForm;
+  overnight_on_campus: ReviewCheckForm;
+  overnight_off_campus: ReviewCheckForm;
+  souvenirs: ReviewCheckForm;
   waste: ReviewCheckForm;
+  transportations: ReviewCheckForm;
 };
 
 export type ReviewFormValues = {
@@ -19,8 +22,9 @@ export type ReviewFormValues = {
   detail: {
     owner: ReviewCheckForm;
     project: ReviewCheckForm;
-    scope1: ReviewCheckForm;
-    scope2: ReviewCheckForm;
-    scope3: ReviewScope3Form;
+    project_info: ReviewCheckForm;
+    food_beverage: ReviewCheckForm;
+    energy: ReviewCheckForm;
+    other: ReviewOtherForm;
   };
 };

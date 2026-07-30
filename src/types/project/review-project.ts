@@ -3,21 +3,6 @@ export type TReviewCheck = {
   rejection_notes?: string[] | null;
 };
 
-export type TReviewScope3 = {
-  attendee: TReviewCheck;
-  overnight: TReviewCheck;
-  souvenir: TReviewCheck;
-  waste: TReviewCheck;
-};
-
-export type TReviewProjectDetail = {
-  owner: TReviewCheck;
-  project: TReviewCheck;
-  scope1: TReviewCheck;
-  scope2: TReviewCheck;
-  scope3: TReviewScope3;
-};
-
 export type TReviewOtherDetailV2 = {
   attendees: TReviewCheck;
   internal_vehicles: TReviewCheck;
@@ -39,7 +24,7 @@ export type TReviewProjectDetailV2 = {
 
 export type TReviewProjectRequest = {
   id: string;
-  detail: TReviewProjectDetail;
+  detail: TReviewProjectDetailV2;
   note?: string;
 };
 

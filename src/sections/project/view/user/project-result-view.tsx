@@ -22,7 +22,7 @@ import { useUpdateProjectStatusMutation } from "@/services/project/mutation";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
 import { canModifyProject } from "@/helper/project-permissions";
 import ProjectCarbonDetail from "../../project-carbon-detail";
-import { totalCarbonResult } from "@/types/project/get-project";
+import ProjectPolicyInformation from "../../detail/project-policy-information";
 
 type Params = {
   id: string;
@@ -82,9 +82,13 @@ function ProjectResultView() {
   };
 
   const ownerData = project.data?.project.owner;
+  const projectInfo = project.data?.project.project_info;
 
   const carbonResult = project.data?.project.carbon_result;
-  const carbonUsageAll = carbonResult ? totalCarbonResult(carbonResult) : 0;
+  const carbonUsageAll = carbonResult?.total ?? 0;
+  const carbonUsageScope1 = carbonResult?.scope1 ?? 0;
+  const carbonUsageScope2 = carbonResult?.scope2 ?? 0;
+  const carbonUsageScope3 = carbonResult?.scope3 ?? 0;
 
   // --------------------------- Render ---------------------------
 
@@ -150,43 +154,61 @@ function ProjectResultView() {
         </ProjectOwnerInformation>
 
         <ProjectFirstScopeInformation
-          data={project.data?.project?.carbon_detail?.scope1?.activities ?? []}
-          carbon={project.data?.project.carbon_result.scope1}
+          data={project.data?.project?.carbon_input?.food_beverage?.activities}
+          carbon={carbonUsageScope1}
         >
-          {renderReviewStatus(project.data.review?.detail?.scope1)}
+          {renderReviewStatus(project.data.review?.detail?.food_beverage)}
         </ProjectFirstScopeInformation>
 
         <ProjectSecondScopeInformation
-          data={
-            project.data?.project.carbon_detail.scope2 ?? {
-              buildings: null,
-              generators: null,
-            }
-          }
-          carbon={project.data?.project.carbon_result.scope2}
+          data={project.data?.project.carbon_input.energy}
+          carbon={carbonUsageScope2}
         >
-          {renderReviewStatus(project.data.review?.detail?.scope2)}
+          {renderReviewStatus(project.data.review?.detail?.energy)}
         </ProjectSecondScopeInformation>
 
         <ProjectThirdScopeInformation
-          data={project.data?.project?.carbon_detail?.scope3}
+          data={project.data?.project?.carbon_input?.other}
           projectId={project.data?.project.id}
-          carbon={project.data?.project.carbon_result.scope3}
+          carbon={carbonUsageScope3}
           ownerId={project.data.project.owner_id}
+          transportationChildren={renderReviewStatus(
+            project.data.review?.detail?.other?.transportations,
+          )}
           attendeeChildren={renderReviewStatus(
-            project.data.review?.detail?.scope3?.attendee,
+            project.data.review?.detail?.other?.attendees,
+          )}
+          internalVehicleChildren={renderReviewStatus(
+            project.data.review?.detail?.other?.internal_vehicles,
           )}
           overnightChildren={renderReviewStatus(
-            project.data.review?.detail?.scope3?.overnight,
+            project.data.review?.detail?.other?.overnight_on_campus,
+          )}
+          overnightOffCampusChildren={renderReviewStatus(
+            project.data.review?.detail?.other?.overnight_off_campus,
           )}
           souvenirChildren={renderReviewStatus(
-            project.data.review?.detail?.scope3?.souvenir,
+            project.data.review?.detail?.other?.souvenirs,
           )}
           wasteChildren={renderReviewStatus(
-            project.data.review?.detail?.scope3?.waste,
+            project.data.review?.detail?.other?.waste,
           )}
         >
-          <ProjectCarbonDetail carbon={carbonUsageAll} all />
+          {projectInfo && (
+            <ProjectPolicyInformation data={projectInfo}>
+              {renderReviewStatus(project.data.review?.detail?.project_info)}
+            </ProjectPolicyInformation>
+          )}
+
+          <ProjectCarbonDetail
+            carbon={carbonUsageAll}
+            all
+            scopes={{
+              scope1: carbonUsageScope1,
+              scope2: carbonUsageScope2,
+              scope3: carbonUsageScope3,
+            }}
+          />
         </ProjectThirdScopeInformation>
 
         {project.data.review?.note && (

@@ -10,7 +10,6 @@ import {
   projectsQueryKeys,
 } from "@/services/project/query/project-query";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
-import { totalCarbonResult } from "@/types/project/get-project";
 import {
   Box,
   Button,
@@ -28,6 +27,7 @@ import ProjectSecondScopeInformation from "../../detail/project-second-scope-inf
 import ProjectThirdScopeInformation from "../../detail/project-third-scope-information";
 import ProjectCarbonDetail from "../../project-carbon-detail";
 import ProjectRejectDetailButton from "../../project-reject-detail-button";
+import ProjectPolicyInformation from "../../detail/project-policy-information";
 
 type Params = {
   id: string;
@@ -111,6 +111,7 @@ function ProjectView() {
   };
 
   const ownerData = project.data?.project.owner;
+  const projectInfo = project.data?.project.project_info;
 
   const canManage = canModifyProject(
     currentOwner,
@@ -118,7 +119,10 @@ function ProjectView() {
   );
 
   const carbonResult = project.data?.project.carbon_result;
-  const carbonUsageAll = carbonResult ? totalCarbonResult(carbonResult) : 0;
+  const carbonUsageAll = carbonResult?.total ?? 0;
+  const carbonUsageScope1 = carbonResult?.scope1 ?? 0;
+  const carbonUsageScope2 = carbonResult?.scope2 ?? 0;
+  const carbonUsageScope3 = carbonResult?.scope3 ?? 0;
 
   // --------------------------- Render ---------------------------
 
@@ -153,28 +157,33 @@ function ProjectView() {
 
           <ProjectFirstScopeInformation
             data={
-              project.data?.project?.carbon_detail?.scope1?.activities ?? []
+              project.data?.project?.carbon_input?.food_beverage?.activities
             }
-            carbon={project.data?.project.carbon_result.scope1}
+            carbon={carbonUsageScope1}
           />
 
           <ProjectSecondScopeInformation
-            data={
-              project.data?.project.carbon_detail.scope2 ?? {
-                buildings: null,
-                generators: null,
-              }
-            }
-            carbon={project.data?.project.carbon_result.scope2}
+            data={project.data?.project.carbon_input.energy}
+            carbon={carbonUsageScope2}
           />
 
           <ProjectThirdScopeInformation
-            data={project.data?.project?.carbon_detail?.scope3}
+            data={project.data?.project?.carbon_input?.other}
             projectId={project.data?.project.id}
             ownerId={project.data.project.owner_id}
-            carbon={project.data?.project.carbon_result.scope3}
+            carbon={carbonUsageScope3}
           >
-            <ProjectCarbonDetail carbon={carbonUsageAll} all />
+            {projectInfo && <ProjectPolicyInformation data={projectInfo} />}
+
+            <ProjectCarbonDetail
+              carbon={carbonUsageAll}
+              all
+              scopes={{
+                scope1: carbonUsageScope1,
+                scope2: carbonUsageScope2,
+                scope3: carbonUsageScope3,
+              }}
+            />
           </ProjectThirdScopeInformation>
 
           <Stack
