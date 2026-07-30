@@ -31,8 +31,11 @@ type TProjectThirdScopeInformationProps = {
   carbon: number;
   projectId?: string;
   ownerId: string;
+  transportationChildren?: ReactNode;
   attendeeChildren?: ReactNode;
+  internalVehicleChildren?: ReactNode;
   overnightChildren?: ReactNode;
+  overnightOffCampusChildren?: ReactNode;
   souvenirChildren?: ReactNode;
   wasteChildren?: ReactNode;
   children?: ReactNode;
@@ -47,8 +50,11 @@ function ProjectThirdScopeInformation({
   projectId,
   carbon,
   ownerId,
+  transportationChildren,
   attendeeChildren,
+  internalVehicleChildren,
   overnightChildren,
+  overnightOffCampusChildren,
   souvenirChildren,
   wasteChildren,
   children,
@@ -222,12 +228,16 @@ function ProjectThirdScopeInformation({
       </Stack>
 
       {canDownloadCsv && (
-        <CSVUploadField
-          name="transportations_csv_file"
-          control={control}
-          disabled
-          onDownload={handleDownloadCsv}
-        />
+        <Stack spacing={2}>
+          <CSVUploadField
+            name="transportations_csv_file"
+            control={control}
+            disabled
+            onDownload={handleDownloadCsv}
+          />
+
+          {transportationChildren}
+        </Stack>
       )}
 
       <ContainerWithOutlined borderRadius={2}>
@@ -274,6 +284,8 @@ function ProjectThirdScopeInformation({
           showIndex
           indexHeader="รายการที่"
         />
+
+        {internalVehicleChildren}
       </ContainerWithOutlined>
 
       <ContainerWithOutlined borderRadius={2}>
@@ -287,6 +299,8 @@ function ProjectThirdScopeInformation({
           showIndex
           indexHeader="รายการที่"
         />
+
+        {overnightOffCampusChildren}
       </ContainerWithOutlined>
 
       <ContainerWithOutlined borderRadius={2}>

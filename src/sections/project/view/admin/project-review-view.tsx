@@ -38,7 +38,13 @@ import { buildReviewProjectPayload } from "../../helper/review-formatter";
 import type { ReviewFormValues } from "../../review-form/type";
 import { StyledAddButton } from "../../styles";
 import ProjectCarbonDetail from "../../project-carbon-detail";
-import { totalCarbonResult } from "@/types/project/get-project";
+import {
+  scope1CarbonResult,
+  scope2CarbonResult,
+  scope3CarbonResult,
+  totalCarbonResult,
+} from "@/types/project/get-project";
+import ContainerWithOutlined from "@/components/container/container-with-outlined";
 
 // ---------------------------------------------------------------------------------
 
@@ -52,28 +58,44 @@ const REJECTION_NOTE_CONFIGS = [
     notesPath: "detail.project.rejection_notes",
   },
   {
-    passedPath: "detail.scope1.passed",
-    notesPath: "detail.scope1.rejection_notes",
+    passedPath: "detail.project_info.passed",
+    notesPath: "detail.project_info.rejection_notes",
   },
   {
-    passedPath: "detail.scope2.passed",
-    notesPath: "detail.scope2.rejection_notes",
+    passedPath: "detail.food_beverage.passed",
+    notesPath: "detail.food_beverage.rejection_notes",
   },
   {
-    passedPath: "detail.scope3.attendee.passed",
-    notesPath: "detail.scope3.attendee.rejection_notes",
+    passedPath: "detail.energy.passed",
+    notesPath: "detail.energy.rejection_notes",
   },
   {
-    passedPath: "detail.scope3.overnight.passed",
-    notesPath: "detail.scope3.overnight.rejection_notes",
+    passedPath: "detail.other.attendees.passed",
+    notesPath: "detail.other.attendees.rejection_notes",
   },
   {
-    passedPath: "detail.scope3.souvenir.passed",
-    notesPath: "detail.scope3.souvenir.rejection_notes",
+    passedPath: "detail.other.internal_vehicles.passed",
+    notesPath: "detail.other.internal_vehicles.rejection_notes",
   },
   {
-    passedPath: "detail.scope3.waste.passed",
-    notesPath: "detail.scope3.waste.rejection_notes",
+    passedPath: "detail.other.overnight_on_campus.passed",
+    notesPath: "detail.other.overnight_on_campus.rejection_notes",
+  },
+  {
+    passedPath: "detail.other.overnight_off_campus.passed",
+    notesPath: "detail.other.overnight_off_campus.rejection_notes",
+  },
+  {
+    passedPath: "detail.other.souvenirs.passed",
+    notesPath: "detail.other.souvenirs.rejection_notes",
+  },
+  {
+    passedPath: "detail.other.waste.passed",
+    notesPath: "detail.other.waste.rejection_notes",
+  },
+  {
+    passedPath: "detail.other.transportations.passed",
+    notesPath: "detail.other.transportations.rejection_notes",
   },
 ] as const;
 
@@ -152,64 +174,109 @@ function ProjectReviewView() {
   });
 
   const {
-    fields: scope1RejectionNotes,
-    append: appendScope1RejectionNote,
-    remove: removeScope1RejectionNote,
-  } = useFieldArray<ReviewFormValues, "detail.scope1.rejection_notes">({
+    fields: projectInfoRejectionNotes,
+    append: appendProjectInfoRejectionNote,
+    remove: removeProjectInfoRejectionNote,
+  } = useFieldArray<ReviewFormValues, "detail.project_info.rejection_notes">({
     control,
-    name: "detail.scope1.rejection_notes",
+    name: "detail.project_info.rejection_notes",
   });
 
   const {
-    fields: scope2RejectionNotes,
-    append: appendScope2RejectionNote,
-    remove: removeScope2RejectionNote,
-  } = useFieldArray<ReviewFormValues, "detail.scope2.rejection_notes">({
+    fields: foodBeverageRejectionNotes,
+    append: appendFoodBeverageRejectionNote,
+    remove: removeFoodBeverageRejectionNote,
+  } = useFieldArray<ReviewFormValues, "detail.food_beverage.rejection_notes">({
     control,
-    name: "detail.scope2.rejection_notes",
+    name: "detail.food_beverage.rejection_notes",
   });
 
   const {
-    fields: scope3AttendeeRejectionNotes,
-    append: appendScope3AttendeeRejectionNote,
-    remove: removeScope3AttendeeRejectionNote,
-  } = useFieldArray<ReviewFormValues, "detail.scope3.attendee.rejection_notes">(
+    fields: energyRejectionNotes,
+    append: appendEnergyRejectionNote,
+    remove: removeEnergyRejectionNote,
+  } = useFieldArray<ReviewFormValues, "detail.energy.rejection_notes">({
+    control,
+    name: "detail.energy.rejection_notes",
+  });
+
+  const {
+    fields: otherAttendeesRejectionNotes,
+    append: appendOtherAttendeesRejectionNote,
+    remove: removeOtherAttendeesRejectionNote,
+  } = useFieldArray<ReviewFormValues, "detail.other.attendees.rejection_notes">(
     {
       control,
-      name: "detail.scope3.attendee.rejection_notes",
+      name: "detail.other.attendees.rejection_notes",
     },
   );
 
   const {
-    fields: scope3OvernightRejectionNotes,
-    append: appendScope3OvernightRejectionNote,
-    remove: removeScope3OvernightRejectionNote,
+    fields: otherInternalVehiclesRejectionNotes,
+    append: appendOtherInternalVehiclesRejectionNote,
+    remove: removeOtherInternalVehiclesRejectionNote,
   } = useFieldArray<
     ReviewFormValues,
-    "detail.scope3.overnight.rejection_notes"
+    "detail.other.internal_vehicles.rejection_notes"
   >({
     control,
-    name: "detail.scope3.overnight.rejection_notes",
+    name: "detail.other.internal_vehicles.rejection_notes",
   });
 
   const {
-    fields: scope3SouvenirRejectionNotes,
-    append: appendScope3SouvenirRejectionNote,
-    remove: removeScope3SouvenirRejectionNote,
-  } = useFieldArray<ReviewFormValues, "detail.scope3.souvenir.rejection_notes">(
+    fields: otherOvernightOnCampusRejectionNotes,
+    append: appendOtherOvernightOnCampusRejectionNote,
+    remove: removeOtherOvernightOnCampusRejectionNote,
+  } = useFieldArray<
+    ReviewFormValues,
+    "detail.other.overnight_on_campus.rejection_notes"
+  >({
+    control,
+    name: "detail.other.overnight_on_campus.rejection_notes",
+  });
+
+  const {
+    fields: otherOvernightOffCampusRejectionNotes,
+    append: appendOtherOvernightOffCampusRejectionNote,
+    remove: removeOtherOvernightOffCampusRejectionNote,
+  } = useFieldArray<
+    ReviewFormValues,
+    "detail.other.overnight_off_campus.rejection_notes"
+  >({
+    control,
+    name: "detail.other.overnight_off_campus.rejection_notes",
+  });
+
+  const {
+    fields: otherSouvenirsRejectionNotes,
+    append: appendOtherSouvenirsRejectionNote,
+    remove: removeOtherSouvenirsRejectionNote,
+  } = useFieldArray<ReviewFormValues, "detail.other.souvenirs.rejection_notes">(
     {
       control,
-      name: "detail.scope3.souvenir.rejection_notes",
+      name: "detail.other.souvenirs.rejection_notes",
     },
   );
 
   const {
-    fields: scope3WasteRejectionNotes,
-    append: appendScope3WasteRejectionNote,
-    remove: removeScope3WasteRejectionNote,
-  } = useFieldArray<ReviewFormValues, "detail.scope3.waste.rejection_notes">({
+    fields: otherWasteRejectionNotes,
+    append: appendOtherWasteRejectionNote,
+    remove: removeOtherWasteRejectionNote,
+  } = useFieldArray<ReviewFormValues, "detail.other.waste.rejection_notes">({
     control,
-    name: "detail.scope3.waste.rejection_notes",
+    name: "detail.other.waste.rejection_notes",
+  });
+
+  const {
+    fields: otherTransportationsRejectionNotes,
+    append: appendOtherTransportationsRejectionNote,
+    remove: removeOtherTransportationsRejectionNote,
+  } = useFieldArray<
+    ReviewFormValues,
+    "detail.other.transportations.rejection_notes"
+  >({
+    control,
+    name: "detail.other.transportations.rejection_notes",
   });
 
   const passedValues = useWatch({
@@ -340,11 +407,15 @@ function ProjectReviewView() {
   };
 
   const ownerData = project.data?.project.owner;
+  const projectInfo = project.data?.project.project_info;
 
   const isReject = passedValues.includes(false);
 
   const carbonResult = project.data?.project.carbon_result;
   const carbonUsageAll = carbonResult ? totalCarbonResult(carbonResult) : 0;
+  const carbonUsageScope1 = carbonResult ? scope1CarbonResult(carbonResult) : 0;
+  const carbonUsageScope2 = carbonResult ? scope2CarbonResult(carbonResult) : 0;
+  const carbonUsageScope3 = carbonResult ? scope3CarbonResult(carbonResult) : 0;
 
   // --------------------------- Function ---------------------------
 
@@ -453,71 +524,146 @@ function ProjectReviewView() {
               )}
             </ProjectOwnerInformation>
 
+            {projectInfo && (
+              <ContainerWithOutlined>
+                <Typography variant="h3" fontSize={16}>
+                  การดำเนินนโยบายสิ่งแวดล้อม
+                </Typography>
+
+                <Stack spacing={1}>
+                  <Typography variant="body2" fontWeight={700}>
+                    นโยบายสิ่งแวดล้อม
+                  </Typography>
+                  <Typography variant="body2" fontWeight={500}>
+                    {projectInfo.environmental_policy}
+                  </Typography>
+                </Stack>
+
+                <Stack spacing={1}>
+                  <Typography variant="body2" fontWeight={700}>
+                    ข้อเสนอแนะในการดำเนินนโยบาย
+                  </Typography>
+                  <Typography variant="body2" fontWeight={500}>
+                    {projectInfo.policy_implementation_suggestion}
+                  </Typography>
+                </Stack>
+
+                {!!projectInfo.policy_implementation_photos?.length && (
+                  <Stack spacing={1}>
+                    <Typography variant="body2" fontWeight={700}>
+                      รูปภาพการดำเนินการตามนโยบาย
+                    </Typography>
+                    <Stack direction="row" spacing={2} flexWrap="wrap">
+                      {projectInfo.policy_implementation_photos.map((photo) => (
+                        <Box
+                          key={photo.storage_key}
+                          component="img"
+                          src={photo.url || "/assets/icons/ic-file.svg"}
+                          alt={photo.filename}
+                          sx={{
+                            width: 120,
+                            height: 120,
+                            borderRadius: 1,
+                            objectFit: "cover",
+                            border: "1px solid #DBE0E4",
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  </Stack>
+                )}
+
+                {renderReviewSection(
+                  "detail.project_info.passed",
+                  errors.detail?.project_info?.passed?.message,
+                  projectInfoRejectionNotes,
+                  appendProjectInfoRejectionNote,
+                  removeProjectInfoRejectionNote,
+                )}
+              </ContainerWithOutlined>
+            )}
+
             <ProjectFirstScopeInformation
               data={
-                project.data?.project?.carbon_detail?.scope1?.activities ?? []
+                project.data?.project?.carbon_input?.food_beverage?.activities
               }
-              carbon={project.data?.project.carbon_result.scope1}
+              carbon={carbonUsageScope1}
             >
               {renderReviewSection(
-                "detail.scope1.passed",
-                errors.detail?.scope1?.passed?.message,
-                scope1RejectionNotes,
-                appendScope1RejectionNote,
-                removeScope1RejectionNote,
+                "detail.food_beverage.passed",
+                errors.detail?.food_beverage?.passed?.message,
+                foodBeverageRejectionNotes,
+                appendFoodBeverageRejectionNote,
+                removeFoodBeverageRejectionNote,
               )}
             </ProjectFirstScopeInformation>
 
             <ProjectSecondScopeInformation
-              data={
-                project.data?.project.carbon_detail.scope2 ?? {
-                  buildings: null,
-                  generators: null,
-                }
-              }
-              carbon={project.data?.project.carbon_result.scope2}
+              data={project.data?.project.carbon_input.energy}
+              carbon={carbonUsageScope2}
             >
               {renderReviewSection(
-                "detail.scope2.passed",
-                errors.detail?.scope2?.passed?.message,
-                scope2RejectionNotes,
-                appendScope2RejectionNote,
-                removeScope2RejectionNote,
+                "detail.energy.passed",
+                errors.detail?.energy?.passed?.message,
+                energyRejectionNotes,
+                appendEnergyRejectionNote,
+                removeEnergyRejectionNote,
               )}
             </ProjectSecondScopeInformation>
 
             <ProjectThirdScopeInformation
-              data={project.data?.project?.carbon_detail?.scope3}
+              data={project.data?.project?.carbon_input?.other}
               projectId={project.data?.project.id}
-              ownerId={project.data?.project.owner_id}
-              carbon={project.data?.project.carbon_result.scope3}
+              ownerId={project.data.project.owner_id}
+              carbon={carbonUsageScope3}
+              transportationChildren={renderReviewSection(
+                "detail.other.transportations.passed",
+                errors.detail?.other?.transportations?.passed?.message,
+                otherTransportationsRejectionNotes,
+                appendOtherTransportationsRejectionNote,
+                removeOtherTransportationsRejectionNote,
+              )}
               attendeeChildren={renderReviewSection(
-                "detail.scope3.attendee.passed",
-                errors.detail?.scope3?.attendee?.passed?.message,
-                scope3AttendeeRejectionNotes,
-                appendScope3AttendeeRejectionNote,
-                removeScope3AttendeeRejectionNote,
+                "detail.other.attendees.passed",
+                errors.detail?.other?.attendees?.passed?.message,
+                otherAttendeesRejectionNotes,
+                appendOtherAttendeesRejectionNote,
+                removeOtherAttendeesRejectionNote,
+              )}
+              internalVehicleChildren={renderReviewSection(
+                "detail.other.internal_vehicles.passed",
+                errors.detail?.other?.internal_vehicles?.passed?.message,
+                otherInternalVehiclesRejectionNotes,
+                appendOtherInternalVehiclesRejectionNote,
+                removeOtherInternalVehiclesRejectionNote,
               )}
               overnightChildren={renderReviewSection(
-                "detail.scope3.overnight.passed",
-                errors.detail?.scope3?.overnight?.passed?.message,
-                scope3OvernightRejectionNotes,
-                appendScope3OvernightRejectionNote,
-                removeScope3OvernightRejectionNote,
+                "detail.other.overnight_on_campus.passed",
+                errors.detail?.other?.overnight_on_campus?.passed?.message,
+                otherOvernightOnCampusRejectionNotes,
+                appendOtherOvernightOnCampusRejectionNote,
+                removeOtherOvernightOnCampusRejectionNote,
+              )}
+              overnightOffCampusChildren={renderReviewSection(
+                "detail.other.overnight_off_campus.passed",
+                errors.detail?.other?.overnight_off_campus?.passed?.message,
+                otherOvernightOffCampusRejectionNotes,
+                appendOtherOvernightOffCampusRejectionNote,
+                removeOtherOvernightOffCampusRejectionNote,
               )}
               souvenirChildren={renderReviewSection(
-                "detail.scope3.souvenir.passed",
-                errors.detail?.scope3?.souvenir?.passed?.message,
-                scope3SouvenirRejectionNotes,
-                appendScope3SouvenirRejectionNote,
-                removeScope3SouvenirRejectionNote,
+                "detail.other.souvenirs.passed",
+                errors.detail?.other?.souvenirs?.passed?.message,
+                otherSouvenirsRejectionNotes,
+                appendOtherSouvenirsRejectionNote,
+                removeOtherSouvenirsRejectionNote,
               )}
               wasteChildren={renderReviewSection(
-                "detail.scope3.waste.passed",
-                errors.detail?.scope3?.waste?.passed?.message,
-                scope3WasteRejectionNotes,
-                appendScope3WasteRejectionNote,
-                removeScope3WasteRejectionNote,
+                "detail.other.waste.passed",
+                errors.detail?.other?.waste?.passed?.message,
+                otherWasteRejectionNotes,
+                appendOtherWasteRejectionNote,
+                removeOtherWasteRejectionNote,
               )}
             >
               <ProjectCarbonDetail carbon={carbonUsageAll} all />

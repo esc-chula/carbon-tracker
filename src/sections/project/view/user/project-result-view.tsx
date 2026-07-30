@@ -206,6 +206,8 @@ function ProjectResultView() {
                 </Stack>
               </Stack>
             )}
+
+            {renderReviewStatus(project.data.review?.detail?.project_info)}
           </ContainerWithOutlined>
         )}
 
@@ -213,14 +215,14 @@ function ProjectResultView() {
           data={project.data?.project?.carbon_input?.food_beverage?.activities}
           carbon={carbonUsageScope1}
         >
-          {renderReviewStatus(project.data.review?.detail?.scope1)}
+          {renderReviewStatus(project.data.review?.detail?.food_beverage)}
         </ProjectFirstScopeInformation>
 
         <ProjectSecondScopeInformation
           data={project.data?.project.carbon_input.energy}
           carbon={carbonUsageScope2}
         >
-          {renderReviewStatus(project.data.review?.detail?.scope2)}
+          {renderReviewStatus(project.data.review?.detail?.energy)}
         </ProjectSecondScopeInformation>
 
         <ProjectThirdScopeInformation
@@ -228,17 +230,26 @@ function ProjectResultView() {
           projectId={project.data?.project.id}
           carbon={carbonUsageScope3}
           ownerId={project.data.project.owner_id}
+          transportationChildren={renderReviewStatus(
+            project.data.review?.detail?.other?.transportations,
+          )}
           attendeeChildren={renderReviewStatus(
-            project.data.review?.detail?.scope3?.attendee,
+            project.data.review?.detail?.other?.attendees,
+          )}
+          internalVehicleChildren={renderReviewStatus(
+            project.data.review?.detail?.other?.internal_vehicles,
           )}
           overnightChildren={renderReviewStatus(
-            project.data.review?.detail?.scope3?.overnight,
+            project.data.review?.detail?.other?.overnight_on_campus,
+          )}
+          overnightOffCampusChildren={renderReviewStatus(
+            project.data.review?.detail?.other?.overnight_off_campus,
           )}
           souvenirChildren={renderReviewStatus(
-            project.data.review?.detail?.scope3?.souvenir,
+            project.data.review?.detail?.other?.souvenirs,
           )}
           wasteChildren={renderReviewStatus(
-            project.data.review?.detail?.scope3?.waste,
+            project.data.review?.detail?.other?.waste,
           )}
         >
           <ProjectCarbonDetail carbon={carbonUsageAll} all />
