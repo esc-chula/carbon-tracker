@@ -3,8 +3,8 @@ import { z } from "zod";
 import type {
   ReviewCheckForm,
   ReviewFormValues,
+  ReviewOtherForm,
   ReviewRejectionNoteForm,
-  ReviewScope3Form,
 } from "./type";
 
 type ReviewRejectionNoteFormInput = Partial<ReviewRejectionNoteForm>;
@@ -13,11 +13,14 @@ type ReviewCheckFormInput = Omit<ReviewCheckForm, "rejection_notes"> & {
   rejection_notes?: ReviewRejectionNoteFormInput[];
 };
 
-type ReviewScope3FormInput = {
-  attendee: ReviewCheckFormInput;
-  overnight: ReviewCheckFormInput;
-  souvenir: ReviewCheckFormInput;
+type ReviewOtherFormInput = {
+  attendees: ReviewCheckFormInput;
+  internal_vehicles: ReviewCheckFormInput;
+  overnight_on_campus: ReviewCheckFormInput;
+  overnight_off_campus: ReviewCheckFormInput;
+  souvenirs: ReviewCheckFormInput;
   waste: ReviewCheckFormInput;
+  transportations: ReviewCheckFormInput;
 };
 
 type ReviewFormValuesInput = {
@@ -25,9 +28,10 @@ type ReviewFormValuesInput = {
   detail: {
     owner: ReviewCheckFormInput;
     project: ReviewCheckFormInput;
-    scope1: ReviewCheckFormInput;
-    scope2: ReviewCheckFormInput;
-    scope3: ReviewScope3FormInput;
+    project_info: ReviewCheckFormInput;
+    food_beverage: ReviewCheckFormInput;
+    energy: ReviewCheckFormInput;
+    other: ReviewOtherFormInput;
   };
 };
 
@@ -53,15 +57,18 @@ const ReviewCheckSchema: z.ZodType<
     .default([]),
 });
 
-const ReviewScope3Schema: z.ZodType<
-  ReviewScope3Form,
+const ReviewOtherSchema: z.ZodType<
+  ReviewOtherForm,
   z.ZodTypeDef,
-  ReviewScope3FormInput
+  ReviewOtherFormInput
 > = z.object({
-  attendee: ReviewCheckSchema,
-  overnight: ReviewCheckSchema,
-  souvenir: ReviewCheckSchema,
+  attendees: ReviewCheckSchema,
+  internal_vehicles: ReviewCheckSchema,
+  overnight_on_campus: ReviewCheckSchema,
+  overnight_off_campus: ReviewCheckSchema,
+  souvenirs: ReviewCheckSchema,
   waste: ReviewCheckSchema,
+  transportations: ReviewCheckSchema,
 });
 
 const ReviewFormSchema: z.ZodType<
@@ -73,10 +80,11 @@ const ReviewFormSchema: z.ZodType<
   detail: z.object({
     owner: ReviewCheckSchema,
     project: ReviewCheckSchema,
-    scope1: ReviewCheckSchema,
-    scope2: ReviewCheckSchema,
-    scope3: ReviewScope3Schema,
+    project_info: ReviewCheckSchema,
+    food_beverage: ReviewCheckSchema,
+    energy: ReviewCheckSchema,
+    other: ReviewOtherSchema,
   }),
 });
 
-export { ReviewCheckSchema, ReviewFormSchema, ReviewScope3Schema };
+export { ReviewCheckSchema, ReviewFormSchema, ReviewOtherSchema };

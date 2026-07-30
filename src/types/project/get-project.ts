@@ -5,10 +5,7 @@ import type {
   ProjectInfo,
   Scope3Transportation,
 } from "./project";
-import type {
-  TReviewProjectDetail,
-  TReviewProjectDetailV2,
-} from "./review-project";
+import type { TReviewProjectDetailV2 } from "./review-project";
 
 export type TGetProjectRequest = {
   id: string;
@@ -74,13 +71,6 @@ type ProjectCarbonDetail = CarbonDetail & {
   scope3: CarbonDetail["scope3"] & {
     transportations?: Scope3Transportation[] | null;
   };
-};
-
-export type TProjectReview = {
-  id?: string;
-  project_id: string;
-  note: string;
-  detail: TReviewProjectDetail;
 };
 
 export type TProjectReviewV2 = {
