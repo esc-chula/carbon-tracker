@@ -3,8 +3,8 @@ export type CarbonDetail = {
     activities: Scope1Activity[] | null;
   };
   scope2: {
-    buildings: Scope2Building[] | null;
-    generators: Scope2Generator[] | null;
+    buildings: LegacyScope2Building[] | null;
+    generators: LegacyScope2Generator[] | null;
   };
   scope3: {
     attendee: Scope3Attendee[] | null;
@@ -32,8 +32,7 @@ export type PolicyImplementationPhoto = {
 
 export type CarbonInput = {
   energy: {
-    buildings: Scope2Building[] | null;
-    generators: Scope2Generator[] | null;
+    items: EnergyItem[] | null;
   };
   food_beverage: {
     activities: Scope1Activity[] | null;
@@ -51,6 +50,21 @@ export type CarbonInput = {
 
 type ISODateTime = string;
 
+type LegacyScope2Building = {
+  name: string;
+  room: string;
+  start_time: ISODateTime | null;
+  end_time: ISODateTime | null;
+  meter_value: number;
+  facilities: string[] | null;
+};
+
+type LegacyScope2Generator = {
+  facilities: string[] | null;
+  unit: string;
+  value: number;
+};
+
 // --- Scope 1
 export type Scope1Activity = {
   name: string;
@@ -60,19 +74,29 @@ export type Scope1Activity = {
 
 // --- Scope 2
 export type Scope2Building = {
+  type: "building";
   name: string;
   room: string;
-  start_time: ISODateTime | null;
-  end_time: ISODateTime | null;
+  facilities: string[];
+  start_time: ISODateTime;
+  end_time: ISODateTime;
+};
+
+export type Scope2Meter = {
+  type: "meter";
+  name: string;
+  room: string;
   meter_value: number;
-  facilities: string[] | null;
 };
 
 export type Scope2Generator = {
-  facilities: string[] | null;
+  type: "generator";
   unit: string;
   value: number;
+  date: ISODateTime;
 };
+
+export type EnergyItem = Scope2Building | Scope2Meter | Scope2Generator;
 
 // --- Scope 3
 export type Scope3Attendee = {

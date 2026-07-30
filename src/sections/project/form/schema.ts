@@ -71,6 +71,7 @@ const Scope2EntrySchema = z
     meter_facilities: z.array(z.string()).optional(),
     start_time: z.string().optional(),
     end_time: z.string().optional(),
+    date: z.string().optional(),
     meter_value: z.preprocess(
       toOptionalNumber,
       z.number().positive("กรุณากรอกค่าที่ไม่ติดลบ").optional(),
@@ -127,6 +128,13 @@ const Scope2EntrySchema = z
     }
 
     if (data.kind === "generator") {
+      if (!data.date?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["date"],
+          message: "กรุณาเลือกวันที่ใช้",
+        });
+      }
       if (data.value == null) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -139,14 +147,6 @@ const Scope2EntrySchema = z
           code: z.ZodIssueCode.custom,
           path: ["unit"],
           message: "กรุณาเลือกหน่วย",
-        });
-      }
-
-      if (!data.generator_facilities?.length) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["generator_facilities"],
-          message: "กรุณาเลือกอุปกรณ์ที่ใช้",
         });
       }
     }
@@ -313,7 +313,6 @@ const ProjectFormStepTwoSchema = z.object({
   scope2_entries: z.array(Scope2EntrySchema).optional(),
   scope3_attendee: z.array(Scope3AttendeeSchema),
   scope3_internal_vehicles: z.array(Scope3InternalVehicleSchema).optional(),
-  scope3_overnight: z.array(Scope3OvernightSchema).optional(),
   scope3_overnight_on_campus: z.array(Scope3OvernightSchema).optional(),
   scope3_overnight_off_campus: z.array(Scope3OvernightSchema).optional(),
   scope3_souvenir: z.array(Scope3SouvenirSchema).optional(),
@@ -410,6 +409,7 @@ const defaultValues: ProjectFormValues = {
       meter_facilities: [],
       start_time: undefined,
       end_time: undefined,
+      date: undefined,
       meter_value: undefined,
       value: undefined,
       unit: "",
@@ -419,7 +419,6 @@ const defaultValues: ProjectFormValues = {
   scope3_internal_vehicles: [
     { vehicle_type: "", distance_km: undefined, people_count: undefined },
   ],
-  scope3_overnight: [],
   scope3_overnight_on_campus: [{ date: undefined, value: undefined }],
   scope3_overnight_off_campus: [{ date: undefined, value: undefined }],
   scope3_souvenir: [{ type: "", value: undefined, unit: "" }],

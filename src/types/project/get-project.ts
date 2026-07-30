@@ -18,6 +18,7 @@ export type CarbonResult = {
   scope2: {
     building: number;
     generator: number;
+    meter: number;
   };
   scope3: {
     attendee: number;
@@ -31,6 +32,7 @@ export type CarbonResult = {
 export type CarbonResultV2 = {
   energy: {
     buildings: number;
+    meters: number;
     generators: number;
   };
   food_beverage: {

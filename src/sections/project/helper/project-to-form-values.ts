@@ -87,40 +87,55 @@ function projectToFormValues({
 
   const scope2Entries: NonNullable<ProjectFormValues["scope2_entries"]> = [];
 
-  const buildings = carbonInput.energy?.buildings ?? [];
-  buildings?.forEach((building) => {
-    const meterValue = building?.meter_value ?? 0;
-    const isMeter = meterValue !== 0;
+  const energyItems = carbonInput.energy?.items ?? [];
+  energyItems.forEach((item) => {
+    if (item.type === "building") {
+      scope2Entries.push({
+        kind: "building",
+        name: item.name ?? "",
+        room: item.room ?? "",
+        building_facilities: item.facilities ?? [],
+        generator_facilities: [],
+        meter_facilities: [],
+        start_time: item.start_time ?? "",
+        end_time: item.end_time ?? "",
+        meter_value: undefined,
+        value: undefined,
+        unit: "",
+      });
+      return;
+    }
 
-    scope2Entries.push({
-      kind: isMeter ? "meter" : "building",
-      name: building?.name ?? "",
-      room: building?.room ?? "",
-      building_facilities: isMeter ? [] : (building?.facilities ?? []),
-      generator_facilities: [],
-      meter_facilities: isMeter ? (building?.facilities ?? []) : [],
-      start_time: building?.start_time ?? "",
-      end_time: building?.end_time ?? "",
-      meter_value: meterValue || undefined,
-      value: undefined,
-      unit: "",
-    });
-  });
+    if (item.type === "meter") {
+      scope2Entries.push({
+        kind: "meter",
+        name: item.name ?? "",
+        room: item.room ?? "",
+        building_facilities: [],
+        generator_facilities: [],
+        meter_facilities: ["มิเตอร์"],
+        start_time: undefined,
+        end_time: undefined,
+        meter_value: item.meter_value || undefined,
+        value: undefined,
+        unit: "",
+      });
+      return;
+    }
 
-  const generators = carbonInput.energy?.generators ?? [];
-  generators?.forEach((generator) => {
     scope2Entries.push({
       kind: "generator",
       name: undefined,
       room: undefined,
       building_facilities: [],
-      generator_facilities: generator?.facilities ?? [],
+      generator_facilities: [],
       meter_facilities: [],
       start_time: undefined,
       end_time: undefined,
+      date: item.date ?? "",
       meter_value: undefined,
-      value: generator?.value ?? undefined,
-      unit: generator?.unit ?? "",
+      value: item.value ?? undefined,
+      unit: item.unit ?? "",
     });
   });
 

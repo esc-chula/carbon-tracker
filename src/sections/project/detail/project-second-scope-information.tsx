@@ -11,13 +11,20 @@ import type { CarbonInput } from "@/types/project/project";
 
 // ---------------------------------------------------------------------------------
 
-type Scope2Building = {
+type Scope2BuildingRow = {
   name: string;
   room: string;
   start_time: string;
   end_time: string;
   facilities: string;
+};
+
+type Scope2MeterRow = {
+  facilities: string;
+  name: string;
+  room: string;
   meter_value: number;
+  unit: string;
 };
 
 type TProjectSecondScopeInformationProps = {
@@ -32,7 +39,7 @@ function ProjectSecondScopeInformation({
 }: TProjectSecondScopeInformationProps) {
   // --------------------------- Values ---------------------------
 
-  const buildingColumns: DisplayColumn<Scope2Building>[] = [
+  const buildingColumns: DisplayColumn<Scope2BuildingRow>[] = [
     { id: "name", label: "อาคารที่ใช้", width: 250 },
     { id: "room", label: "ห้องที่ใช้", width: 250 },
     { id: "facilities", label: "อุปกรณ์ที่ใช้", width: 220 },
@@ -40,43 +47,41 @@ function ProjectSecondScopeInformation({
     { id: "end_time", label: "วันและเวลาหยุดใช้", width: 220 },
   ];
 
-  const meterColumns: DisplayColumn<Scope2Building>[] = [
+  const meterColumns: DisplayColumn<Scope2MeterRow>[] = [
     { id: "facilities", label: "อุปกรณ์ที่ใช้", width: 250 },
     { id: "name", label: "อาคารที่ใช้", width: 250 },
     { id: "room", label: "ห้องที่ใช้", width: 220 },
     { id: "meter_value", label: "ปริมาณพลังงานที่ใช้", width: 220 },
-    { id: "end_time", label: "หน่วย", width: 220 },
+    { id: "unit", label: "หน่วย", width: 220 },
   ];
 
-  const buildingRows: Scope2Building[] =
-    data?.buildings
-      ?.filter((building) => !building.meter_value)
-      .map((building) => ({
-        name: building.name,
-        room: building.room,
-        facilities:
-          building.facilities
-            ?.map((facility) => FacilityMapper(facility))
-            .join(", ") ?? "",
-        start_time: transFormDateToThai(building.start_time),
-        end_time: transFormDateToThai(building.end_time),
-        meter_value: building.meter_value,
-      })) ?? [];
+  const energyItems = data?.items ?? [];
 
-  const meterRows: Scope2Building[] =
-    data?.buildings
-      ?.filter((building) => building.meter_value > 0)
-      .map((building) => ({
-        name: building.name,
-        room: building.room,
-        facilities: building.facilities?.[0] ?? "มิเตอร์",
-        start_time: "-",
-        end_time: "kWh",
-        meter_value: building.meter_value,
-      })) ?? [];
+  const buildingRows: Scope2BuildingRow[] = energyItems
+    .filter((item) => item.type === "building")
+    .map((building) => ({
+      name: building.name,
+      room: building.room,
+      facilities: building.facilities
+        .map((facility) => FacilityMapper(facility))
+        .join(", "),
+      start_time: transFormDateToThai(building.start_time),
+      end_time: transFormDateToThai(building.end_time),
+    }));
 
-  const generatorUsage =
-    data?.generators?.reduce((sum, c) => sum + c.value, 0) ?? 0;
+  const meterRows: Scope2MeterRow[] = energyItems
+    .filter((item) => item.type === "meter")
+    .map((meter) => ({
+      facilities: "มิเตอร์",
+      name: meter.name,
+      room: meter.room,
+      meter_value: meter.meter_value,
+      unit: "kWh",
+    }));
+
+  const generatorUsage = energyItems
+    .filter((item) => item.type === "generator")
+    .reduce((sum, generator) => sum + generator.value, 0);
 
   return (
     <ContainerWithOutlined>
