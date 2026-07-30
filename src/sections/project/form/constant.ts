@@ -3,17 +3,8 @@ import constants from "@/constants/constants.json";
 type Option = { value: string; label: string };
 type RoomOption = Option & { meter_only?: boolean };
 type RoomRecord = Record<string, RoomOption[]>;
-type FieldOptionsByYear = Record<string, Option[]>;
 
 type TRoom = keyof typeof constants.room_options;
-
-const fieldOptionsByYear =
-  constants.field_options_by_year as FieldOptionsByYear;
-
-const getFieldOptionsByYear = (year?: string | number): Option[] => {
-  const yearKey = String(year ?? "2026");
-  return fieldOptionsByYear[yearKey] ?? fieldOptionsByYear["2026"] ?? [];
-};
 
 const roomOptions = constants.room_options as RoomRecord;
 
@@ -41,7 +32,7 @@ const getBuildingOptions = (optionsByBuilding: Partial<RoomRecord>) =>
       label: building,
     }));
 
-const fieldOptions = getFieldOptionsByYear("2026");
+const fieldOptions = constants.field_options_by_year["2026"];
 const departmentOptions = constants.department_options;
 const activityOptions = constants.activity_options;
 const activityUnitOptions = constants.activity_unit_options;
@@ -67,8 +58,6 @@ export {
   energyUnitOptions,
   equipmentOptions,
   fieldOptions,
-  fieldOptionsByYear,
-  getFieldOptionsByYear,
   giftUnitOptions,
   internalVehicleOptions,
   roomOptions,
