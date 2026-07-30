@@ -121,15 +121,6 @@ function ProjectForm({
   });
 
   const {
-    fields: scope3Overnight,
-    append: appendScope3Overnight,
-    remove: removeScope3Overnight,
-  } = useFieldArray({
-    control,
-    name: "scope3_overnight",
-  });
-
-  const {
     fields: scope3OvernightOnCampus,
     append: appendScope3OvernightOnCampus,
     remove: removeScope3OvernightOnCampus,
@@ -319,7 +310,6 @@ function ProjectForm({
           scope2Entries={scope2Entries}
           scope3Attendee={scope3Attendee}
           scope3InternalVehicles={scope3InternalVehicles}
-          scope3Overnight={scope3Overnight}
           scope3OvernightOnCampus={scope3OvernightOnCampus}
           scope3OvernightOffCampus={scope3OvernightOffCampus}
           scope3Souvenir={scope3Souvenir}
@@ -341,8 +331,6 @@ function ProjectForm({
           appendScope3Attendee={appendScope3Attendee}
           removeScope3InternalVehicle={removeScope3InternalVehicle}
           appendScope3InternalVehicle={appendScope3InternalVehicle}
-          removeScope3Overnight={removeScope3Overnight}
-          appendScope3Overnight={appendScope3Overnight}
           removeScope3OvernightOnCampus={removeScope3OvernightOnCampus}
           appendScope3OvernightOnCampus={appendScope3OvernightOnCampus}
           removeScope3OvernightOffCampus={removeScope3OvernightOffCampus}

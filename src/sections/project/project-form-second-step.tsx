@@ -63,7 +63,6 @@ type TProjectFormSecondStepProps = {
   scope2Entries: Scope2EntryForm[];
   scope3Attendee: Scope3AttendeeForm[];
   scope3InternalVehicles: Scope3InternalVehicleForm[];
-  scope3Overnight: Scope3OvernightForm[];
   scope3OvernightOnCampus: Scope3OvernightForm[];
   scope3OvernightOffCampus: Scope3OvernightForm[];
   scope3Souvenir: Scope3SouvenirForm[];
@@ -85,8 +84,6 @@ type TProjectFormSecondStepProps = {
   appendScope3Attendee: (value: Scope3AttendeeForm) => void;
   removeScope3InternalVehicle: (index: number) => void;
   appendScope3InternalVehicle: (value: Scope3InternalVehicleForm) => void;
-  removeScope3Overnight: (index: number) => void;
-  appendScope3Overnight: (value: Scope3OvernightForm) => void;
   removeScope3OvernightOnCampus: (index: number) => void;
   appendScope3OvernightOnCampus: (value: Scope3OvernightForm) => void;
   removeScope3OvernightOffCampus: (index: number) => void;
@@ -135,7 +132,6 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     scope2Entries,
     scope3Attendee,
     scope3InternalVehicles,
-    scope3Overnight,
     scope3OvernightOnCampus,
     scope3OvernightOffCampus,
     scope3Souvenir,
@@ -157,8 +153,6 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     appendScope3Attendee,
     removeScope3InternalVehicle,
     appendScope3InternalVehicle,
-    removeScope3Overnight,
-    appendScope3Overnight,
     removeScope3OvernightOnCampus,
     appendScope3OvernightOnCampus,
     removeScope3OvernightOffCampus,
@@ -592,7 +586,15 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                       disabled
                     />
                   </Grid>
-                  <Grid size={{ xs: 7.5 }}>
+                  <Grid size={{ xs: 3 }}>
+                    <RHFDateTimePicker
+                      mode="date"
+                      name={`scope2_entries.${index}.date`}
+                      label="วันที่ใช้"
+                      helperText={errors.scope2_entries?.[index]?.date?.message}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 4.5 }}>
                     <Field.Text
                       type="number"
                       name={`scope2_entries.${index}.value`}
@@ -765,6 +767,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             meter_facilities: [],
             start_time: undefined,
             end_time: undefined,
+            date: undefined,
             meter_value: undefined,
             value: undefined,
             unit: "",

@@ -17,6 +17,7 @@ type Scope2EntryForm = {
   meter_facilities?: Array<string>;
   start_time?: string;
   end_time?: string;
+  date?: string;
 
   meter_value?: number;
   value?: number;

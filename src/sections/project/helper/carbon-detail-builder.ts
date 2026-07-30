@@ -1,4 +1,8 @@
-import type { CarbonDetail, CarbonInput } from "@/types/project/project";
+import type {
+  CarbonDetail,
+  CarbonInput,
+  EnergyItem,
+} from "@/types/project/project";
 import type { ProjectFormValues } from "../form/type";
 
 const toArray = <T>(values: T[] | undefined | null): T[] =>
@@ -48,11 +52,7 @@ function buildCarbonDetail(data: ProjectFormValues): CarbonDetail {
           date: item.date ?? "",
           value: item.value ?? 0,
         })) ?? [],
-      overnight:
-        data.scope3_overnight?.map((item) => ({
-          date: item.date ?? "",
-          value: item.value ?? 0,
-        })) ?? [],
+      overnight: [],
       souvenir:
         data.scope3_souvenir?.map((item) => ({
           type: item.type ?? "",
@@ -75,27 +75,34 @@ function buildCarbonDetail(data: ProjectFormValues): CarbonDetail {
 function buildCarbonInput(data: ProjectFormValues): CarbonInput {
   const scope2Entries = data.scope2_entries ?? [];
 
-  const energyBuildings = scope2Entries
-    .filter((item) => item.kind === "building" || item.kind === "meter")
-    .map((item) => ({
+  const energyItems: EnergyItem[] = scope2Entries.map((item) => {
+    if (item.kind === "meter") {
+      return {
+        type: "meter",
+        name: item.name?.trim() ?? "",
+        room: item.room?.trim() ?? "",
+        meter_value: item.meter_value ?? 0,
+      };
+    }
+
+    if (item.kind === "generator") {
+      return {
+        type: "generator",
+        unit: item.unit?.trim() ?? "",
+        value: item.value ?? 0,
+        date: item.date?.trim() || item.start_time?.trim() || "",
+      };
+    }
+
+    return {
+      type: "building",
       name: item.name?.trim() ?? "",
       room: item.room?.trim() ?? "",
-      start_time: item.start_time?.trim() ?? null,
-      end_time: item.end_time?.trim() ?? null,
-      facilities:
-        item.kind === "meter"
-          ? toArray(item.meter_facilities)
-          : toArray(item.building_facilities),
-      meter_value: item.meter_value ?? 0,
-    }));
-
-  const energyGenerators = scope2Entries
-    .filter((item) => item.kind === "generator")
-    .map((item) => ({
-      facilities: toArray(item.generator_facilities),
-      unit: item.unit?.trim() ?? "",
-      value: item.value ?? 0,
-    }));
+      facilities: toArray(item.building_facilities),
+      start_time: item.start_time?.trim() ?? "",
+      end_time: item.end_time?.trim() ?? "",
+    };
+  });
 
   return {
     food_beverage: {
@@ -107,8 +114,7 @@ function buildCarbonInput(data: ProjectFormValues): CarbonInput {
         })) ?? [],
     },
     energy: {
-      buildings: energyBuildings,
-      generators: energyGenerators,
+      items: energyItems,
     },
     other: {
       attendees:
@@ -283,8 +289,11 @@ function buildRealtimeCarbonDetail(
   };
 }
 
-function buildRealtimeCarbonInput(data: ProjectFormValues): RealtimeCarbonInput {
+function buildRealtimeCarbonInput(
+  data: ProjectFormValues,
+): RealtimeCarbonInput {
   const base = buildCarbonInput(data);
+  const scope2Entries = data.scope2_entries ?? [];
 
   return {
     food_beverage: {
@@ -295,19 +304,26 @@ function buildRealtimeCarbonInput(data: ProjectFormValues): RealtimeCarbonInput 
       })),
     },
     energy: {
-      buildings: toArray(base.energy.buildings).map((building) => ({
-        name: building.name,
-        room: building.room,
-        facilities: toArray(building.facilities),
-        start_time: toValidDate(building.start_time),
-        end_time: toValidDate(building.end_time),
-        meter_value: building.meter_value,
-      })),
-      generators: toArray(base.energy.generators).map((generator) => ({
-        facilities: toArray(generator.facilities),
-        unit: generator.unit,
-        value: generator.value,
-      })),
+      buildings: scope2Entries
+        .filter((item) => item.kind === "building" || item.kind === "meter")
+        .map((item) => ({
+          name: item.name?.trim() ?? "",
+          room: item.room?.trim() ?? "",
+          facilities:
+            item.kind === "meter"
+              ? toArray(item.meter_facilities)
+              : toArray(item.building_facilities),
+          start_time: toValidDate(item.start_time),
+          end_time: toValidDate(item.end_time),
+          meter_value: item.meter_value ?? 0,
+        })),
+      generators: scope2Entries
+        .filter((item) => item.kind === "generator")
+        .map((item) => ({
+          facilities: toArray(item.generator_facilities),
+          unit: item.unit?.trim() ?? "",
+          value: item.value ?? 0,
+        })),
     },
     other: {
       attendees: toArray(base.other.attendees).map((attendee) => ({

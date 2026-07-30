@@ -71,6 +71,7 @@ const Scope2EntrySchema = z
     meter_facilities: z.array(z.string()).optional(),
     start_time: z.string().optional(),
     end_time: z.string().optional(),
+    date: z.string().optional(),
     meter_value: z.preprocess(
       toOptionalNumber,
       z.number().positive("กรุณากรอกค่าที่ไม่ติดลบ").optional(),
@@ -127,6 +128,13 @@ const Scope2EntrySchema = z
     }
 
     if (data.kind === "generator") {
+      if (!data.date?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["date"],
+          message: "กรุณาเลือกวันที่ใช้",
+        });
+      }
       if (data.value == null) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -401,6 +409,7 @@ const defaultValues: ProjectFormValues = {
       meter_facilities: [],
       start_time: undefined,
       end_time: undefined,
+      date: undefined,
       meter_value: undefined,
       value: undefined,
       unit: "",
