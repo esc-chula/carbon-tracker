@@ -141,14 +141,6 @@ const Scope2EntrySchema = z
           message: "กรุณาเลือกหน่วย",
         });
       }
-
-      if (!data.generator_facilities?.length) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["generator_facilities"],
-          message: "กรุณาเลือกอุปกรณ์ที่ใช้",
-        });
-      }
     }
 
     if (data.kind === "meter") {
@@ -313,7 +305,6 @@ const ProjectFormStepTwoSchema = z.object({
   scope2_entries: z.array(Scope2EntrySchema).optional(),
   scope3_attendee: z.array(Scope3AttendeeSchema),
   scope3_internal_vehicles: z.array(Scope3InternalVehicleSchema).optional(),
-  scope3_overnight: z.array(Scope3OvernightSchema).optional(),
   scope3_overnight_on_campus: z.array(Scope3OvernightSchema).optional(),
   scope3_overnight_off_campus: z.array(Scope3OvernightSchema).optional(),
   scope3_souvenir: z.array(Scope3SouvenirSchema).optional(),
@@ -419,7 +410,6 @@ const defaultValues: ProjectFormValues = {
   scope3_internal_vehicles: [
     { vehicle_type: "", distance_km: undefined, people_count: undefined },
   ],
-  scope3_overnight: [],
   scope3_overnight_on_campus: [{ date: undefined, value: undefined }],
   scope3_overnight_off_campus: [{ date: undefined, value: undefined }],
   scope3_souvenir: [{ type: "", value: undefined, unit: "" }],

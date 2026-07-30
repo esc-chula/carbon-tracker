@@ -73,8 +73,6 @@ type ProjectFormValues = {
   scope2_entries?: Array<Scope2EntryForm>;
   scope3_attendee: Array<Scope3AttendeeForm>;
   scope3_internal_vehicles?: Array<Scope3InternalVehicleForm>;
-  /** @deprecated Use scope3_overnight_on_campus or scope3_overnight_off_campus. */
-  scope3_overnight?: Array<Scope3OvernightForm>;
   scope3_overnight_on_campus?: Array<Scope3OvernightForm>;
   scope3_overnight_off_campus?: Array<Scope3OvernightForm>;
   scope3_souvenir?: Array<Scope3SouvenirForm>;
