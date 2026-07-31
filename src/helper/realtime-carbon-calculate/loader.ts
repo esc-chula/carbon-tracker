@@ -1,26 +1,15 @@
-import type { RealtimeCarbonDetail } from "@/sections/project/helper/carbon-detail-builder";
+import type { RealtimeCarbonInput } from "@/sections/project/helper/carbon-detail-builder";
 
 type CarbonCalculatorResult = {
-  scope1?: {
-    activity?: number;
-  };
-  scope2?: {
-    building?: number;
-    generator?: number;
-  };
-  scope3?: {
-    transportation?: number;
-    attendee?: number;
-    overnight?: number;
-    souvenir?: number;
-    waste?: number;
-  };
+  scope1?: number;
+  scope2?: number;
+  scope3?: number;
   total?: number;
   error?: string;
 };
 
 type CarbonCalculator = (
-  carbonDetail: RealtimeCarbonDetail,
+  carbonInput: RealtimeCarbonInput,
   emissionFactors: Record<string, number>,
   csvContent: string,
 ) => CarbonCalculatorResult;

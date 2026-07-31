@@ -47,7 +47,7 @@ import {
   wasteOptions,
   type TRoom,
 } from "./form/constant";
-import { buildRealtimeCarbonDetail } from "./helper/carbon-detail-builder";
+import { buildRealtimeCarbonInput } from "./helper/carbon-detail-builder";
 import ProjectCarbonDetail from "./project-carbon-detail";
 import ProjectRejectDetailButton from "./project-reject-detail-button";
 import { StyledAddButton, StyledStack } from "./styles";
@@ -189,8 +189,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
 
   const watchedValues = watch();
 
-  const realtimeCarbonDetail = useMemo(
-    () => buildRealtimeCarbonDetail(watchedValues),
+  const realtimeCarbonInput = useMemo(
+    () => buildRealtimeCarbonInput(watchedValues),
     [watchedValues],
   );
 
@@ -373,7 +373,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     const timeoutId = setTimeout(() => {
       try {
         const result = calculatorRef.current!(
-          realtimeCarbonDetail,
+          realtimeCarbonInput,
           emissionFactors,
           csvContent,
         );
@@ -386,15 +386,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
         }
 
         const summary: CarbonSummary = {
-          scope1: result.scope1?.activity ?? 0,
-          scope2:
-            (result.scope2?.building ?? 0) + (result.scope2?.generator ?? 0),
-          scope3:
-            (result.scope3?.transportation ?? 0) +
-            (result.scope3?.attendee ?? 0) +
-            (result.scope3?.overnight ?? 0) +
-            (result.scope3?.souvenir ?? 0) +
-            (result.scope3?.waste ?? 0),
+          scope1: result.scope1 ?? 0,
+          scope2: result.scope2 ?? 0,
+          scope3: result.scope3 ?? 0,
           total: result.total ?? 0,
         };
 
@@ -421,7 +415,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     calculatorLoaded,
     emissionFactors,
     emissionFactorErrorMessage,
-    realtimeCarbonDetail,
+    realtimeCarbonInput,
     csvContent,
   ]);
 
