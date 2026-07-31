@@ -8,8 +8,6 @@ export type PolicyImplementationPhoto = {
   storage_key: string;
   filename: string;
   mime_type: string;
-  size?: number;
-  size_bytes?: number;
   url?: string;
 };
 

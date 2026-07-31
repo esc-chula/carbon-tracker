@@ -27,13 +27,15 @@ function formatFileSize(bytes?: number | null): string {
 
 function PolicyPhotoFileRow({ photo }: { photo: PolicyImplementationPhoto }) {
   const canDownload = Boolean(photo.url);
-  const metadataSize = photo.size ?? photo.size_bytes;
   const [fileSize, setFileSize] = useState<number | null | undefined>(
-    metadataSize,
+    undefined,
   );
 
   useEffect(() => {
-    if (metadataSize !== undefined || !photo.url) return;
+    if (!photo.url) {
+      setFileSize(null);
+      return;
+    }
 
     let ignore = false;
 
@@ -61,7 +63,7 @@ function PolicyPhotoFileRow({ photo }: { photo: PolicyImplementationPhoto }) {
     return () => {
       ignore = true;
     };
-  }, [metadataSize, photo.url]);
+  }, [photo.url]);
 
   const handleDownload = () => {
     if (!photo.url) return;

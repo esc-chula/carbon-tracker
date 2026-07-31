@@ -73,6 +73,8 @@ function ProjectEditView() {
   }, [canEditProject, owner.isSuccess, project.isSuccess, projectId, router]);
 
   const fallbackOwner = owner.data?.owner ?? null;
+  const hasTransportationData =
+    (project.data?.project.carbon_input.other.transportations?.length ?? 0) > 0;
 
   const transportationsCsvQuery = useQuery<File | null>({
     queryKey: ["project-transportations-csv", projectId],
@@ -96,7 +98,7 @@ function ProjectEditView() {
         throw error;
       }
     },
-    enabled: canEditProject && projectId.length > 0,
+    enabled: canEditProject && projectId.length > 0 && hasTransportationData,
   });
 
   const transportationsCsvFile = transportationsCsvQuery.data ?? null;
