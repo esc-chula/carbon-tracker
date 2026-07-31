@@ -1,20 +1,3 @@
-export type CarbonDetail = {
-  scope1: {
-    activities: Scope1Activity[] | null;
-  };
-  scope2: {
-    buildings: LegacyScope2Building[] | null;
-    generators: LegacyScope2Generator[] | null;
-  };
-  scope3: {
-    attendee: Scope3Attendee[] | null;
-    overnight: Scope3Overnight[] | null;
-    souvenir: Scope3Souvenir[] | null;
-    transportations?: Scope3Transportation[] | null;
-    waste: Scope3Waste[] | null;
-  };
-};
-
 export type ProjectInfo = {
   environmental_policy: string;
   policy_implementation_suggestion: string;
@@ -49,21 +32,6 @@ export type CarbonInput = {
 };
 
 type ISODateTime = string;
-
-type LegacyScope2Building = {
-  name: string;
-  room: string;
-  start_time: ISODateTime | null;
-  end_time: ISODateTime | null;
-  meter_value: number;
-  facilities: string[] | null;
-};
-
-type LegacyScope2Generator = {
-  facilities: string[] | null;
-  unit: string;
-  value: number;
-};
 
 // --- Scope 1
 export type Scope1Activity = {

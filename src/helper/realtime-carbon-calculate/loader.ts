@@ -1,4 +1,4 @@
-import type { RealtimeCarbonInput } from "@/sections/project/helper/carbon-detail-builder";
+import type { CarbonInput } from "@/types/project/project";
 
 type CarbonCalculatorResult = {
   scope1?: number;
@@ -9,7 +9,7 @@ type CarbonCalculatorResult = {
 };
 
 type CarbonCalculator = (
-  carbonInput: RealtimeCarbonInput,
+  carbonInput: CarbonInput,
   emissionFactors: Record<string, number>,
   csvContent: string,
 ) => CarbonCalculatorResult;
