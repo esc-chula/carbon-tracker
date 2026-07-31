@@ -156,10 +156,23 @@ function ProjectPolicyInformation({
           alignItems: "start",
         }}
       >
-        <Typography variant="body2" fontWeight={500} color="#637381">
+        <Typography
+          variant="body2"
+          fontWeight={500}
+          color="#637381"
+          sx={{ minWidth: 0 }}
+        >
           นโยบายสิ่งแวดล้อม
         </Typography>
-        <Typography variant="body2" fontWeight={500}>
+        <Typography
+          variant="body2"
+          fontWeight={500}
+          sx={{
+            minWidth: 0,
+            overflowWrap: "anywhere",
+            whiteSpace: "pre-wrap",
+          }}
+        >
           {data.environmental_policy}
         </Typography>
       </Box>
@@ -172,10 +185,23 @@ function ProjectPolicyInformation({
           alignItems: "start",
         }}
       >
-        <Typography variant="body2" fontWeight={500} color="#637381">
+        <Typography
+          variant="body2"
+          fontWeight={500}
+          color="#637381"
+          sx={{ minWidth: 0 }}
+        >
           ข้อเสนอแนะในการดำเนินนโยบาย
         </Typography>
-        <Typography variant="body2" fontWeight={500}>
+        <Typography
+          variant="body2"
+          fontWeight={500}
+          sx={{
+            minWidth: 0,
+            overflowWrap: "anywhere",
+            whiteSpace: "pre-wrap",
+          }}
+        >
           {data.policy_implementation_suggestion}
         </Typography>
       </Box>

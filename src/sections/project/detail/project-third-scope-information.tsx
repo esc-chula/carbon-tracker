@@ -220,23 +220,23 @@ function ProjectThirdScopeInformation({
         </Stack>
       </Stack>
 
-
       <ContainerWithOutlined borderRadius={2}>
         <Typography variant="h5" fontSize={14}>
-            การเดินทางของผู้เข้าร่วมและ staff
+          การเดินทางของผู้เข้าร่วมและ staff
         </Typography>
-          {canDownloadCsv && (
-            <Stack spacing={2}>
-              <CSVUploadField
-                name="transportations_csv_file"
-                control={control}
-                disabled
-                onDownload={handleDownloadCsv}
-              />
 
-              {transportationChildren}
-            </Stack>
+        <Stack spacing={2}>
+          {canDownloadCsv && (
+            <CSVUploadField
+              name="transportations_csv_file"
+              control={control}
+              disabled
+              onDownload={handleDownloadCsv}
+            />
           )}
+
+          {transportationChildren}
+        </Stack>
       </ContainerWithOutlined>
 
       <ContainerWithOutlined borderRadius={2}>

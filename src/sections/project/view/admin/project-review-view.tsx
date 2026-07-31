@@ -278,6 +278,28 @@ function ProjectReviewView() {
     name: REJECTION_NOTE_CONFIGS.map((config) => config.passedPath),
   }) as Array<string | boolean | undefined>;
 
+  const hasTransportationData =
+    (project.data?.project.carbon_input.other.transportations?.length ?? 0) > 0;
+
+  useEffect(() => {
+    if (!project.isSuccess || hasTransportationData) {
+      return;
+    }
+
+    setValue("detail.other.transportations.passed", true, {
+      shouldDirty: false,
+      shouldValidate: false,
+    });
+    setValue("detail.other.transportations.rejection_notes", [], {
+      shouldDirty: false,
+      shouldValidate: false,
+    });
+    clearErrors([
+      "detail.other.transportations.passed",
+      "detail.other.transportations.rejection_notes",
+    ]);
+  }, [project.isSuccess, hasTransportationData, clearErrors, setValue]);
+
   useEffect(() => {
     REJECTION_NOTE_CONFIGS.forEach((config, index) => {
       const rawPassed = passedValues?.[index];
@@ -551,13 +573,17 @@ function ProjectReviewView() {
               projectId={project.data?.project.id}
               ownerId={project.data.project.owner_id}
               carbon={carbonUsageScope3}
-              transportationChildren={renderReviewSection(
-                "detail.other.transportations.passed",
-                errors.detail?.other?.transportations?.passed?.message,
-                otherTransportationsRejectionNotes,
-                appendOtherTransportationsRejectionNote,
-                removeOtherTransportationsRejectionNote,
-              )}
+              transportationChildren={
+                hasTransportationData
+                  ? renderReviewSection(
+                      "detail.other.transportations.passed",
+                      errors.detail?.other?.transportations?.passed?.message,
+                      otherTransportationsRejectionNotes,
+                      appendOtherTransportationsRejectionNote,
+                      removeOtherTransportationsRejectionNote,
+                    )
+                  : null
+              }
               attendeeChildren={renderReviewSection(
                 "detail.other.attendees.passed",
                 errors.detail?.other?.attendees?.passed?.message,
