@@ -208,23 +208,7 @@ type RealtimeCarbonDetail = {
   };
 };
 
-type RealtimeCarbonInput = {
-  food_beverage: RealtimeCarbonDetail["scope1"];
-  energy: RealtimeCarbonDetail["scope2"];
-  other: {
-    attendees: RealtimeCarbonDetail["scope3"]["attendee"];
-    internal_vehicles: Array<{
-      distance_km: number;
-      people_count: number;
-      vehicle_type: string;
-    }>;
-    overnight_on_campus: RealtimeCarbonDetail["scope3"]["overnight"];
-    overnight_off_campus: RealtimeCarbonDetail["scope3"]["overnight"];
-    souvenirs: RealtimeCarbonDetail["scope3"]["souvenir"];
-    transportations: RealtimeCarbonDetail["scope3"]["transportations"];
-    waste: RealtimeCarbonDetail["scope3"]["waste"];
-  };
-};
+type RealtimeCarbonInput = CarbonInput;
 
 const toValidDate = (value: string | null | undefined): RealTimeDate => {
   if (!value) return undefined;
@@ -292,81 +276,7 @@ function buildRealtimeCarbonDetail(
 function buildRealtimeCarbonInput(
   data: ProjectFormValues,
 ): RealtimeCarbonInput {
-  const base = buildCarbonInput(data);
-  const scope2Entries = data.scope2_entries ?? [];
-
-  return {
-    food_beverage: {
-      activities: toArray(base.food_beverage.activities).map((activity) => ({
-        name: activity.name,
-        unit: activity.unit,
-        value: activity.value,
-      })),
-    },
-    energy: {
-      buildings: scope2Entries
-        .filter((item) => item.kind === "building" || item.kind === "meter")
-        .map((item) => ({
-          name: item.name?.trim() ?? "",
-          room: item.room?.trim() ?? "",
-          facilities:
-            item.kind === "meter"
-              ? toArray(item.meter_facilities)
-              : toArray(item.building_facilities),
-          start_time: toValidDate(item.start_time),
-          end_time: toValidDate(item.end_time),
-          meter_value: item.meter_value ?? 0,
-        })),
-      generators: scope2Entries
-        .filter((item) => item.kind === "generator")
-        .map((item) => ({
-          facilities: toArray(item.generator_facilities),
-          unit: item.unit?.trim() ?? "",
-          value: item.value ?? 0,
-        })),
-    },
-    other: {
-      attendees: toArray(base.other.attendees).map((attendee) => ({
-        date: toValidDate(attendee.date),
-        value: attendee.value,
-      })),
-      internal_vehicles: toArray(base.other.internal_vehicles).map(
-        (vehicle) => ({
-          distance_km: vehicle.distance_km,
-          people_count: vehicle.people_count,
-          vehicle_type: vehicle.vehicle_type,
-        }),
-      ),
-      overnight_on_campus: toArray(base.other.overnight_on_campus).map(
-        (overnight) => ({
-          date: toValidDate(overnight.date),
-          value: overnight.value,
-        }),
-      ),
-      overnight_off_campus: toArray(base.other.overnight_off_campus).map(
-        (overnight) => ({
-          date: toValidDate(overnight.date),
-          value: overnight.value,
-        }),
-      ),
-      souvenirs: toArray(base.other.souvenirs).map((souvenir) => ({
-        type: souvenir.type,
-        unit: souvenir.unit,
-        value: souvenir.value,
-      })),
-      transportations: toArray(base.other.transportations).map(
-        (transportation) => ({
-          type: transportation.type,
-          origin: transportation.origin,
-        }),
-      ),
-      waste: toArray(base.other.waste).map((waste) => ({
-        type: waste.type,
-        unit: waste.unit,
-        value: waste.value,
-      })),
-    },
-  };
+  return buildCarbonInput(data);
 }
 
 export {
