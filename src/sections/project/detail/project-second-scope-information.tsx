@@ -97,21 +97,33 @@ function ProjectSecondScopeInformation({
       </Stack>
 
       {buildingRows.length > 0 && (
-        <TableCustom
-          rows={buildingRows}
-          columns={buildingColumns}
-          showIndex
-          indexHeader="รายการที่"
-        />
+        <Stack spacing={1.5}>
+          <Typography variant="body2" fontWeight={700}>
+            การใช้งานอาคาร
+          </Typography>
+
+          <TableCustom
+            rows={buildingRows}
+            columns={buildingColumns}
+            showIndex
+            indexHeader="รายการที่"
+          />
+        </Stack>
       )}
 
       {meterRows.length > 0 && (
-        <TableCustom
-          rows={meterRows}
-          columns={meterColumns}
-          showIndex
-          indexHeader="รายการที่"
-        />
+        <Stack spacing={1.5}>
+          <Typography variant="body2" fontWeight={700}>
+            มิเตอร์ไฟฟ้า
+          </Typography>
+
+          <TableCustom
+            rows={meterRows}
+            columns={meterColumns}
+            showIndex
+            indexHeader="รายการที่"
+          />
+        </Stack>
       )}
 
       <Stack direction="row" spacing={0.5}>
