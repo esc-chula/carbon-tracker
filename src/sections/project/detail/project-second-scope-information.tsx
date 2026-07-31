@@ -96,19 +96,23 @@ function ProjectSecondScopeInformation({
         </Stack>
       </Stack>
 
-      <TableCustom
-        rows={buildingRows}
-        columns={buildingColumns}
-        showIndex
-        indexHeader="รายการที่"
-      />
+      {buildingRows.length > 0 && (
+        <TableCustom
+          rows={buildingRows}
+          columns={buildingColumns}
+          showIndex
+          indexHeader="รายการที่"
+        />
+      )}
 
-      <TableCustom
-        rows={meterRows}
-        columns={meterColumns}
-        showIndex
-        indexHeader="รายการที่"
-      />
+      {meterRows.length > 0 && (
+        <TableCustom
+          rows={meterRows}
+          columns={meterColumns}
+          showIndex
+          indexHeader="รายการที่"
+        />
+      )}
 
       <Stack direction="row" spacing={0.5}>
         <Box
