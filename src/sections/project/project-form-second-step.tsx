@@ -851,9 +851,6 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
       <StyledStack sx={{ borderRadius: 2 }}>
         <Typography variant="body2" fontWeight={700}>
           การเดินทางของผู้เข้าร่วมและ staff
-          <Typography component="span" color="red">
-            *
-          </Typography>
         </Typography>
         <Typography variant="caption" color={greyColor}>
           การเดินทางของผู้เข้าร่วมและ staff มาที่คณะวิศวกรรมศาสตร์
