@@ -6,7 +6,7 @@ import type {
   ProjectInfo,
 } from "@/types/project/project";
 import { Box, Stack, Typography } from "@mui/material";
-import { useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 type ProjectPolicyInformationProps = {
   data: ProjectInfo;
@@ -27,43 +27,6 @@ function formatFileSize(bytes?: number | null): string {
 
 function PolicyPhotoFileRow({ photo }: { photo: PolicyImplementationPhoto }) {
   const canDownload = Boolean(photo.url);
-  const [fileSize, setFileSize] = useState<number | null | undefined>(
-    undefined,
-  );
-
-  useEffect(() => {
-    if (!photo.url) {
-      setFileSize(null);
-      return;
-    }
-
-    let ignore = false;
-
-    async function fetchPhotoSize() {
-      try {
-        const response = await fetch(photo.url as string);
-        if (!response.ok) {
-          throw new Error("Failed to fetch policy photo");
-        }
-
-        const blob = await response.blob();
-
-        if (!ignore) {
-          setFileSize(blob.size);
-        }
-      } catch {
-        if (!ignore) {
-          setFileSize(null);
-        }
-      }
-    }
-
-    void fetchPhotoSize();
-
-    return () => {
-      ignore = true;
-    };
-  }, [photo.url]);
 
   const handleDownload = () => {
     if (!photo.url) return;
@@ -123,7 +86,7 @@ function PolicyPhotoFileRow({ photo }: { photo: PolicyImplementationPhoto }) {
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography variant="body2" color="text.secondary">
-              {formatFileSize(fileSize)}
+              {formatFileSize(photo.size)}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               •

@@ -7,6 +7,7 @@ export type ProjectInfo = {
 export type PolicyImplementationPhoto = {
   storage_key: string;
   filename: string;
+  size?: number;
   mime_type: string;
   url?: string;
 };
