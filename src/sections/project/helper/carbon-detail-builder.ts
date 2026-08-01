@@ -22,7 +22,7 @@ function buildCarbonInput(data: ProjectFormValues): CarbonInput {
         type: "generator",
         unit: item.unit?.trim() ?? "",
         value: item.value ?? 0,
-        date: item.date?.trim() || item.start_time?.trim() || "",
+        date: item.date?.trim() ?? item.start_time?.trim() ?? "",
       };
     }
 

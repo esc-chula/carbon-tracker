@@ -298,7 +298,7 @@ export default function PolicyPhotoUploadField<
                       >
                         <Box
                           component="img"
-                          src={photo.url || "/assets/icons/ic-file.svg"}
+                          src={photo.url ?? "/assets/icons/ic-file.svg"}
                           width={32}
                           height={32}
                           sx={{
@@ -384,9 +384,9 @@ export default function PolicyPhotoUploadField<
                 </Stack>
               )}
 
-              {(selectionError || fieldState.error?.message) && (
+              {(selectionError ?? fieldState.error?.message) && (
                 <Alert severity="error" sx={{ mt: 2 }}>
-                  {selectionError || fieldState.error?.message}
+                  {selectionError ?? fieldState.error?.message}
                 </Alert>
               )}
 
