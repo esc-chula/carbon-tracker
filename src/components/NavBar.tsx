@@ -49,6 +49,11 @@ export default function NavBar() {
     setAnchorEl(null);
   };
 
+  const handleContactClick = () => {
+    handleClose();
+    router.push("/contact");
+  };
+
   const handleYearChange = (year: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("year", year);
@@ -101,7 +106,7 @@ export default function NavBar() {
                     sx={{ width: 24, height: 24 }}
                   />
                 }
-                // onClick={() => router.replace("/")}
+                onClick={handleContactClick}
               >
                 <Typography
                   sx={{
@@ -267,7 +272,7 @@ export default function NavBar() {
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
-                  <MenuItem onClick={handleClose} sx={{ py: 0.75 }}>
+                  <MenuItem onClick={handleContactClick} sx={{ py: 0.75 }}>
                     <ListItemIcon>
                       <Box
                         component="img"
