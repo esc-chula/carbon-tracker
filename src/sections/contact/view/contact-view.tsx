@@ -1,4 +1,4 @@
-import { Divider, Grid, Paper, Stack, Typography } from "@mui/material";
+import { Box, Divider, Grid, Paper, Stack, Typography } from "@mui/material";
 
 type Contact = {
   role: string;
@@ -34,7 +34,7 @@ const CONTACTS: Contact[] = [
 
 function ContactView() {
   return (
-    <Stack spacing={6} sx={{ py: 4 }}>
+    <Stack spacing={6} sx={{ position: "relative", py: 4 }}>
       <Typography variant="h1" fontWeight={700} sx={{ mb: 16 }}>
         ข้อมูลติดต่อ
       </Typography>
@@ -46,6 +46,56 @@ function ContactView() {
           </Grid>
         ))}
       </Grid>
+
+      <Box
+        component="img"
+        src="/assets/icons/Group%201.svg"
+        alt=""
+        sx={{
+          position: "absolute",
+          right: 0,
+          bottom: 102,
+          zIndex: 1,
+          width: 220,
+        }}
+      />
+
+      <Paper
+        elevation={0}
+        sx={{
+          width: 1,
+          p: 3,
+          borderRadius: 1.5,
+          boxShadow: "0 3px 6px rgba(33, 43, 54, 0.25)",
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={1.5}
+          sx={{ alignItems: "center", justifyContent: "center" }}
+        >
+          <Typography
+            sx={{
+              color: "#637381",
+              fontSize: 20,
+              fontWeight: 500,
+              lineHeight: "20px",
+            }}
+          >
+            อีเมลฝ่ายความยั่งยืน:
+          </Typography>
+          <Typography
+            sx={{
+              color: "#036846",
+              fontSize: 20,
+              fontWeight: 500,
+              lineHeight: "20px",
+            }}
+          >
+            Sustainability.esc@gmail.com
+          </Typography>
+        </Stack>
+      </Paper>
     </Stack>
   );
 }
