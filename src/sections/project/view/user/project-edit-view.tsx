@@ -19,12 +19,12 @@ import type { ProjectFormValues } from "../../form/type";
 import { projectToFormValues } from "../../helper/project-to-form-values";
 import UpdateProjectFormatter from "../../helper/update-project-formatter";
 import { canModifyProject } from "@/helper/project-permissions";
+import { messageFromSubmitError } from "@/lib/http-error-message";
 import ProjectForm, {
   type ProjectFormConfirmHandlerArgs,
 } from "../../project-form";
 import ProjectFormStepper from "../../project-form-stepper";
 import { HTTPError } from "ky";
-import { mapApiErrorToMessage } from "@/lib/error-mapping";
 
 // ---------------------------------------------------------------------------------
 
@@ -139,11 +139,10 @@ function ProjectEditView() {
 
       showSuccess("บันทึกแบบร่างสำเร็จ");
     } catch (error) {
-      let errorMessage = "ส่งแบบฟอร์มไม่สำเร็จ";
-      if (error instanceof HTTPError) {
-        const errorData = await error.response.json();
-        errorMessage = mapApiErrorToMessage(errorData, errorMessage);
-      }
+      const errorMessage = await messageFromSubmitError(
+        error,
+        "ส่งแบบฟอร์มไม่สำเร็จ",
+      );
       showError(errorMessage);
     }
   };
@@ -153,9 +152,14 @@ function ProjectEditView() {
     submit,
     closeDialog,
   }: ProjectFormConfirmHandlerArgs) => {
-    const runSubmit = formHandleSubmit((formData) => {
-      void submit(formData, "pending");
-    });
+    const runSubmit = formHandleSubmit(
+      (formData) => {
+        void submit(formData, "pending");
+      },
+      () => {
+        showError("กรุณาตรวจสอบข้อมูลในฟอร์มให้ครบและถูกต้อง");
+      },
+    );
 
     void runSubmit();
     closeDialog();

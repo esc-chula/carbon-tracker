@@ -13,9 +13,8 @@ import type { ProjectFormValues } from "../../form/type";
 import { useCreateProjectMutation } from "@/services/project/mutation";
 import CreateProjectFormatter from "../../helper/create-project-formatter";
 import { showError, showSuccess } from "@/components/toast/toast";
+import { messageFromSubmitError } from "@/lib/http-error-message";
 import type { TProjectStatus } from "@/types/project/list-project";
-import { HTTPError } from "ky";
-import { mapApiErrorToMessage } from "@/lib/error-mapping";
 
 // ---------------------------------------------------------------------------------
 
@@ -73,11 +72,10 @@ function ProjectCreateView() {
         return;
       }
     } catch (error) {
-      let errorMessage = "ส่งแบบฟอร์มไม่สำเร็จ";
-      if (error instanceof HTTPError) {
-        const errorData = await error.response.json();
-        errorMessage = mapApiErrorToMessage(errorData, errorMessage);
-      }
+      const errorMessage = await messageFromSubmitError(
+        error,
+        "ส่งแบบฟอร์มไม่สำเร็จ",
+      );
       showError(errorMessage);
     }
   };
@@ -87,11 +85,14 @@ function ProjectCreateView() {
     submit,
     closeDialog,
   }: ProjectFormConfirmHandlerArgs) => {
-    const runSubmit = handleSubmit((data) => {
-      void submit(data, "pending");
-    });
-
-    void runSubmit();
+    void handleSubmit(
+      (data) => {
+        void submit(data, "pending");
+      },
+      () => {
+        showError("กรุณาตรวจสอบข้อมูลในฟอร์มให้ครบและถูกต้อง");
+      },
+    )();
 
     closeDialog();
   };
