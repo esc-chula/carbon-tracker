@@ -51,6 +51,7 @@ import { buildRealtimeCarbonInput } from "./helper/carbon-detail-builder";
 import ProjectCarbonDetail from "./project-carbon-detail";
 import ProjectRejectDetailButton from "./project-reject-detail-button";
 import { StyledAddButton, StyledStack } from "./styles";
+import { showError } from "@/components/toast/toast";
 
 // ---------------------------------------------------------------------------------
 type Params = {
@@ -1375,7 +1376,11 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 color="secondary"
                 disabled={confirmDisabled}
                 onClick={() => {
-                  void handleSubmit((data) => onSubmit(data, "draft"))();
+                  void handleSubmit(
+                    (data) => onSubmit(data, "draft"),
+                    () =>
+                      showError("กรุณาตรวจสอบข้อมูลในฟอร์มให้ครบและถูกต้อง"),
+                  )();
                 }}
               >
                 บันทึกแบบร่าง

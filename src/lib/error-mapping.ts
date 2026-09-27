@@ -6,28 +6,86 @@ const errorMapping: Record<string, string> = {
   INTERNAL_ERROR: "ระบบเกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง",
 };
 
+const GENERIC_TITLES = new Set([
+  "Bad Request",
+  "Unprocessable Entity",
+  "Unauthorized",
+  "Forbidden",
+  "Not Found",
+  "Internal Server Error",
+]);
+
 export interface ApiErrorResponse {
   title: string;
+  detail?: string;
+  errors?: ApiErrorDetail[] | null;
+  status?: number;
 }
+
+export interface ApiErrorDetail {
+  message?: string;
+  location?: string;
+}
+
+const MAX_VALIDATION_LINES = 5;
 
 function isApiErrorResponse(error: unknown): error is ApiErrorResponse {
   return (
     typeof error === "object" &&
     error !== null &&
     "title" in error &&
-    typeof error.title === "string"
+    typeof (error as ApiErrorResponse).title === "string"
   );
 }
 
-export function mapApiErrorToMessage(error: unknown, fallback: string): string;
-export function mapApiErrorToMessage(error: unknown): string | undefined;
-
-export function mapApiErrorToMessage(error: unknown, fallback?: string) {
+export function formatApiErrorBody(
+  error: unknown,
+  fallback = "ส่งแบบฟอร์มไม่สำเร็จ",
+): string {
   if (!isApiErrorResponse(error)) {
     return fallback;
   }
 
-  const code = error.title;
+  const mappedCode = errorMapping[error.title];
+  if (mappedCode) {
+    return mappedCode;
+  }
 
-  return errorMapping[code] ?? fallback;
+  const validationMessage =
+    error.errors && error.errors.length > 0
+      ? formatValidationErrors(error.errors)
+      : undefined;
+  if (validationMessage) {
+    return validationMessage;
+  }
+
+  const detail = error.detail?.trim();
+  if (detail) {
+    return detail;
+  }
+
+  if (!GENERIC_TITLES.has(error.title)) {
+    return error.title;
+  }
+
+  return fallback;
+}
+
+function formatValidationErrors(errors: ApiErrorDetail[]): string | undefined {
+  const lines = errors
+    .map((entry) => {
+      const location = entry.location?.trim();
+      const message = entry.message?.trim();
+      if (location && message) return `${location}: ${message}`;
+      return message ?? location;
+    })
+    .filter((line): line is string => Boolean(line));
+
+  if (lines.length === 0) return undefined;
+
+  const shown = lines.slice(0, MAX_VALIDATION_LINES);
+  if (lines.length > MAX_VALIDATION_LINES) {
+    shown.push(`… และอีก ${lines.length - MAX_VALIDATION_LINES} รายการ`);
+  }
+  return shown.join("\n");
 }
