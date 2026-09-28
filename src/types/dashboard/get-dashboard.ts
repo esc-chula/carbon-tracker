@@ -10,6 +10,8 @@ export type TGetDashboardResponse = {
     current_year: number;
     carbon_emission_by_organization:
       | {
+          org: string;
+          org_detail: string;
           organization: string;
           percent: number;
           total: number;

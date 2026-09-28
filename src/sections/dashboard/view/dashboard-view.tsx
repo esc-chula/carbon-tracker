@@ -94,10 +94,10 @@ function DashboardView() {
         >
           <Stack>
             <Typography variant="h2" fontWeight={700}>
-              ฝ่ายใดปล่อยคาร์บอนจากการใช้ไฟฟ้ามากที่สุด
+              หน่วยงานไหนปล่อยคาร์บอนจากการใช้ไฟฟ้ามากที่สุด
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              ปริมาณการปล่อยคาร์บอนแยกตามฝ่าย
+              ปริมาณการปล่อยคาร์บอนแยกตามหน่วยงาน
             </Typography>
           </Stack>
 

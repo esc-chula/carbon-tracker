@@ -17,7 +17,7 @@ export interface paths {
          *     - current_year: current academic year
          *     - available_years: academic years present on non-deleted projects (always includes current_year), ascending
          *     - Total project count for the selected year
-         *     - Total carbon emissions grouped by organization, sorted by total carbon emission in descending order (If totals are equal, sort by organization name in ascending order)
+         *     - Total carbon emissions grouped by (org, org_detail), sorted by total descending (ties by org_detail then org ascending). Each item includes org, org_detail, and organization (deprecated alias of org_detail). ESC ฝ่าย (กวศ.) are always listed, including zeros; ชมรม/อื่นๆ appear when projects exist.
          *     - Carbon emission per-person (scope 1–3)
          *     - Activity heatmap data
          *
@@ -343,6 +343,11 @@ export interface components {
             scope3: components["schemas"]["Scope3WithTransportations"];
         };
         CarbonEmissionByOrganizationItem: {
+            /** @description Organization category: กวศ. | ชมรม | อื่นๆ (other normalized to อื่นๆ). */
+            org: string;
+            /** @description Detail within the category: ฝ่าย name, club name, or free-text label. */
+            org_detail: string;
+            /** @description Deprecated display alias; same value as org_detail. Prefer org_detail. */
             organization: string;
             /** Format: double */
             percent: number;
