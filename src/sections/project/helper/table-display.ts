@@ -53,11 +53,3 @@ export const getMajorAbbr = (major = ""): string => {
   };
   return map[clean] ?? clean;
 };
-
-export const getStudentYear = (studentId = ""): string | number => {
-  if (!studentId || studentId.length < 2) return "";
-  const prefix = parseInt(studentId.substring(0, 2));
-  if (Number.isNaN(prefix)) return "";
-  const currentYear = (new Date().getFullYear() + 543) % 100;
-  return currentYear - prefix;
-};

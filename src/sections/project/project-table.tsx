@@ -42,11 +42,7 @@ import { ownersQueryKeys } from "@/services/user/query/user-query";
 import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
 import { useBoolean } from "@/hooks/use-boolean";
 import { canModifyProject } from "@/helper/project-permissions";
-import {
-  getMajorAbbr,
-  getOrganizationText,
-  getStudentYear,
-} from "./helper/table-display";
+import { getMajorAbbr, getOrganizationText } from "./helper/table-display";
 
 dayjs.extend(buddhistEra);
 
@@ -269,8 +265,7 @@ export default function ProjectTable({
                       {getOrganizationText(row.org, row.org_detail)}
                     </StyledTableCell>
                     <StyledTableCell>
-                      {row.owner.nickname} #
-                      {getStudentYear(row.owner.student_id)}{" "}
+                      {row.owner.nickname} #{row.owner.student_year ?? ""}{" "}
                       {getMajorAbbr(row.owner.major)}
                     </StyledTableCell>
                     <StyledTableCell>
