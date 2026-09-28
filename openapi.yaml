@@ -72,7 +72,14 @@ components:
     CarbonEmissionByOrganizationItem:
       additionalProperties: false
       properties:
+        org:
+          description: "Organization category: กวศ. | ชมรม | อื่นๆ (other normalized to อื่นๆ)."
+          type: string
+        org_detail:
+          description: "Detail within the category: ฝ่าย name, club name, or free-text label."
+          type: string
         organization:
+          description: Deprecated display alias; same value as org_detail. Prefer org_detail.
           type: string
         percent:
           format: double
@@ -81,6 +88,8 @@ components:
           format: double
           type: number
       required:
+        - org
+        - org_detail
         - organization
         - total
         - percent
@@ -436,6 +445,10 @@ components:
           type: string
         student_id:
           type: string
+        student_year:
+          description: ชั้นปี derived from student_id vs current academic year (July–June). Omitted when it cannot be derived.
+          format: int64
+          type: integer
       required:
         - fullname
         - nickname
@@ -827,7 +840,7 @@ paths:
         - current_year: current academic year
         - available_years: academic years present on non-deleted projects (always includes current_year), ascending
         - Total project count for the selected year
-        - Total carbon emissions grouped by organization, sorted by total carbon emission in descending order (If totals are equal, sort by organization name in ascending order)
+        - Total carbon emissions grouped by (org, org_detail), sorted by total descending (ties by org_detail then org ascending). Each item includes org, org_detail, and organization (deprecated alias of org_detail). ESC ฝ่าย (กวศ.) are always listed, including zeros; ชมรม/อื่นๆ appear when projects exist.
         - Carbon emission per-person (scope 1–3)
         - Activity heatmap data
 
