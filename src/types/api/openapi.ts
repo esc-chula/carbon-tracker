@@ -539,6 +539,11 @@ export interface components {
             nickname: string;
             phone_number: string;
             student_id: string;
+            /**
+             * Format: int64
+             * @description ชั้นปี derived from student_id vs current academic year (July–June). Omitted when it cannot be derived.
+             */
+            student_year?: number;
         };
         ProjectDetail: {
             carbon_detail: components["schemas"]["CarbonDetailGenericScope3WithTransportations"];

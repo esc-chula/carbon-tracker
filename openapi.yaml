@@ -445,6 +445,10 @@ components:
           type: string
         student_id:
           type: string
+        student_year:
+          description: ชั้นปี derived from student_id vs current academic year (July–June). Omitted when it cannot be derived.
+          format: int64
+          type: integer
       required:
         - fullname
         - nickname

@@ -8,6 +8,7 @@ export type TOwner = {
   student_id: string;
   major: string;
   is_admin: boolean;
+  student_year?: number;
 };
 
 export type TGetOwnerResponse = {
