@@ -152,17 +152,19 @@ function ProjectEditView() {
     submit,
     closeDialog,
   }: ProjectFormConfirmHandlerArgs) => {
-    const runSubmit = formHandleSubmit(
-      (formData) => {
-        void submit(formData, "pending");
+    void formHandleSubmit(
+      async (formData) => {
+        try {
+          await submit(formData, "pending");
+        } finally {
+          closeDialog();
+        }
       },
       () => {
+        closeDialog();
         showError("กรุณาตรวจสอบข้อมูลในฟอร์มให้ครบและถูกต้อง");
       },
-    );
-
-    void runSubmit();
-    closeDialog();
+    )();
   };
 
   // --------------------------- Value ---------------------------
