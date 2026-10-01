@@ -86,15 +86,18 @@ function ProjectCreateView() {
     closeDialog,
   }: ProjectFormConfirmHandlerArgs) => {
     void handleSubmit(
-      (data) => {
-        void submit(data, "pending");
+      async (data) => {
+        try {
+          await submit(data, "pending");
+        } finally {
+          closeDialog();
+        }
       },
       () => {
+        closeDialog();
         showError("กรุณาตรวจสอบข้อมูลในฟอร์มให้ครบและถูกต้อง");
       },
     )();
-
-    closeDialog();
   };
 
   // --------------------------- Render ---------------------------

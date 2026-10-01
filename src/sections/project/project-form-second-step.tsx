@@ -1390,8 +1390,9 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
                 type="button"
                 variant="contained"
                 onClick={openDialog.onTrue}
+                disabled={confirmDisabled}
               >
-                ส่งแบบฟอร์ม
+                {confirmDisabled ? "กำลังส่ง..." : "ส่งแบบฟอร์ม"}
               </Button>
             </Stack>
           </Stack>
