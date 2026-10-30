@@ -244,6 +244,15 @@ const Scope3WasteSchema = z.object({
   unit: z.string().min(1, "กรุณาเลือกหน่วย"),
 });
 
+const GreenCateringSchema = z.object({
+  name: z.string().optional(),
+  contact: z.string().optional(),
+  location: z.string().optional(),
+  location_other: z.string().optional(),
+  packaging: z.string().optional(),
+  packaging_other: z.string().optional(),
+});
+
 const ProjectInfoSchema = z.object({
   environmental_policy: z.string().trim().min(1, "กรุณาระบุนโยบายสิ่งแวดล้อม"),
   policy_implementation_suggestion: z
@@ -317,6 +326,7 @@ const ProjectFormStepTwoSchema = z.object({
   scope3_overnight_off_campus: z.array(Scope3OvernightSchema).optional(),
   scope3_souvenir: z.array(Scope3SouvenirSchema).optional(),
   scope3_waste: z.array(Scope3WasteSchema).optional(),
+  green_catering: z.array(GreenCateringSchema).optional(),
   transportations_csv_file: z.any().optional(),
 });
 
@@ -368,6 +378,7 @@ const ProjectFormSchema = ProjectFormStepOneBaseSchema.merge(ProjectInfoSchema)
 
 // Export schemas
 export {
+  GreenCateringSchema,
   ProjectInfoSchema,
   ProjectFormSchema,
   ProjectFormStepOneSchema,
@@ -423,6 +434,16 @@ const defaultValues: ProjectFormValues = {
   scope3_overnight_off_campus: [{ date: undefined, value: undefined }],
   scope3_souvenir: [{ type: "", value: undefined, unit: "" }],
   scope3_waste: [{ type: "", value: undefined, unit: "" }],
+  green_catering: [
+    {
+      name: "",
+      contact: "",
+      location: "",
+      location_other: "",
+      packaging: "",
+      packaging_other: "",
+    },
+  ],
   field: "",
   clubName: "",
   otherUnderProject: "",
