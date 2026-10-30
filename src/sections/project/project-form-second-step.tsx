@@ -9,6 +9,7 @@ import {
 } from "@/helper/realtime-carbon-calculate/loader";
 import type { UseBooleanReturn } from "@/hooks/use-boolean";
 import type {
+  GreenCateringForm,
   ProjectFormValues,
   Scope1ActivityForm,
   Scope2EntryForm,
@@ -41,6 +42,8 @@ import {
   energyUnitOptions,
   equipmentOptions,
   giftUnitOptions,
+  greenCateringLocationOptions,
+  greenCateringPackagingOptions,
   internalVehicleOptions,
   roomOptions,
   roomOptionsExcludeMeterOnly,
@@ -68,6 +71,7 @@ type TProjectFormSecondStepProps = {
   scope3OvernightOffCampus: Scope3OvernightForm[];
   scope3Souvenir: Scope3SouvenirForm[];
   scope3Waste: Scope3WasteForm[];
+  greenCatering: GreenCateringForm[];
   errors: FieldErrors<ProjectFormValues>;
   customId: string;
   title: string;
@@ -93,6 +97,8 @@ type TProjectFormSecondStepProps = {
   appendScope3Souvenir: (value: Scope3SouvenirForm) => void;
   removeScope3Waste: (index: number) => void;
   appendScope3Waste: (value: Scope3WasteForm) => void;
+  removeGreenCatering: (index: number) => void;
+  appendGreenCatering: (value: GreenCateringForm) => void;
   handleBack: () => void;
   onSubmit: (data: ProjectFormValues, status: "draft" | "pending") => void;
   openDialog: UseBooleanReturn;
@@ -137,6 +143,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     scope3OvernightOffCampus,
     scope3Souvenir,
     scope3Waste,
+    greenCatering,
     errors,
     customId,
     title,
@@ -162,6 +169,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     appendScope3Souvenir,
     removeScope3Waste,
     appendScope3Waste,
+    removeGreenCatering,
+    appendGreenCatering,
     handleBack,
     openDialog,
     confirmDisabled,
@@ -1233,6 +1242,100 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
     </StyledStack>
   );
 
+  const renderGreenCatering = (
+    <StyledStack>
+      <Stack spacing={1.5}>
+        <Typography variant="subtitle1" fontWeight={700}>
+          Green Catering
+        </Typography>
+        <Typography variant="caption" color={greyColor}>
+          ข้อมูลร้านอาหารที่ใช้ภายในโครงการ
+        </Typography>
+      </Stack>
+
+      {greenCatering?.map((_, index) => {
+        const location = watch(`green_catering.${index}.location`);
+        const packaging = watch(`green_catering.${index}.packaging`);
+
+        return (
+          <StyledStack key={index} sx={{ borderRadius: 2 }}>
+            <Grid container spacing={2} alignItems="start">
+              <Grid size={{ xs: 5.75 }}>
+                <Field.Text
+                  name={`green_catering.${index}.name`}
+                  label="ชื่อร้านอาหาร"
+                />
+              </Grid>
+              <Grid size={{ xs: 5.75 }}>
+                <Field.Text
+                  name={`green_catering.${index}.contact`}
+                  label="ช่องทางการติดต่อร้าน"
+                />
+              </Grid>
+              <Grid size={{ xs: 0.5 }} sx={{ paddingTop: 1 }}>
+                <IconButton onClick={() => removeGreenCatering(index)}>
+                  <SvgColor
+                    src="/assets/icons/ic-trash.svg"
+                    color={redColor}
+                  />
+                </IconButton>
+              </Grid>
+            </Grid>
+            <Stack direction="row" alignItems="center" gap={2}>
+              <Typography variant="body2" flexShrink={0}>
+                สถานที่
+              </Typography>
+              <Field.GroupRadio
+                name={`green_catering.${index}.location`}
+                options={greenCateringLocationOptions}
+              />
+              <Field.Text
+                name={`green_catering.${index}.location_other`}
+                label="โปรดระบุ"
+                disabled={location !== "other"}
+                required
+                sx={{ flex: 1 }}
+              />
+            </Stack>
+            <Stack direction="row" alignItems="center" gap={2}>
+              <Typography variant="body2" flexShrink={0}>
+                บรรจุภัณฑ์
+              </Typography>
+              <Field.GroupRadio
+                name={`green_catering.${index}.packaging`}
+                options={greenCateringPackagingOptions}
+              />
+              <Field.Text
+                name={`green_catering.${index}.packaging_other`}
+                label="โปรดระบุ"
+                disabled={packaging !== "other"}
+                required
+                sx={{ flex: 1 }}
+              />
+            </Stack>
+          </StyledStack>
+        );
+      })}
+
+      <StyledAddButton
+        variant="outlined"
+        startIcon={<SvgColor src="/assets/icons/ic-plus.svg" />}
+        onClick={() =>
+          appendGreenCatering({
+            name: "",
+            contact: "",
+            location: "",
+            location_other: "",
+            packaging: "",
+            packaging_other: "",
+          })
+        }
+      >
+        เพิ่มร้านอาหาร
+      </StyledAddButton>
+    </StyledStack>
+  );
+
   const renderPolicyInfo = (
     <StyledStack>
       <Stack spacing={1.5}>
@@ -1349,6 +1452,8 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             {renderSecondScope}
 
             {renderThirdScope}
+
+            {renderGreenCatering}
 
             {renderPolicyInfo}
 

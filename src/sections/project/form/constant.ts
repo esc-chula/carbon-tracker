@@ -46,6 +46,9 @@ const energyUnitOptions = constants.equipment_unit_options;
 const internalVehicleOptions = constants.internal_vehicle_options;
 const giftUnitOptions = constants.gift_options;
 const wasteOptions = constants.waste_options;
+const greenCateringLocationOptions = constants.green_catering_location_options;
+const greenCateringPackagingOptions =
+  constants.green_catering_packaging_options;
 
 export type { TRoom };
 export {
@@ -59,6 +62,8 @@ export {
   equipmentOptions,
   fieldOptions,
   giftUnitOptions,
+  greenCateringLocationOptions,
+  greenCateringPackagingOptions,
   internalVehicleOptions,
   roomOptions,
   roomOptionsMeterOnly,
