@@ -4,6 +4,8 @@ import {
   activityOptions,
   activityUnitOptions,
   equipmentOptions,
+  greenCateringLocationOptions,
+  greenCateringPackagingOptions,
 } from "../form/constant";
 
 const activityMap: Record<string, string> = Object.fromEntries(
@@ -30,4 +32,26 @@ function FacilityMapper(value: string) {
   return facilityMap[value] ?? value;
 }
 
-export { ActivityNameMapper, ActivityUnitMapper, FacilityMapper };
+const greenCateringLocationMap: Record<string, string> = Object.fromEntries(
+  greenCateringLocationOptions.map((opt) => [opt.value, opt.label]),
+);
+
+function GreenCateringLocationMapper(value: string) {
+  return greenCateringLocationMap[value] ?? value;
+}
+
+const greenCateringPackagingMap: Record<string, string> = Object.fromEntries(
+  greenCateringPackagingOptions.map((opt) => [opt.value, opt.label]),
+);
+
+function GreenCateringPackagingMapper(value: string) {
+  return greenCateringPackagingMap[value] ?? value;
+}
+
+export {
+  ActivityNameMapper,
+  ActivityUnitMapper,
+  FacilityMapper,
+  GreenCateringLocationMapper,
+  GreenCateringPackagingMapper,
+};

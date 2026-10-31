@@ -26,5 +26,6 @@ export type ReviewFormValues = {
     food_beverage: ReviewCheckForm;
     energy: ReviewCheckForm;
     other: ReviewOtherForm;
+    green_catering: ReviewCheckForm;
   };
 };

@@ -32,6 +32,7 @@ type ReviewFormValuesInput = {
     food_beverage: ReviewCheckFormInput;
     energy: ReviewCheckFormInput;
     other: ReviewOtherFormInput;
+    green_catering: ReviewCheckFormInput;
   };
 };
 
@@ -84,6 +85,7 @@ const ReviewFormSchema: z.ZodType<
     food_beverage: ReviewCheckSchema,
     energy: ReviewCheckSchema,
     other: ReviewOtherSchema,
+    green_catering: ReviewCheckSchema,
   }),
 });
 

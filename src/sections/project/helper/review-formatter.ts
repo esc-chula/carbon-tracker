@@ -59,6 +59,7 @@ function buildReviewProjectPayload({
         waste: mapReviewCheck(values.detail.other.waste),
         transportations: mapReviewCheck(values.detail.other.transportations),
       },
+      green_catering: mapReviewCheck(values.detail.green_catering),
     },
   };
 }
