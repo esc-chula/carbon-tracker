@@ -20,6 +20,7 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import ProjectFirstScopeInformation from "../../detail/project-first-scope-information";
+import ProjectGreenCateringInformation from "../../detail/project-green-catering-information";
 import ProjectHeader from "../../detail/project-header";
 import ProjectInformation from "../../detail/project-information";
 import ProjectOwnerInformation from "../../detail/project-owner-information";
@@ -173,6 +174,12 @@ function ProjectView() {
             ownerId={project.data.project.owner_id}
             carbon={carbonUsageScope3}
           >
+            <ProjectGreenCateringInformation
+              data={
+                project.data?.project?.carbon_input?.green_catering?.restaurants
+              }
+            />
+
             {projectInfo && <ProjectPolicyInformation data={projectInfo} />}
 
             <ProjectCarbonDetail

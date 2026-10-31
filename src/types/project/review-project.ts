@@ -20,6 +20,7 @@ export type TReviewProjectDetailV2 = {
   food_beverage: TReviewCheck;
   energy: TReviewCheck;
   other: TReviewOtherDetailV2;
+  green_catering: TReviewCheck;
 };
 
 export type TReviewProjectRequest = {

@@ -22,6 +22,7 @@ import { useUpdateProjectStatusMutation } from "@/services/project/mutation";
 import { ownersQueryKeys } from "@/services/user/query/user-query";
 import { canModifyProject } from "@/helper/project-permissions";
 import ProjectCarbonDetail from "../../project-carbon-detail";
+import ProjectGreenCateringInformation from "../../detail/project-green-catering-information";
 import ProjectPolicyInformation from "../../detail/project-policy-information";
 
 type Params = {
@@ -194,6 +195,14 @@ function ProjectResultView() {
             project.data.review?.detail?.other?.waste,
           )}
         >
+          <ProjectGreenCateringInformation
+            data={
+              project.data?.project?.carbon_input?.green_catering?.restaurants
+            }
+          >
+            {renderReviewStatus(project.data.review?.detail?.green_catering)}
+          </ProjectGreenCateringInformation>
+
           {projectInfo && (
             <ProjectPolicyInformation data={projectInfo}>
               {renderReviewStatus(project.data.review?.detail?.project_info)}
