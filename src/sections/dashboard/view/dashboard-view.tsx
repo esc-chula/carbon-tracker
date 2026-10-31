@@ -94,7 +94,7 @@ function DashboardView() {
         >
           <Stack>
             <Typography variant="h2" fontWeight={700}>
-              หน่วยงานไหนปล่อยคาร์บอนจากการใช้ไฟฟ้ามากที่สุด
+              หน่วยงานไหนปล่อยคาร์บอนมากที่สุด
             </Typography>
             <Typography variant="body1" fontWeight={500}>
               ปริมาณการปล่อยคาร์บอนแยกตามหน่วยงาน
@@ -277,10 +277,10 @@ function DashboardView() {
         <Grid size={{ xs: 12 }}>
           <StyledPaper elevation={2} sx={{ paddingBottom: 0 }}>
             <Typography variant="h2" fontWeight={700}>
-              Heatmap การใช้ไฟฟ้าของกิจกรรมนิสิต
+              Heatmap การปล่อยคาร์บอนของกิจกรรมนิสิต
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              Heatmap แสดงการใช้ไฟฟ้าแต่ละวันตลอดปีการศึกษา
+              Heatmap แสดงปล่อยคาร์บอนในแต่ละวันตลอดปีการศึกษา
             </Typography>
 
             <DashboardCalendarHeatmap

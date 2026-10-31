@@ -1378,7 +1378,7 @@ export function ProjectFormSecondStep(props: TProjectFormSecondStepProps) {
             </Typography>
             <Field.Text
               name="policy_implementation_suggestion"
-              label="ระบุผลการดำเนินงาน อุปสรรคที่พบ และแนวทางแก้ไข เพื่อเป็นข้อมูลประโยชน์ในการจัดทำแนวทางสำหรับโครงการอื่น ๆ ต่อไป"
+              placeholder="ประเมินผลการดำเนินนโยบายสิ่งแวดล้อมของโครงการว่าได้ผลตามที่คาดหวังหรือไม่ ผู้เข้าร่วมให้ความร่วมมือมากน้อยเพียงใด มีปัญหาหรืออุปสรรคอะไรบ้าง และมีวิธีแก้ไขอย่างไร พร้อมเสนอแนวทางปรับปรุงสำหรับการจัดโครงการครั้งต่อไป"
               multiline
               rows={3}
               required
