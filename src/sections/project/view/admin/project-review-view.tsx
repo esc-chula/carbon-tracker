@@ -15,6 +15,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import ProjectFirstScopeInformation from "../../detail/project-first-scope-information";
+import ProjectGreenCateringInformation from "../../detail/project-green-catering-information";
 import ProjectHeader from "../../detail/project-header";
 import ProjectInformation from "../../detail/project-information";
 import ProjectOwnerInformation from "../../detail/project-owner-information";
@@ -90,6 +91,10 @@ const REJECTION_NOTE_CONFIGS = [
   {
     passedPath: "detail.other.transportations.passed",
     notesPath: "detail.other.transportations.rejection_notes",
+  },
+  {
+    passedPath: "detail.green_catering.passed",
+    notesPath: "detail.green_catering.rejection_notes",
   },
 ] as const;
 
@@ -271,6 +276,15 @@ function ProjectReviewView() {
   >({
     control,
     name: "detail.other.transportations.rejection_notes",
+  });
+
+  const {
+    fields: greenCateringRejectionNotes,
+    append: appendGreenCateringRejectionNote,
+    remove: removeGreenCateringRejectionNote,
+  } = useFieldArray<ReviewFormValues, "detail.green_catering.rejection_notes">({
+    control,
+    name: "detail.green_catering.rejection_notes",
   });
 
   const passedValues = useWatch({
@@ -627,6 +641,21 @@ function ProjectReviewView() {
                 removeOtherWasteRejectionNote,
               )}
             >
+              <ProjectGreenCateringInformation
+                data={
+                  project.data?.project?.carbon_input?.green_catering
+                    ?.restaurants
+                }
+              >
+                {renderReviewSection(
+                  "detail.green_catering.passed",
+                  errors.detail?.green_catering?.passed?.message,
+                  greenCateringRejectionNotes,
+                  appendGreenCateringRejectionNote,
+                  removeGreenCateringRejectionNote,
+                )}
+              </ProjectGreenCateringInformation>
+
               {projectInfo && (
                 <ProjectPolicyInformation data={projectInfo}>
                   {renderReviewSection(
