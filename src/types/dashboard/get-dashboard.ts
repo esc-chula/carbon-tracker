@@ -26,6 +26,7 @@ export type TGetDashboardResponse = {
     };
 
     heatmap: {
+      year: number;
       electricity_usages:
         | {
             amount: number;

@@ -287,6 +287,7 @@ function DashboardView() {
               key={JSON.stringify(
                 dashboard.data.dashboard.heatmap.electricity_usages,
               )}
+              year={dashboard.data.dashboard.heatmap.year}
               data={dashboard.data.dashboard.heatmap.electricity_usages}
             />
           </StyledPaper>
