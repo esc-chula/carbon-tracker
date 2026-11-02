@@ -225,5 +225,18 @@
 
   "waste_unit_options": [
     { "value": "kg", "label": "กิโลกรัม" }
+  ],
+
+  "green_catering_location_options": [
+    { "value": "dorm", "label": "หอพักนิสิต" },
+    { "value": "icanteen", "label": "โรงอาหาร iCanteen" },
+    { "value": "other", "label": "อื่นๆ" }
+  ],
+
+  "green_catering_packaging_options": [
+    { "value": "bagasse_box", "label": "กล่องชานอ้อย" },
+    { "value": "paper_box", "label": "กล่องกระดาษ" },
+    { "value": "plastic_box", "label": "กล่องพลาสติก" },
+    { "value": "other", "label": "อื่นๆ" }
   ]
 }

@@ -52,6 +52,15 @@ type Scope3WasteForm = {
   unit?: string;
 };
 
+type GreenCateringForm = {
+  name?: string;
+  contact?: string;
+  location?: string;
+  location_other?: string;
+  packaging?: string;
+  packaging_other?: string;
+};
+
 type ProjectFormValues = {
   custom_id: string;
   title: string;
@@ -78,6 +87,7 @@ type ProjectFormValues = {
   scope3_overnight_off_campus?: Array<Scope3OvernightForm>;
   scope3_souvenir?: Array<Scope3SouvenirForm>;
   scope3_waste?: Array<Scope3WasteForm>;
+  green_catering?: Array<GreenCateringForm>;
 
   field?: string;
   clubName?: string;
@@ -85,6 +95,7 @@ type ProjectFormValues = {
 };
 
 export type {
+  GreenCateringForm,
   ProjectFormValues,
   Scope1ActivityForm,
   Scope2EntryForm,

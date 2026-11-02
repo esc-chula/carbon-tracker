@@ -83,6 +83,29 @@ function buildCarbonInput(data: ProjectFormValues): CarbonInput {
           value: item.value ?? 0,
         })) ?? [],
     },
+    green_catering: {
+      restaurants:
+        data.green_catering
+          ?.filter(
+            (item) =>
+              item.name?.trim() ||
+              item.contact?.trim() ||
+              item.location ||
+              item.packaging,
+          )
+          .map((item) => ({
+            name: item.name?.trim() ?? "",
+            contact: item.contact?.trim() ?? "",
+            location: {
+              type: item.location ?? "",
+              other: item.location_other?.trim() ?? "",
+            },
+            packaging: {
+              type: item.packaging ?? "",
+              other: item.packaging_other?.trim() ?? "",
+            },
+          })) ?? [],
+    },
   };
 }
 

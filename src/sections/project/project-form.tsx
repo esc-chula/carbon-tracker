@@ -156,6 +156,15 @@ function ProjectForm({
     name: "scope3_waste",
   });
 
+  const {
+    fields: greenCatering,
+    append: appendGreenCatering,
+    remove: removeGreenCatering,
+  } = useFieldArray({
+    control,
+    name: "green_catering",
+  });
+
   // --------------------------- Value ---------------------------
 
   const whiteColor = theme.palette.background.paper;
@@ -314,6 +323,7 @@ function ProjectForm({
           scope3OvernightOffCampus={scope3OvernightOffCampus}
           scope3Souvenir={scope3Souvenir}
           scope3Waste={scope3Waste}
+          greenCatering={greenCatering}
           errors={errors}
           customId={customId}
           title={title}
@@ -339,6 +349,8 @@ function ProjectForm({
           appendScope3Souvenir={appendScope3Souvenir}
           removeScope3Waste={removeScope3Waste}
           appendScope3Waste={appendScope3Waste}
+          removeGreenCatering={removeGreenCatering}
+          appendGreenCatering={appendGreenCatering}
           handleBack={handleBack}
           onSubmit={onSubmit}
           openDialog={openDialog}

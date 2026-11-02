@@ -28,9 +28,25 @@ export type CarbonInput = {
     transportations?: Scope3Transportation[] | null;
     waste: Scope3Waste[] | null;
   };
+  green_catering: {
+    restaurants: Restaurant[] | null;
+  };
 };
 
 type ISODateTime = string;
+
+export type Restaurant = {
+  name: string;
+  contact: string;
+  location: {
+    type: string;
+    other: string;
+  };
+  packaging: {
+    type: string;
+    other: string;
+  };
+};
 
 // --- Scope 1
 export type Scope1Activity = {

@@ -194,6 +194,18 @@ function projectToFormValues({
     }));
   }
 
+  const restaurants = carbonInput.green_catering?.restaurants ?? [];
+  if (restaurants?.length) {
+    values.green_catering = restaurants.map((item) => ({
+      name: item?.name ?? "",
+      contact: item?.contact ?? "",
+      location: item?.location?.type ?? "",
+      location_other: item?.location?.other ?? "",
+      packaging: item?.packaging?.type ?? "",
+      packaging_other: item?.packaging?.other ?? "",
+    }));
+  }
+
   values.transportations_csv_file = undefined;
 
   return values;

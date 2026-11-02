@@ -26,10 +26,12 @@ const LEGEND = [
 // ---------------------------------------------------
 
 type TDashboardCalendarHeatmap = {
+  year: number;
   data?: TGetDashboardResponse["dashboard"]["heatmap"]["electricity_usages"];
 };
 
 export default function DashboardCalendarHeatmap({
+  year,
   data,
 }: TDashboardCalendarHeatmap) {
   // --------------------------- Value ---------------------------
@@ -67,8 +69,8 @@ export default function DashboardCalendarHeatmap({
         <Stack sx={{ width: 1, overflowX: "scroll" }}>
           <Box sx={{ width: { xs: 900, lg: 1 } }}>
             <CalendarHeatmap
-              startDate={new Date("2025-07-01")}
-              endDate={new Date("2026-06-30")}
+              startDate={new Date(`${year}-07-01`)}
+              endDate={new Date(`${year + 1}-06-30`)}
               values={formattedData ?? []}
               showWeekdayLabels
               weekdayLabels={["", "M", "", "W", "", "F", ""]}
