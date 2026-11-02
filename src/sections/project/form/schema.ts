@@ -244,14 +244,45 @@ const Scope3WasteSchema = z.object({
   unit: z.string().min(1, "กรุณาเลือกหน่วย"),
 });
 
-const GreenCateringSchema = z.object({
-  name: z.string().optional(),
-  contact: z.string().optional(),
-  location: z.string().optional(),
-  location_other: z.string().optional(),
-  packaging: z.string().optional(),
-  packaging_other: z.string().optional(),
-});
+const GreenCateringSchema = z
+  .object({
+    name: z.string().optional(),
+    contact: z.string().optional(),
+    location: z.string().optional(),
+    location_other: z.string().optional(),
+    packaging: z.string().optional(),
+    packaging_other: z.string().optional(),
+  })
+  .superRefine((row, ctx) => {
+    // A fully blank row is dropped by buildCarbonInput, so it needs no validation.
+    const touched = [
+      row.name?.trim(),
+      row.contact?.trim(),
+      row.location,
+      row.packaging,
+    ].some(Boolean);
+    if (!touched) return;
+
+    const require = (value: unknown, path: string, message: string) => {
+      if (value) return;
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: [path], message });
+    };
+
+    require(row.name?.trim(), "name", "กรุณากรอกชื่อร้านอาหาร");
+    require(row.contact?.trim(), "contact", "กรุณากรอกช่องทางการติดต่อร้าน");
+    require(row.location, "location", "กรุณาเลือกสถานที่");
+    require(row.packaging, "packaging", "กรุณาเลือกบรรจุภัณฑ์");
+    if (row.location === "other") {
+      require(row.location_other?.trim(), "location_other", "กรุณาระบุสถานที่");
+    }
+    if (row.packaging === "other") {
+      require(
+        row.packaging_other?.trim(),
+        "packaging_other",
+        "กรุณาระบุบรรจุภัณฑ์",
+      );
+    }
+  });
 
 const ProjectInfoSchema = z.object({
   environmental_policy: z.string().trim().min(1, "กรุณาระบุนโยบายสิ่งแวดล้อม"),
