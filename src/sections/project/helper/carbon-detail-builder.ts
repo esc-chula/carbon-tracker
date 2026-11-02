@@ -88,9 +88,9 @@ function buildCarbonInput(data: ProjectFormValues): CarbonInput {
         data.green_catering
           ?.filter(
             (item) =>
-              item.name?.trim() ||
-              item.contact?.trim() ||
-              item.location ||
+              item.name?.trim() ??
+              item.contact?.trim() ??
+              item.location ??
               item.packaging,
           )
           .map((item) => ({
