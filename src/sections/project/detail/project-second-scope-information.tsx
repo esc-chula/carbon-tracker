@@ -62,7 +62,7 @@ function ProjectSecondScopeInformation({
     .map((building) => ({
       name: building.name,
       room: building.room,
-      facilities: building.facilities
+      facilities: (building.facilities ?? [])
         .map((facility) => FacilityMapper(facility))
         .join(", "),
       start_time: transFormDateToThai(building.start_time),

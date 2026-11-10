@@ -60,7 +60,8 @@ export type Scope2Building = {
   type: "building";
   name: string;
   room: string;
-  facilities: string[];
+  // BE (Go) returns null/omits this when the slice is empty
+  facilities?: string[] | null;
   start_time: ISODateTime;
   end_time: ISODateTime;
 };
